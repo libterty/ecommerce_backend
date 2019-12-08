@@ -22,12 +22,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/', (req, res) =>
-  res.status(200).json({ status: 'success', message: 'Hello World!' })
-);
-
 app.listen(port, () =>
   console.log(`Example app listening on port http://localhost:${port}!`)
 );
+
+require('./routes')(app);
 
 module.exports = app;

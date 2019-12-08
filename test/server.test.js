@@ -18,7 +18,7 @@ describe('User', function() {
   });
   it('should return a 200 response', function(done) {
     request
-      .get('/')
+      .get('/api')
       .set('Accept', 'application/json')
       .expect(200, done);
   });
