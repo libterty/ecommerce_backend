@@ -3,12 +3,20 @@ node_js:
   - "10"
   - "8"
 
+services:
+  - mysql
+
 env:
   - NODE_ENV=test
 
 before_install:
   - npm install
   - npm install codecov
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS ac_twitter_workspace_test default character set utf8mb4 collate utf8mb4_unicode_ci;'
+  - npm install sequelize-cli -g
+
+before_script:
+  - sequelize db:migrate
 
 script:
   - npm test
