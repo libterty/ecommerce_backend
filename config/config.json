@@ -8,8 +8,7 @@
         "operatorsAliases": "Op"
     },
     "test": {
-        "username": "root",
-        "password": "12345678",
+        "username": "travis",
         "database": "ec_web_test",
         "host": "127.0.0.1",
         "dialect": "mysql",
