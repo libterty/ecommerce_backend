@@ -24,8 +24,9 @@ script:
 
 deploy:
   provider: heroku
+  app: secret-brushlands-82653
   api_key:
-    secure: "be4f0ef4-f01a-43e7-a514-ad48d433e354"
+    secure: be4f0ef4-f01a-43e7-a514-ad48d433e354
   run:
     - "npm install sequelize-cli -g"
     - "sequelize db:migrate"
