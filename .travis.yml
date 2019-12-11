@@ -21,8 +21,6 @@ before_script:
 script:
   - npm test
 
-after_success:
-  - codecov
 
 deploy:
   provider: heroku
@@ -31,3 +29,6 @@ deploy:
   run:
     - "npm install sequelize-cli -g"
     - "sequelize db:migrate"
+
+after_success:
+  - codecov
