@@ -5,6 +5,7 @@
 
 # Ingore code coverage
 coverage/
+.nyc_output/
 
 # Ingore file upload
 temp/
@@ -19,3 +20,4 @@ node_modules/
 
 # Ignore config.json
 config/config.json
+

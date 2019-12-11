@@ -6,10 +6,11 @@
     "scripts": {
         "start": "node index.js",
         "dev": "nodemon index.js",
-        "test": "mocha test --exit --recursive --timeout 5000 || true && codecov -t 1b7bc6dd-e62c-4d0d-8524-6396bf2a6024",
+        "test": "nyc mocha test --exit --recursive --timeout 5000 || true",
         "lint": "eslint --format table --fix .",
         "test-migrate": "set NODE_ENV=test& npx sequelize db:migrate",
-        "dev-migrate": "set NODE_ENV=development& npx sequelize db:migrate"
+        "dev-migrate": "set NODE_ENV=development& npx sequelize db:migrate",
+        "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
     },
     "keywords": [],
     "author": "",
@@ -18,11 +19,13 @@
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
+        "coveralls": "^3.0.9",
         "express": "^4.17.1",
         "faker": "^4.1.0",
         "method-override": "^3.0.0",
         "mocha": "^6.2.2",
         "mysql2": "^2.0.2",
+        "nyc": "^14.1.1",
         "passport": "^0.4.0",
         "passport-jwt": "^4.0.0",
         "sequelize": "^5.21.2",
