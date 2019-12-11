@@ -3,7 +3,7 @@ process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const should = chai.should();
 const db = require('../../models');
-const OrderModel = require('../../models/Order');
+const OrderModel = require('../../models/order');
 const {
   sequelize,
   dataTypes,
