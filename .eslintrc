@@ -16,7 +16,16 @@
     },
     "rules": {
         "prettier/prettier": "error",
-        "no-global-assign": ["error", {"exceptions": ["require"]}],
-        "no-console":"off"
+        "no-global-assign": [
+            "error",
+            {
+                "exceptions": [
+                    "require"
+                ]
+            }
+        ],
+        "no-console": "off",
+        "no-unused-vars": "off",
+        "no-undef": "off"
     }
 }
