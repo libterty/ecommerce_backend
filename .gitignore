@@ -18,6 +18,3 @@ upload/
 # Dependency directories
 node_modules/
 
-# Ignore config.json
-config/config.json
-

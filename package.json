@@ -10,7 +10,7 @@
         "lint": "eslint --format table --fix .",
         "test-migrate": "set NODE_ENV=test& npx sequelize db:migrate",
         "dev-migrate": "set NODE_ENV=development& npx sequelize db:migrate",
-        "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+        "coveralls": "nyc report --reporter=text-lcov | coveralls"
     },
     "keywords": [],
     "author": "",
