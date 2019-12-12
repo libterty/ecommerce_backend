@@ -1,7 +1,8 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const OrderItem = sequelize.define(
-    'OrderItem', {
+    'OrderItem',
+    {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -21,7 +22,8 @@ module.exports = (sequelize, DataTypes) => {
       OrderId: DataTypes.INTEGER,
       ProductId: DataTypes.INTEGER,
       ColorId: DataTypes.INTEGER
-    }, {}
+    },
+    {}
   );
   OrderItem.associate = function(models) {
     OrderItem.belongsTo(models.Color);

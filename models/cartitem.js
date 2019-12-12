@@ -2,7 +2,8 @@
 // TODO: missing imageID?
 module.exports = (sequelize, DataTypes) => {
   const CartItem = sequelize.define(
-    'CartItem', {
+    'CartItem',
+    {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -14,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
       CartId: DataTypes.INTEGER,
       ProductId: DataTypes.INTEGER,
       ColorId: DataTypes.INTEGER
-    }, {}
+    },
+    {}
   );
   CartItem.associate = function(models) {
     CartItem.belongsTo(models.Cart);

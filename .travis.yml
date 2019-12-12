@@ -1,7 +1,6 @@
 language: node_js
 node_js:
-  - "10"
-  - "8"
+  - "12"
 
 services:
   - mysql
@@ -11,7 +10,6 @@ env:
 
 before_install:
   - npm install
-  - npm install codecov
   - mysql -e 'CREATE DATABASE IF NOT EXISTS ec_web_test default character set utf8mb4 collate utf8mb4_unicode_ci;'
   - npm install sequelize-cli -g
 
@@ -20,7 +18,6 @@ before_script:
 
 script:
   - npm test
-
 
 deploy:
   provider: heroku
@@ -32,4 +29,4 @@ deploy:
     - "sequelize db:migrate"
 
 after_success:
-  - codecov
+  - npm run coveralls

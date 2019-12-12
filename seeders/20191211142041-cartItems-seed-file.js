@@ -13,7 +13,8 @@ module.exports = {
         ColorId: Math.floor(Math.random() * 3) + 1,
         createdAt: new Date(),
         updatedAt: new Date()
-      })), {}
+      })),
+      {}
     );
   },
 
