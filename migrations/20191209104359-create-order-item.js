@@ -10,10 +10,12 @@ module.exports = {
       },
       price: {
         allowNull: false,
+        defaultValue: 0,
         type: Sequelize.FLOAT
       },
       quantity: {
         allowNull: false,
+        defaultValue: 0,
         type: Sequelize.INTEGER
       },
       OrderId: {

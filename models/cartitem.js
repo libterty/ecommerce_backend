@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = (sequelize, DataTypes) => {
   const CartItem = sequelize.define(
     'CartItem',
@@ -9,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         allowNull: false
       },
-      price: { type: DataTypes.FLOAT, allowNull: false },
-      quantity: { type: DataTypes.INTEGER, allowNull: false },
+      price: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
+      quantity: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
       CartId: DataTypes.INTEGER,
       ProductId: DataTypes.INTEGER,
       ColorId: DataTypes.INTEGER

@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 // const passport = require('./config/passport');
 const cors = require('cors');
 
@@ -13,6 +15,16 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use(cors({ credentials: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(
+  session({
+    secret: 'trueAndFalse',
+    name: 'trueAndFalse',
+    cookie: { maxAge: 80000 },
+    resave: false,
+    saveUninitialized: true
+  })
+);
 app.use(bodyParser.json());
 // app.use(passport.initialize());
 // app.use(passport.session());

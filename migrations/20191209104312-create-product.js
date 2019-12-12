@@ -10,6 +10,7 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
+        defaultValue: '',
         allowNull: false
       },
       description: {
@@ -17,6 +18,7 @@ module.exports = {
       },
       price: {
         type: Sequelize.FLOAT,
+        defaultValue: 0,
         allowNull: false
       },
       height: {
