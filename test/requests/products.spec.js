@@ -36,5 +36,74 @@ describe('# Product request', () => {
         await db.Image.destroy({ where: {}, truncate: true });
       });
     });
+
+    describe('When Visit HomePage with Image data', () => {
+      before(async () => {
+        await db.Product.create({ name: 'Product1 Test', price: 3000 });
+        await db.Product.create({ name: 'Product2 Test', price: 3000 });
+      });
+
+      it('should return 200 and get json data', done => {
+        request(app)
+          .get('/api/furnitures')
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('success');
+            expect(res.body.products[0].Image).to.equal(null);
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.Product.destroy({ where: {}, truncate: true });
+      });
+    });
+
+    describe('When Visit Specific Product Page', () => {
+      before(async () => {
+        await db.Product.create({ name: 'Product1 Test', price: 3000 });
+        await db.Product.create({ name: 'Product2 Test', price: 3000 });
+        await db.Image.create({ url: 'test1.jpg', ProductId: 1 });
+        await db.Image.create({ url: 'test2.jpg', ProductId: 2 });
+        await db.Color.create({ name: 'Yellow', ProductId: 1 });
+        await db.Color.create({ name: 'Green', ProductId: 2 });
+      });
+
+      it('should return 200 and get json data', done => {
+        request(app)
+          .get('/api/furnitures/1')
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('success');
+            expect(res.body.product.name).to.equal('Product1 Test');
+            expect(res.body.Images[0].url).to.equal('test1.jpg');
+            expect(res.body.Colors[0].name).to.equal('Yellow');
+            done();
+          });
+      });
+
+      it('should return 400 and get error message', done => {
+        request(app)
+          .get('/api/furnitures/3')
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Fail to find product');
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Image.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
+      });
+    });
   });
 });

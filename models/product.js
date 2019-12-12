@@ -10,7 +10,9 @@ module.exports = (sequelize, DataTypes) => {
       width: DataTypes.INTEGER,
       length: DataTypes.INTEGER,
       weight: DataTypes.INTEGER,
-      material: DataTypes.STRING
+      material: DataTypes.STRING,
+      rating: DataTypes.INTEGER,
+      viewCounts: DataTypes.INTEGER
     },
     {}
   );
