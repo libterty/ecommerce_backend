@@ -55,7 +55,7 @@ const cartController = {
             message: 'Fail to find products'
           });
         }
-        // TODO: missing imageID?
+
         return CartItem.findOrCreate({
           where: {
             CartId: cart.id,

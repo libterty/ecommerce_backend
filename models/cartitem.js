@@ -1,5 +1,5 @@
 'use strict';
-// TODO: missing imageID?
+
 module.exports = (sequelize, DataTypes) => {
   const CartItem = sequelize.define(
     'CartItem',
