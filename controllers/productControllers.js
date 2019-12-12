@@ -8,7 +8,7 @@ const productController = {
   getHomePageProducts: (req, res) => {
     return Product.findAll().then(async products => {
       const Images = await Image.findAll().then(images => images);
-      console.log('products log', Images);
+      // console.log('products log', Images);
       if (products) {
         products = products.map(p => ({
           ...p.dataValues,
@@ -20,13 +20,19 @@ const productController = {
               ).url
             : null
         }));
-        console.log('products log', products);
+        // console.log('products log', products);
         return res.status(200).json({ status: 'success', products });
       }
       return res
         .status(400)
         .json({ status: 'error', message: 'fail to find products' });
     });
+  },
+
+  getProduct: (req, res) => {
+    return Product.findByPk(req.params.id).then(product => {
+      
+    })
   }
 };
 
