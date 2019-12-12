@@ -10,11 +10,13 @@ module.exports = {
       },
       price: {
         allowNull: false,
-        type: Sequelize.FLOAT
+        type: Sequelize.FLOAT,
+        defaultValue: 0
       },
       quantity: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        defaultValue: 0
       },
       CartId: {
         type: Sequelize.INTEGER
