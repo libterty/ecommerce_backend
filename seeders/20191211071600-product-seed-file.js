@@ -15,6 +15,7 @@ module.exports = {
         material: '橡木系列',
         rating: 8,
         viewCounts: 0,
+        ratingCounts: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -29,6 +30,7 @@ module.exports = {
         material: '全牛皮',
         rating: 5,
         viewCounts: 0,
+        ratingCounts: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -43,6 +45,7 @@ module.exports = {
         material: '橡木系列',
         rating: 3,
         viewCounts: 0,
+        ratingCounts: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -57,6 +60,7 @@ module.exports = {
         material: '橡木系列',
         rating: 9,
         viewCounts: 0,
+        ratingCounts: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -71,6 +75,7 @@ module.exports = {
         material: '橡木系列',
         rating: 8,
         viewCounts: 0,
+        ratingCounts: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -85,6 +90,7 @@ module.exports = {
         material: '橡木系列',
         rating: 6,
         viewCounts: 0,
+        ratingCounts: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       }

@@ -11,8 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       length: DataTypes.INTEGER,
       weight: DataTypes.INTEGER,
       material: DataTypes.STRING,
-      rating: DataTypes.INTEGER,
-      viewCounts: DataTypes.INTEGER
+      rating: DataTypes.FLOAT,
+      viewCounts: DataTypes.INTEGER,
+      ratingCounts: DataTypes.INTEGER
     },
     {}
   );
