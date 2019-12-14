@@ -3,6 +3,7 @@ const db = require('../models');
 const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
+const Inventory = db.Inventory;
 const Op = Sequelize.Op;
 
 const productController = {
@@ -33,8 +34,16 @@ const productController = {
         let Colors = await Color.findAll({
           where: { ProductId: req.params.id }
         }).then(colors => colors);
+        let Inventories = await Inventory.findAll({
+          where: { ProductId: req.params.id }
+        }).then(inventories => inventories);
         Images = Images.map(image => ({ ...image.dataValues }));
-        Colors = Colors.map(color => ({ ...color.dataValues }));
+        Colors = Colors.map(color => ({
+          ...color.dataValues,
+          Inventory: Inventories.filter(i => i.dataValues).find(
+            item => item.id == color.id
+          )
+        }));
         return res
           .status(200)
           .json({ status: 'success', product, Images, Colors });
