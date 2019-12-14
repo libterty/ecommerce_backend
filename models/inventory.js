@@ -9,7 +9,9 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         allowNull: false
       },
-      quantity: DataTypes.STRING,
+      quantity: {
+        type: DataTypes.INTEGER
+      },
       ProductId: DataTypes.INTEGER,
       ColorId: DataTypes.INTEGER
     },
