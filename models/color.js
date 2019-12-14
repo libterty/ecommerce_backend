@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
   const Color = sequelize.define(
     'Color',
     {
-      name: DataTypes.STRING
+      name: DataTypes.STRING,
+      ProductId: DataTypes.INTEGER
     },
     {}
   );

@@ -13,5 +13,6 @@ router.get('/cart', cartController.getCart);
 router.post('/cart', cartController.postCart);
 
 router.get('/furnitures', productController.getHomePageProducts);
+router.get('/furnitures/:id', productController.getProduct);
 
 module.exports = router;

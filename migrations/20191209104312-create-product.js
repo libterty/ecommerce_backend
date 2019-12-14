@@ -36,6 +36,18 @@ module.exports = {
       material: {
         type: Sequelize.STRING
       },
+      rating: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0
+      },
+      viewCounts: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+      ratingCounts: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
