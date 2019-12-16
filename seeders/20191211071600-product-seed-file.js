@@ -7,6 +7,7 @@ module.exports = {
         name: '原木化妝桌',
         description:
           '源自法國宮廷木匠完美呈現，大膽的藝術呈現在家具上，細膩而溫潤的質感 讓你一見鍾情',
+        cost: 9900,
         price: 18800,
         height: 77,
         width: 100,
@@ -22,6 +23,7 @@ module.exports = {
       {
         name: '電動沙發',
         description: '義大利ITALPELLI黃牛皮，符合澳大利亞SAA國際質檢機構',
+        cost: 6900,
         price: 13800,
         height: 103,
         width: 90,
@@ -37,6 +39,7 @@ module.exports = {
       {
         name: '咖啡桌大茶几',
         description: '100%純北美白橡木，簡約設計的咖啡矮桌',
+        cost: 5450,
         price: 10900,
         height: 45,
         width: 129,
@@ -52,6 +55,7 @@ module.exports = {
       {
         name: '電視長櫃',
         description: '擁有自然紋理且簡約時尚的北美白橡木',
+        cost: 8800,
         price: 17700,
         height: 48,
         width: 180,
@@ -67,6 +71,7 @@ module.exports = {
       {
         name: '北歐溫莎床架',
         description: '床架源自FAS級橡木，經過細膩的做工使床架的承重力更強',
+        cost: 7400,
         price: 14800,
         height: 99,
         width: 170,
@@ -82,6 +87,7 @@ module.exports = {
       {
         name: '輕日北歐衣櫃',
         description: '輕日北歐，極簡無印系列，鄉村款',
+        cost: 15450,
         price: 33500,
         height: 205,
         width: 105,

@@ -38,6 +38,13 @@ router.get(
   adminController.hiAdmin
 );
 
+router.get(
+  '/admin/products',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getProducts
+);
+
 router.post('/signin', userControlloer.signIn);
 
 // cart

@@ -66,6 +66,7 @@ describe('# Product Model', () => {
     let data = null;
     const requiredColumns = {
       name: '',
+      cost: 1,
       price: 1
     };
     it('create', done => {

@@ -15,8 +15,8 @@ describe('# Cart request', () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
-        await db.Product.create({ id: 1, name: 'Sofa', price: 9999 });
-        await db.Product.create({ id: 2, name: 'Desk', price: 5999 });
+        await db.Product.create({ id: 1, name: 'Sofa', cost: 3333, price: 9999 });
+        await db.Product.create({ id: 2, name: 'Desk', cost: 3333, price: 5999 });
       });
       // TODO: should check inventories stock
       it('should GET cart data and return success json message', done => {
@@ -64,8 +64,8 @@ describe('# Cart request', () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
-        await db.Product.create({ id: 1, name: 'Sofa', price: 9999 });
-        await db.Product.create({ id: 2, name: 'Desk', price: 5999 });
+        await db.Product.create({ id: 1, name: 'Sofa', cost: 1111, price: 9999 });
+        await db.Product.create({ id: 2, name: 'Desk', cost: 1111, price: 5999 });
       });
       it('should not get cart data without req.body.price and return error message', done => {
         let agent = request.agent(app);
@@ -91,7 +91,7 @@ describe('# Cart request', () => {
         let agent = request.agent(app);
         agent
           .post('/api/cart')
-          .send({ productId: 1, colorId: 1, price: 500 })
+          .send({ productId: 1, colorId: 1, cost: 11, price: 500 })
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
@@ -111,7 +111,7 @@ describe('# Cart request', () => {
         let agent = request.agent(app);
         agent
           .post('/api/cart')
-          .send({ productId: 1, quantity: 1, price: 500 })
+          .send({ productId: 1, quantity: 1, cost: 11, price: 500 })
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
@@ -131,7 +131,7 @@ describe('# Cart request', () => {
         let agent = request.agent(app);
         agent
           .post('/api/cart')
-          .send({ colorId: 1, quantity: 1, price: 500 })
+          .send({ colorId: 1, quantity: 1, cost: 11, price: 500 })
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
