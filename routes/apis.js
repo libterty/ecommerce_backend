@@ -4,9 +4,35 @@ const router = express.Router();
 const cartController = require('../controllers/cartControllers');
 const productController = require('../controllers/productControllers');
 const userControlloer = require('../controllers/userControllers');
+const adminController = require('../controllers/adminControllers');
+const passport = require('../config/passport');
+const helpers = require('../_helpers');
+const authenticated = passport.authenticate('jwt', { session: false });
+
+const authenticatedAdmin = (req, res, next) => {
+  // console.log('req.user', helpers.getUser(req));
+  if (helpers.getUser(req)) {
+    if (helpers.getUser(req).admin) {
+      return next();
+    }
+    return res
+      .status(400)
+      .json({ status: 'error', message: 'permission denied' });
+  }
+  return res
+    .status(400)
+    .json({ status: 'error', message: 'permission denied' });
+};
 
 router.get('/', (req, res) =>
   res.status(200).json({ status: 'success', message: 'Hello World!' })
+);
+
+router.get(
+  '/admin',
+  authenticated,
+  authenticatedAdmin,
+  adminController.hiAdmin
 );
 
 router.post('/signin', userControlloer.signIn);

@@ -45,9 +45,9 @@ const userController = {
         message: 'ok',
         token,
         user: {
-            id: user.id,
-            name: user.name,
-            isAdmin: user.admin
+          id: user.id,
+          name: user.name,
+          isAdmin: user.admin
         }
       });
     });
