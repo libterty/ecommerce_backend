@@ -10,7 +10,6 @@ const helpers = require('../_helpers');
 const authenticated = passport.authenticate('jwt', { session: false });
 
 const authenticatedAdmin = (req, res, next) => {
-  // console.log('req.user', helpers.getUser(req));
   if (helpers.getUser(req)) {
     if (helpers.getUser(req).admin) {
       return next();
@@ -26,6 +25,10 @@ const authenticatedAdmin = (req, res, next) => {
 
 router.get('/', (req, res) =>
   res.status(200).json({ status: 'success', message: 'Hello World!' })
+);
+
+router.get('/test', authenticated, (req, res) =>
+  res.status(200).json({ status: 'success', message: 'Auth Test!' })
 );
 
 router.get(
