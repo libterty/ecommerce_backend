@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node index.js",
         "dev": "nodemon index.js",
-        "test": "nyc mocha --exit --timeout 5000 --recursive \"tests/**/*.js\"",
+        "test": "nyc mocha --exit --timeout 5000 --recursive \"test/**/*.js\"",
         "lint": "eslint --format table --fix .",
         "test-migrate": "set NODE_ENV=test& npx sequelize db:migrate",
         "dev-migrate": "set NODE_ENV=development& npx sequelize db:migrate",
