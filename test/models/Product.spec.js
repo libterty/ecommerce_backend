@@ -22,6 +22,7 @@ describe('# Product Model', () => {
     [
       'name',
       'description',
+      'cost',
       'price',
       'height',
       'length',

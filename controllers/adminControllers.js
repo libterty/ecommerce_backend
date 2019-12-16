@@ -18,7 +18,7 @@ const adminController = {
       products = products.map(p => ({
         ...p.dataValues
       }));
-      console.log('req log', products);
+      // console.log('req log', products);
       return res.status(200).json({ status: 'success', products });
     });
   }

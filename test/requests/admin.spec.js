@@ -30,12 +30,12 @@ describe('# Admin Request', () => {
           cost: 1500,
           price: 3000
         });
-        await db.Image.create({ url: 'test1.jpg', ProductId: 1 });
-        await db.Image.create({ url: 'test2.jpg', ProductId: 2 });
-        await db.Color.create({ name: 'Yellow', ProductId: 1 });
-        await db.Color.create({ name: 'Black', ProductId: 2 });
-        await db.Inventory.create({ quantity: 20, ProductId: 1, ColorId: 1 });
-        await db.Inventory.create({ quantity: 10, ProductId: 2, ColorId: 2 });
+        await db.Image.create({ url: 'test1.jpg', ProductId: 2 });
+        await db.Image.create({ url: 'test2.jpg', ProductId: 3 });
+        await db.Color.create({ name: 'Yellow', ProductId: 2 });
+        await db.Color.create({ name: 'Black', ProductId: 3 });
+        await db.Inventory.create({ quantity: 20, ProductId: 2, ColorId: 2 });
+        await db.Inventory.create({ quantity: 10, ProductId: 3, ColorId: 3 });
       });
 
       it('should return 200 with admintoken', done => {
@@ -62,15 +62,12 @@ describe('# Admin Request', () => {
             expect(res.body.status).to.equal('success');
             expect(res.body.products[0].name).to.equal('Product1 Test');
             expect(res.body.products[0].inventories[0].name).to.equal('Yellow');
-            // expect(
-            //   res.body.products[0].inventories[0].Inventory.ProductId
-            // ).to.equal(res.body.products[0].inventories[0].ProductId);
-            // expect(
-            //   res.body.products[0].inventories[0].Inventory.ColorId
-            // ).to.equal(res.body.products[0].inventories[0].id);
-            // console.log('res.body.products[0]', res.body.products[0]);
-            // console.log('res.body.products[0].inventories[0]', res.body.products[0].inventories[0]);
-            // console.log('res.body.products[0].inventories[0].Inventory.ProductId', res.body.products[0].inventories[0].Inventory);
+            expect(
+              res.body.products[0].inventories[0].Inventory.ProductId
+            ).to.equal(res.body.products[0].inventories[0].ProductId);
+            expect(
+              res.body.products[0].inventories[0].Inventory.ColorId
+            ).to.equal(res.body.products[0].inventories[0].id);
             expect(
               res.body.products[0].inventories[0].Inventory.quantity
             ).to.equal(20);
