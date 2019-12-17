@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();
 
 const cartController = require('../controllers/cartControllers');
@@ -8,6 +9,7 @@ const adminController = require('../controllers/adminControllers');
 const passport = require('../config/passport');
 const helpers = require('../_helpers');
 const authenticated = passport.authenticate('jwt', { session: false });
+const upload = multer({ dest: 'temp/' });
 
 const authenticatedAdmin = (req, res, next) => {
   if (helpers.getUser(req)) {
@@ -46,6 +48,7 @@ router.get(
 );
 router.post(
   '/admin/products',
+  upload.single('url'),
   authenticated,
   authenticatedAdmin,
   adminController.postProducts

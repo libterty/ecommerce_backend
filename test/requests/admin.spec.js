@@ -84,4 +84,171 @@ describe('# Admin Request', () => {
       });
     });
   });
+
+  context('# Post Products', () => {
+    describe('When Create New Product', () => {
+      let token;
+      before(async () => {
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+      });
+
+      it('should return 200 with admintoken', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            token = res.body.token;
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            done();
+          });
+      });
+
+      it('should return 200 with Json Data', done => {
+        const body = {
+          name: 'test2Item',
+          description: 'test description',
+          cost: 200,
+          price: 300,
+          height: 38,
+          width: 30,
+          length: 381,
+          weight: 3,
+          material: 'test',
+          quantity: 39,
+          colorName: 'Black'
+        };
+        request(app)
+          .post('/api/admin/products')
+          .set('Authorization', 'bearer ' + token)
+          .field('Content-Type', 'multipart/form-data')
+          .field('name', 'test2Item')
+          .field('description', 'test description')
+          .field('cost', 200)
+          .field('price', 300)
+          .field('height', 38)
+          .field('width', 30)
+          .field('length', 381)
+          .field('weight', 15)
+          .field('material', '測試系列')
+          .field('quantity', 15)
+          .field('colorName', 'Yellow')
+          .attach('url', 'upload/test.jpg')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal('create success');
+            done();
+          });
+      });
+
+      it('should return 400 when input is insufficient', done => {
+        request(app)
+          .post('/api/admin/products')
+          .send({
+            name: '',
+            description: '',
+            cost: 300,
+            price: 3000,
+            height: 30,
+            width: 30,
+            length: 30,
+            weight: 15,
+            material: '測試',
+            quantity: 300,
+            colorName: 'Yellow'
+          })
+          .set('Authorization', 'bearer ' + token)
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("required fields didn't exist");
+            done();
+          });
+      });
+
+      it('should return 200 with Json Data', done => {
+        request(app)
+          .post('/api/admin/products')
+          .send({
+            name: 'test1Item',
+            description: 'description',
+            cost: 300,
+            price: 3000,
+            height: 30,
+            width: 30,
+            length: 30,
+            weight: 15,
+            material: '測試',
+            quantity: 300,
+            colorName: 'Yellow'
+          })
+          .set('Authorization', 'bearer ' + token)
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            db.Product.findOne({ where: { name: 'test1Item' } }).then(
+              async product => {
+                expect(res.body.status).to.equal('success');
+                expect(res.body.message).to.equal(
+                  'create without Product Image'
+                );
+                expect(product.dataValues.cost).to.equal(300);
+                expect(product.dataValues.price).to.equal(3000);
+                const dbColorRes = await db.Color.findOne({
+                  where: { ProductId: product.dataValues.id }
+                });
+                const dbInventoryRes = await db.Inventory.findOne({
+                  where: { ProductId: product.dataValues.id }
+                });
+                expect(dbColorRes.dataValues.name).to.equal('Yellow');
+                expect(dbInventoryRes.dataValues.quantity).to.equal(300);
+                return done();
+              }
+            );
+          });
+      });
+
+      it('should return 400 when db has already have this item', done => {
+        request(app)
+          .post('/api/admin/products')
+          .send({
+            name: 'test1Item',
+            description: 'description',
+            cost: 300,
+            price: 3000,
+            height: 30,
+            width: 30,
+            length: 30,
+            weight: 15,
+            material: '測試',
+            quantity: 300,
+            colorName: 'Yellow'
+          })
+          .set('Authorization', 'bearer ' + token)
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Product is already exist');
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Image.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
 });

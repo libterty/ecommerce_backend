@@ -1,10 +1,12 @@
 const Sequelize = require('sequelize');
+const imgur = require('imgur-node-api');
 const db = require('../models');
 const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
 const Inventory = db.Inventory;
 const Op = Sequelize.Op;
+const IMGUR_CLIENT_ID = process.env.imgur_id;
 
 const adminController = {
   hiAdmin: (req, res) => {
@@ -35,8 +37,7 @@ const adminController = {
       weight,
       material,
       quantity,
-      ColorId,
-      url
+      colorName
     } = req.body;
 
     if (
@@ -50,8 +51,7 @@ const adminController = {
       !weight ||
       !material ||
       !quantity ||
-      !ColorId ||
-      !url
+      !colorName
     ) {
       return res
         .status(400)
@@ -75,22 +75,39 @@ const adminController = {
         material
       });
       if (dbProduct) {
+        const dbColor = await Color.create({
+          name: colorName,
+          ProductId: dbProduct.dataValues.id
+        });
         const dbInventory = await Inventory.create({
           quantity,
           ProductId: dbProduct.dataValues.id,
-          ColorId
+          ColorId: dbColor.dataValues.id
         });
-        const dbImage = await Image.create({
-          url,
-          ProductId: dbProduct.dataValues.id
-        });
+        const { file } = req;
+        if (file) {
+          imgur.setClientID(IMGUR_CLIENT_ID);
+          imgur.upload(file.path, (err, img) => {
+            return Image.create({
+              url: file ? img.data.link : null,
+              ProductId: dbProduct.dataValues.id
+            }).then(() => {
+              return res
+                .status(200)
+                .json({ status: 'success', message: 'create success' });
+            });
+          });
+        } else {
+          return res.status(200).json({
+            status: 'success',
+            message: 'create without Product Image'
+          });
+        }
+      } else {
         return res
-          .status(200)
-          .json({ status: 'success', message: 'create success' });
+          .status(500)
+          .json({ status: 'error', message: 'something went wrong' });
       }
-      return res
-        .status(500)
-        .json({ status: 'error', message: 'something went wrong' });
     });
   }
 };

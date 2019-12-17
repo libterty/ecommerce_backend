@@ -15,7 +15,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 app.use(cors({ credentials: true }));
+app.use('/upload', express.static(__dirname + '/upload'));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(
   session({
@@ -26,7 +28,6 @@ app.use(
     saveUninitialized: true
   })
 );
-app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
