@@ -112,19 +112,6 @@ describe('# Admin Request', () => {
       });
 
       it('should return 200 with Json Data', done => {
-        const body = {
-          name: 'test2Item',
-          description: 'test description',
-          cost: 200,
-          price: 300,
-          height: 38,
-          width: 30,
-          length: 381,
-          weight: 3,
-          material: 'test',
-          quantity: 39,
-          colorName: 'Black'
-        };
         request(app)
           .post('/api/admin/products')
           .set('Authorization', 'bearer ' + token)
@@ -248,6 +235,261 @@ describe('# Admin Request', () => {
         await db.Image.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.Inventory.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
+
+  context('# Put Products', () => {
+    describe('When update product models', () => {
+      let token, id;
+      before(async () => {
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+        await db.Product.create({
+          name: 'test1Item',
+          description: 'description',
+          cost: 300,
+          price: 3000,
+          height: 30,
+          width: 30,
+          length: 30,
+          weight: 15,
+          material: '測試'
+        });
+      });
+
+      it('should have one data in Product model', done => {
+        db.Product.findOne({ where: { name: 'test1Item' } }).then(product => {
+          id = product.dataValues.id;
+          return done();
+        });
+      });
+
+      it('should return 200 with admintoken', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            token = res.body.token;
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            done();
+          });
+      });
+
+      it('should return 400 when item is already exist in db', done => {
+        request(app)
+          .put(`/api/admin/products/${id}`)
+          .send({ name: 'test1Item' })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Product is already exist');
+            done();
+          });
+      });
+
+      it('should return 200 with json data', done => {
+        request(app)
+          .put(`/api/admin/products/${id}`)
+          .send({ name: 'newTest' })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal('Update Prodcut Success');
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
+
+  context('# Post Colors', () => {
+    describe('When update colors to existing products', () => {
+      let token, id;
+      before(async () => {
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+        await db.Product.create({
+          name: 'test1Item',
+          description: 'description',
+          cost: 300,
+          price: 3000,
+          height: 30,
+          width: 30,
+          length: 30,
+          weight: 15,
+          material: '測試'
+        });
+        await db.Color.create({ name: 'white', ProductId: 1 });
+      });
+
+      it('should have one data in Product model', done => {
+        db.Product.findOne({ where: { name: 'test1Item' } }).then(product => {
+          id = product.dataValues.id;
+          return done();
+        });
+      });
+
+      it('should return 200 with admintoken', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            token = res.body.token;
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            done();
+          });
+      });
+
+      it('should return 400 without any input', done => {
+        request(app)
+          .post(`/api/admin/products/colors`)
+          .send({})
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("required fields didn't exist");
+            done();
+          });
+      })
+
+      it('should return 400 when Color is already exist', done => {
+        request(app)
+          .post(`/api/admin/products/colors`)
+          .send({ name: 'white', ProductId: 1 })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("Color is already exist");
+            done();
+          });
+      })
+
+      it('should return 200 with json data', done => {
+        request(app)
+          .post(`/api/admin/products/colors`)
+          .send({ name: 'Black', ProductId: 1 })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal("Create New Color");
+            done();
+          });
+      })
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
+
+  context('# Put Colors', () => {
+    describe('When update colors to existing products', () => {
+      let token, id;
+      before(async () => {
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+        await db.Product.create({
+          name: 'test1Item',
+          description: 'description',
+          cost: 300,
+          price: 3000,
+          height: 30,
+          width: 30,
+          length: 30,
+          weight: 15,
+          material: '測試'
+        });
+        await db.Color.create({ name: 'white', ProductId: 1 });
+      });
+
+      it('should have one data in Product model', done => {
+        db.Product.findOne({ where: { name: 'test1Item' } }).then(product => {
+          id = product.dataValues.id;
+          return done();
+        });
+      });
+
+      it('should return 200 with admintoken', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            token = res.body.token;
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            done();
+          });
+      });
+
+      it('should return 400 when Color is already exist', done => {
+        request(app)
+          .put(`/api/admin/products/colors/${id}`)
+          .send({ name: 'white' })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("Color is already exist");
+            done();
+          });
+      })
+
+      it('should return 200 with json data', done => {
+        request(app)
+          .put(`/api/admin/products/colors/${id}`)
+          .send({ name: 'Black' })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal("Update New Color");
+            done();
+          });
+      })
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
       });
     });
   });

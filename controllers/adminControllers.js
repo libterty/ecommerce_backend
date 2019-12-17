@@ -20,7 +20,6 @@ const adminController = {
       products = products.map(p => ({
         ...p.dataValues
       }));
-      // console.log('req log', products);
       return res.status(200).json({ status: 'success', products });
     });
   },
@@ -108,6 +107,93 @@ const adminController = {
           .status(500)
           .json({ status: 'error', message: 'something went wrong' });
       }
+    });
+  },
+
+  putProducts: (req, res) => {
+    const {
+      name,
+      description,
+      cost,
+      price,
+      height,
+      width,
+      length,
+      weight,
+      material,
+      quantity,
+      colorName
+    } = req.body;
+
+    return Product.findOne({ where: { name: name } }).then(pro => {
+      if (pro) {
+        return res
+          .status(400)
+          .json({ status: 'error', message: 'Product is already exist' });
+      } else {
+        Product.findByPk(req.params.id).then(product => {
+          product
+            .update({
+              name: name ? name : product.name,
+              description: description ? description : product.description,
+              cost: cost ? cost : product.cost,
+              price: price ? price : product.price,
+              height: height ? height : product.height,
+              width: width ? width : product.width,
+              length: length ? length : product.length,
+              weight: weight ? weight : product.weight,
+              material: material ? material : product.material,
+              updatedAt: new Date()
+            })
+            .then(result => {
+              console.log(result);
+              return res
+                .status(200)
+                .json({ status: 'success', message: 'Update Prodcut Success' });
+            });
+        });
+      }
+    });
+  },
+
+  postNewColorForProduct: (req, res) => {
+    const { ProductId, name } = req.body;
+    if (!name || !ProductId)
+      return res
+        .status(400)
+        .json({ status: 'error', message: "required fields didn't exist" });
+    return Color.findOne({ where: { name, ProductId } }).then(color => {
+      if (color) {
+        return res
+          .status(400)
+          .json({ status: 'error', message: 'Color is already exist' });
+      } else {
+        Color.create({ name, ProductId }).then(() => {
+          return res
+            .status(200)
+            .json({ status: 'success', message: 'Create New Color' });
+        });
+      }
+    });
+  },
+
+  putColorForProduct: (req, res) => {
+    const { name } = req.body;
+    return Color.findByPk(req.params.id).then(color => {
+      if (name === color.name) {
+        return res
+          .status(400)
+          .json({ status: 'error', message: 'Color is already exist' });
+      }
+      color
+        .update({
+          name: name ? name : color.name
+        })
+        .then(color => {
+          return res
+            .status(200)
+            .json({ status: 'success', message: 'Update New Color' });
+        });
     });
   }
 };

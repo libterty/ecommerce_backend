@@ -53,6 +53,24 @@ router.post(
   authenticatedAdmin,
   adminController.postProducts
 );
+router.post(
+  '/admin/products/colors',
+  authenticated,
+  authenticatedAdmin,
+  adminController.postNewColorForProduct
+);
+router.put(
+  '/admin/products/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.putProducts
+);
+router.put(
+  '/admin/products/colors/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.putColorForProduct
+);
 
 router.post('/signin', userControlloer.signIn);
 
