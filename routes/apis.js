@@ -44,6 +44,12 @@ router.get(
   authenticatedAdmin,
   adminController.getProducts
 );
+router.post(
+  '/admin/products',
+  authenticated,
+  authenticatedAdmin,
+  adminController.postProducts
+);
 
 router.post('/signin', userControlloer.signIn);
 

@@ -15,8 +15,18 @@ describe('# Cart request', () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
-        await db.Product.create({ id: 1, name: 'Sofa', cost: 3333, price: 9999 });
-        await db.Product.create({ id: 2, name: 'Desk', cost: 3333, price: 5999 });
+        await db.Product.create({
+          id: 1,
+          name: 'Sofa',
+          cost: 3333,
+          price: 9999
+        });
+        await db.Product.create({
+          id: 2,
+          name: 'Desk',
+          cost: 3333,
+          price: 5999
+        });
       });
       // TODO: should check inventories stock
       it('should GET cart data and return success json message', done => {
@@ -64,8 +74,18 @@ describe('# Cart request', () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
-        await db.Product.create({ id: 1, name: 'Sofa', cost: 1111, price: 9999 });
-        await db.Product.create({ id: 2, name: 'Desk', cost: 1111, price: 5999 });
+        await db.Product.create({
+          id: 1,
+          name: 'Sofa',
+          cost: 1111,
+          price: 9999
+        });
+        await db.Product.create({
+          id: 2,
+          name: 'Desk',
+          cost: 1111,
+          price: 5999
+        });
       });
       it('should not get cart data without req.body.price and return error message', done => {
         let agent = request.agent(app);
