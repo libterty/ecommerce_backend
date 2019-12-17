@@ -71,6 +71,12 @@ router.put(
   authenticatedAdmin,
   adminController.putColorForProduct
 );
+router.put(
+  '/admin/products/inventories/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.putInventoryForProduct
+);
 
 router.post('/signin', userControlloer.signIn);
 

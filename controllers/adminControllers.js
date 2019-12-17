@@ -120,9 +120,7 @@ const adminController = {
       width,
       length,
       weight,
-      material,
-      quantity,
-      colorName
+      material
     } = req.body;
 
     return Product.findOne({ where: { name: name } }).then(pro => {
@@ -145,8 +143,7 @@ const adminController = {
               material: material ? material : product.material,
               updatedAt: new Date()
             })
-            .then(result => {
-              console.log(result);
+            .then(() => {
               return res
                 .status(200)
                 .json({ status: 'success', message: 'Update Prodcut Success' });
@@ -187,7 +184,8 @@ const adminController = {
       }
       color
         .update({
-          name: name ? name : color.name
+          name: name ? name : color.name,
+          updatedAt: new Date()
         })
         .then(color => {
           return res
@@ -195,6 +193,25 @@ const adminController = {
             .json({ status: 'success', message: 'Update New Color' });
         });
     });
+  },
+
+  putInventoryForProduct: (req, res) => {
+    const { quantity } = req.body;
+    if (quantity < 0) {
+      return res.status(400).json({ status: 'error', message: "required field is less than zero" })
+    }
+
+    return Inventory.findByPk(req.params.id)
+      .then(inventory => {
+        inventory.update({ 
+          quantity: quantity ? quantity : inventory.quantity,
+          updatedAt: new Date()
+        }).then(() => {
+          return res
+            .status(200)
+            .json({ status: 'success', message: 'Update Inventory' });
+        })
+      })
   }
 };
 
