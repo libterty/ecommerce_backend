@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 let jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-jwtOptions.secretOrKey = 'ecommerce%20backend%20server';
+jwtOptions.secretOrKey = process.env.JWT_SECRET;
 
 let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
   User.findByPk(jwt_payload.id).then(user => {

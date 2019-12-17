@@ -34,7 +34,7 @@ const userController = {
       };
       let token = jwt.sign(
         payload,
-        'ecommerce%20backend%20server',
+        process.env.JWT_SECRET,
         { expiresIn: '7d' },
         { algorithm: 'RS256' }
       );

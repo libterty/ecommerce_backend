@@ -198,20 +198,23 @@ const adminController = {
   putInventoryForProduct: (req, res) => {
     const { quantity } = req.body;
     if (quantity < 0) {
-      return res.status(400).json({ status: 'error', message: "required field is less than zero" })
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'required field is less than zero' });
     }
 
-    return Inventory.findByPk(req.params.id)
-      .then(inventory => {
-        inventory.update({ 
+    return Inventory.findByPk(req.params.id).then(inventory => {
+      inventory
+        .update({
           quantity: quantity ? quantity : inventory.quantity,
           updatedAt: new Date()
-        }).then(() => {
+        })
+        .then(() => {
           return res
             .status(200)
             .json({ status: 'success', message: 'Update Inventory' });
-        })
-      })
+        });
+    });
   }
 };
 

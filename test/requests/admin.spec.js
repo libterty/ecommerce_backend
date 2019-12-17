@@ -375,7 +375,7 @@ describe('# Admin Request', () => {
             expect(res.body.message).to.equal("required fields didn't exist");
             done();
           });
-      })
+      });
 
       it('should return 400 when Color is already exist', done => {
         request(app)
@@ -386,10 +386,10 @@ describe('# Admin Request', () => {
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal("Color is already exist");
+            expect(res.body.message).to.equal('Color is already exist');
             done();
           });
-      })
+      });
 
       it('should return 200 with json data', done => {
         request(app)
@@ -400,10 +400,10 @@ describe('# Admin Request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
-            expect(res.body.message).to.equal("Create New Color");
+            expect(res.body.message).to.equal('Create New Color');
             done();
           });
-      })
+      });
 
       after(async () => {
         await db.User.destroy({ where: {}, truncate: true });
@@ -467,10 +467,10 @@ describe('# Admin Request', () => {
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal("Color is already exist");
+            expect(res.body.message).to.equal('Color is already exist');
             done();
           });
-      })
+      });
 
       it('should return 200 with json data', done => {
         request(app)
@@ -481,10 +481,10 @@ describe('# Admin Request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
-            expect(res.body.message).to.equal("Update New Color");
+            expect(res.body.message).to.equal('Update New Color');
             done();
           });
-      })
+      });
 
       after(async () => {
         await db.User.destroy({ where: {}, truncate: true });
@@ -516,7 +516,7 @@ describe('# Admin Request', () => {
           material: '測試'
         });
         await db.Color.create({ name: 'white', ProductId: 1 });
-        await db.Inventory.create({ quantity: 20, ProductId: 1, ColorId: 1 })
+        await db.Inventory.create({ quantity: 20, ProductId: 1, ColorId: 1 });
       });
 
       it('should have one data in Product model', done => {
@@ -549,10 +549,12 @@ describe('# Admin Request', () => {
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal("required field is less than zero");
+            expect(res.body.message).to.equal(
+              'required field is less than zero'
+            );
             done();
           });
-      })
+      });
 
       it('should return 200 with json data', done => {
         request(app)
@@ -564,12 +566,12 @@ describe('# Admin Request', () => {
           .end((err, res) => {
             db.Inventory.findByPk(id).then(i => {
               expect(res.body.status).to.equal('success');
-              expect(res.body.message).to.equal("Update Inventory");
+              expect(res.body.message).to.equal('Update Inventory');
               expect(i.dataValues.quantity).to.equal(32);
               return done();
-            })
+            });
           });
-      })
+      });
 
       after(async () => {
         await db.User.destroy({ where: {}, truncate: true });
