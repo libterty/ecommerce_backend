@@ -602,7 +602,7 @@ describe('# Admin Request', () => {
           length: 30,
           weight: 15,
           material: '測試'
-        })
+        });
       });
 
       it('should have one data in Product model', done => {
@@ -660,6 +660,95 @@ describe('# Admin Request', () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Image.destroy({ where: {}, truncate: true });
       });
-    })
-  })
+    });
+  });
+
+  context('# delete Products', () => {
+    describe('When update colors to existing products', () => {
+      let token, id;
+      before(async () => {
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+        await db.Product.create({
+          name: 'test1Item',
+          description: 'description',
+          cost: 300,
+          price: 3000,
+          height: 30,
+          width: 30,
+          length: 30,
+          weight: 15,
+          material: '測試'
+        });
+        await db.Image.create({ url: 'https://i.imgur.com/BYCQf4j.jpg', ProductId: 1 });
+        await db.Color.create({ name: 'white', ProductId: 1 });
+        await db.Inventory.create({ quantity: 20, ProductId: 1, ColorId: 1 });
+      });
+
+      it('should have one data in Product model', done => {
+        db.Product.findOne({ where: { name: 'test1Item' } }).then(product => {
+          id = product.dataValues.id;
+          return done();
+        });
+      });
+
+      it('should return 200 with admintoken', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            token = res.body.token;
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            done();
+          });
+      });
+
+      it('should return 400 when no product has found', done => {
+        request(app)
+          .delete(`/api/admin/products/2`)
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal(
+              'nothing to delete'
+            );
+            done();
+          });
+      });
+
+      it('should return 200 with json data', done => {
+        request(app)
+          .delete(`/api/admin/products/${id}`)
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            db.Product.findByPk(id).then(p => {
+              expect(p).to.equal(null);
+              expect(res.body.status).to.equal('success');
+              expect(res.body.message).to.equal('delete success');
+              return done();
+            });
+
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Image.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
 });

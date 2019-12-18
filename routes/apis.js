@@ -39,7 +39,6 @@ router.get(
   authenticatedAdmin,
   adminController.hiAdmin
 );
-
 router.get(
   '/admin/products',
   authenticated,
@@ -83,6 +82,12 @@ router.post(
   authenticated,
   authenticatedAdmin,
   adminController.posttImageForProduct
+);
+router.delete(
+  '/admin/products/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.deleteProduct
 );
 
 router.post('/signin', userControlloer.signIn);

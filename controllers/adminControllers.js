@@ -236,6 +236,31 @@ const adminController = {
         .status(400)
         .json({ status: 'error', message: 'nothing to upload' });
     }
+  },
+
+  deleteProduct: (req, res) => {
+    return Product.findByPk(req.params.id).then(async product => {
+      if (product) {
+        await Color.destroy({
+          where: { ProductId: product.dataValues.id }
+        });
+        await Image.destroy({
+          where: { ProductId: product.dataValues.id }
+        });
+        await Inventory.destroy({
+          where: { ProductId: product.dataValues.id }
+        });
+        product.destroy().then(() => {
+          return res
+            .status(200)
+            .json({ status: 'success', message: 'delete success' });
+        });
+      } else {
+        return res
+          .status(400)
+          .json({ status: 'error', message: 'nothing to delete' });
+      }
+    });
   }
 };
 
