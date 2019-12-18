@@ -26,7 +26,7 @@ describe('# Category Model', () => {
     const Product = 'Product';
 
     before(() => {
-        Category.associate({ Product });
+      Category.associate({ Product });
     });
 
     it('should belong to one product', done => {
