@@ -35,6 +35,7 @@ const adminController = {
       length,
       weight,
       material,
+      CategoryId,
       quantity,
       colorName
     } = req.body;
@@ -71,7 +72,8 @@ const adminController = {
         width,
         length,
         weight,
-        material
+        material,
+        CategoryId
       });
       if (dbProduct) {
         const dbColor = await Color.create({
@@ -120,7 +122,8 @@ const adminController = {
       width,
       length,
       weight,
-      material
+      material,
+      CategoryId
     } = req.body;
 
     return Product.findOne({ where: { name: name } }).then(pro => {
@@ -141,6 +144,7 @@ const adminController = {
               length: length ? length : product.length,
               weight: weight ? weight : product.weight,
               material: material ? material : product.material,
+              CategoryId: CategoryId ? CategoryId : product.CategoryId,
               updatedAt: new Date()
             })
             .then(() => {

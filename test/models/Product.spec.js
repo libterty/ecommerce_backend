@@ -28,18 +28,34 @@ describe('# Product Model', () => {
       'length',
       'width',
       'weight',
-      'material'
+      'material',
+      'rating',
+      'viewCounts',
+      'ratingCounts',
+      'CategoryId'
     ].forEach(checkPropertyExists(product));
   });
 
   context('associations', () => {
-    const [Image, Order, Cart, Color] = ['Image', 'Order', 'Cart', 'Color'];
+    const [Category, Image, Order, Cart, Color] = [
+      'Category',
+      'Image',
+      'Order',
+      'Cart',
+      'Color'
+    ];
 
     before(() => {
+      Product.associate({ Category });
       Product.associate({ Image });
       Product.associate({ Order });
       Product.associate({ Cart });
       Product.associate({ Color });
+    });
+
+    it('should have one Category', done => {
+      Product.belongsTo.should.have.been.calledWith(Category);
+      done();
     });
 
     it('should have many images', done => {

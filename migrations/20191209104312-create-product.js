@@ -53,6 +53,9 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
+      CategoryId: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

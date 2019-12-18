@@ -17,6 +17,7 @@ module.exports = {
         rating: 8,
         viewCounts: 0,
         ratingCounts: 1,
+        CategoryId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -33,6 +34,7 @@ module.exports = {
         rating: 5,
         viewCounts: 0,
         ratingCounts: 1,
+        CategoryId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -49,6 +51,7 @@ module.exports = {
         rating: 3,
         viewCounts: 0,
         ratingCounts: 1,
+        CategoryId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -65,6 +68,7 @@ module.exports = {
         rating: 9,
         viewCounts: 0,
         ratingCounts: 1,
+        CategoryId: 5,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -81,6 +85,7 @@ module.exports = {
         rating: 8,
         viewCounts: 0,
         ratingCounts: 1,
+        CategoryId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -97,6 +102,7 @@ module.exports = {
         rating: 6,
         viewCounts: 0,
         ratingCounts: 1,
+        CategoryId: 5,
         createdAt: new Date(),
         updatedAt: new Date()
       }

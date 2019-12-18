@@ -14,11 +14,13 @@ module.exports = (sequelize, DataTypes) => {
       material: DataTypes.STRING,
       rating: DataTypes.FLOAT,
       viewCounts: DataTypes.INTEGER,
-      ratingCounts: DataTypes.INTEGER
+      ratingCounts: DataTypes.INTEGER,
+      CategoryId: DataTypes.INTEGER
     },
     {}
   );
   Product.associate = function(models) {
+    Product.belongsTo(models.Category);
     Product.hasMany(models.Image);
     Product.belongsToMany(models.Order, {
       through: {

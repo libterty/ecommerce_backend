@@ -125,6 +125,7 @@ describe('# Admin Request', () => {
           .field('length', 381)
           .field('weight', 15)
           .field('material', '測試系列')
+          .field('CategoryId', 1)
           .field('quantity', 15)
           .field('colorName', 'Yellow')
           .attach('url', 'upload/test.jpg')
@@ -151,7 +152,8 @@ describe('# Admin Request', () => {
             weight: 15,
             material: '測試',
             quantity: 300,
-            colorName: 'Yellow'
+            colorName: 'Yellow',
+            CategoryId: 1
           })
           .set('Authorization', 'bearer ' + token)
           .expect(400)
@@ -176,7 +178,8 @@ describe('# Admin Request', () => {
             weight: 15,
             material: '測試',
             quantity: 300,
-            colorName: 'Yellow'
+            colorName: 'Yellow',
+            CategoryId: 1
           })
           .set('Authorization', 'bearer ' + token)
           .expect(200)
@@ -218,7 +221,8 @@ describe('# Admin Request', () => {
             weight: 15,
             material: '測試',
             quantity: 300,
-            colorName: 'Yellow'
+            colorName: 'Yellow',
+            CategoryId: 1
           })
           .set('Authorization', 'bearer ' + token)
           .expect(400)
@@ -258,7 +262,8 @@ describe('# Admin Request', () => {
           width: 30,
           length: 30,
           weight: 15,
-          material: '測試'
+          material: '測試',
+          CategoryId: 1
         });
       });
 
@@ -684,7 +689,10 @@ describe('# Admin Request', () => {
           weight: 15,
           material: '測試'
         });
-        await db.Image.create({ url: 'https://i.imgur.com/BYCQf4j.jpg', ProductId: 1 });
+        await db.Image.create({
+          url: 'https://i.imgur.com/BYCQf4j.jpg',
+          ProductId: 1
+        });
         await db.Color.create({ name: 'white', ProductId: 1 });
         await db.Inventory.create({ quantity: 20, ProductId: 1, ColorId: 1 });
       });
@@ -718,9 +726,7 @@ describe('# Admin Request', () => {
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal(
-              'nothing to delete'
-            );
+            expect(res.body.message).to.equal('nothing to delete');
             done();
           });
       });
@@ -738,7 +744,6 @@ describe('# Admin Request', () => {
               expect(res.body.message).to.equal('delete success');
               return done();
             });
-
           });
       });
 
