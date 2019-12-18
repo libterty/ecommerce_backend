@@ -631,7 +631,7 @@ describe('# Admin Request', () => {
           .post(`/api/admin/products/images/${id}`)
           .set('Authorization', 'bearer ' + token)
           .field('Content-Type', 'multipart/form-data')
-          .attach('url', 'upload/test.jpg')
+          .attach('url', 'upload/test2.jpg')
           .expect(200)
           .end((err, res) => {
             if (err) return done(err);
