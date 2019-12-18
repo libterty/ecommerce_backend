@@ -14,7 +14,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-app.use(cors({ credentials: true }));
+app.use(cors({ credentials: true, origin: true }));
 app.use('/upload', express.static(__dirname + '/upload'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
