@@ -215,6 +215,27 @@ const adminController = {
             .json({ status: 'success', message: 'Update Inventory' });
         });
     });
+  },
+
+  posttImageForProduct: (req, res) => {
+    const { file } = req;
+    if (file) {
+      imgur.setClientID(IMGUR_CLIENT_ID);
+      imgur.upload(file.path, (err, img) => {
+        return Image.create({
+          url: file ? img.data.link : null,
+          ProductId: req.params.id
+        }).then(() => {
+          return res
+            .status(200)
+            .json({ status: 'success', message: 'create success' });
+        });
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'nothing to upload' });
+    }
   }
 };
 

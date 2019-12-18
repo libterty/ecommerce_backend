@@ -77,6 +77,13 @@ router.put(
   authenticatedAdmin,
   adminController.putInventoryForProduct
 );
+router.post(
+  '/admin/products/images/:id',
+  upload.single('url'),
+  authenticated,
+  authenticatedAdmin,
+  adminController.posttImageForProduct
+);
 
 router.post('/signin', userControlloer.signIn);
 
