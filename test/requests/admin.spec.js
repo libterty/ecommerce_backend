@@ -85,6 +85,91 @@ describe('# Admin Request', () => {
     });
   });
 
+  context('# Get Specific Product', () => {
+    describe('When Visit Admin Product page', () => {
+      let token;
+      before(async () => {
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+        await db.Product.create({
+          name: 'Product1 Test',
+          cost: 1500,
+          price: 3000,
+          CategoryId: 2
+        });
+        await db.Category.create({ name: '測試種類' });
+        await db.Image.create({ url: 'test1.jpg', ProductId: 1 });
+        await db.Color.create({ name: 'Yellow', ProductId: 1 });
+        await db.Inventory.create({ quantity: 20, ProductId: 1, ColorId: 1 });
+      });
+
+      it('should create Category data', done => {
+        db.Category.findAll().then(c => {
+          expect(c).not.to.equal(null);
+          return done();
+        })
+      })
+
+      it('should return 200 with admintoken', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            token = res.body.token;
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            done();
+          });
+      });
+
+      it('should return 200 with Json Data', done => {
+        request(app)
+          .get('/api/admin/products/1')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.product.name).to.equal('Product1 Test');
+            expect(res.body.product.cost).to.equal(1500);
+            expect(res.body.product.price).to.equal(3000);
+            expect(res.body.product.Category.name).to.equal('測試種類');
+            expect(res.body.product.inventories[0].name).to.equal('Yellow');
+            expect(res.body.product.inventories[0].Inventory.quantity).to.equal(20);
+            done();
+          });
+      });
+
+      it('should return 400 when product is not exist', done => {
+        request(app)
+          .get('/api/admin/products/2')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Cannot find what you want');
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Image.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
+        await db.Category.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
+
   context('# Post Products', () => {
     describe('When Create New Product', () => {
       let token;

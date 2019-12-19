@@ -45,6 +45,12 @@ router.get(
   authenticatedAdmin,
   adminController.getProducts
 );
+router.get(
+  '/admin/products/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getProduct
+);
 router.post(
   '/admin/products',
   upload.single('url'),

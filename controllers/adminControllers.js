@@ -5,6 +5,7 @@ const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
 const Inventory = db.Inventory;
+const Category = db.Category;
 const Op = Sequelize.Op;
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 
@@ -22,6 +23,17 @@ const adminController = {
       }));
       return res.status(200).json({ status: 'success', products });
     });
+  },
+
+  getProduct: (req, res) => {
+    return Product.findByPk(req.params.id, {
+      include: [Category, { model: Color, as: 'inventories' }]
+    }).then(product => {
+      product = product.dataValues;
+      return res.status(200).json({ status: 'success', product });
+    }).catch(() => {
+      return res.status(200).json({ status: 'error', message: 'Cannot find what you want' });
+    })
   },
 
   postProducts: (req, res) => {
