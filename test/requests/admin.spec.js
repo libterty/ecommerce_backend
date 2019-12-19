@@ -140,6 +140,7 @@ describe('# Admin Request', () => {
             expect(res.body.product.cost).to.equal(1500);
             expect(res.body.product.price).to.equal(3000);
             expect(res.body.product.Category.name).to.equal('測試種類');
+            expect(res.body.product.Images[0].url).to.equal('test1.jpg');
             expect(res.body.product.inventories[0].name).to.equal('Yellow');
             expect(res.body.product.inventories[0].Inventory.quantity).to.equal(20);
             done();

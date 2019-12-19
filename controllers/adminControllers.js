@@ -27,7 +27,7 @@ const adminController = {
 
   getProduct: (req, res) => {
     return Product.findByPk(req.params.id, {
-      include: [Category, { model: Color, as: 'inventories' }]
+      include: [Category, Image, { model: Color, as: 'inventories' }]
     }).then(product => {
       product = product.dataValues;
       return res.status(200).json({ status: 'success', product });
