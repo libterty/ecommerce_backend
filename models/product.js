@@ -5,7 +5,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       name: { type: DataTypes.STRING, allowNull: false },
       description: DataTypes.STRING,
-      price: { type: DataTypes.FLOAT, allowNull: false },
+      cost: { type: DataTypes.INTEGER, allowNull: false },
+      price: { type: DataTypes.INTEGER, allowNull: false },
       height: DataTypes.INTEGER,
       width: DataTypes.INTEGER,
       length: DataTypes.INTEGER,
@@ -13,11 +14,13 @@ module.exports = (sequelize, DataTypes) => {
       material: DataTypes.STRING,
       rating: DataTypes.FLOAT,
       viewCounts: DataTypes.INTEGER,
-      ratingCounts: DataTypes.INTEGER
+      ratingCounts: DataTypes.INTEGER,
+      CategoryId: DataTypes.INTEGER
     },
     {}
   );
   Product.associate = function(models) {
+    Product.belongsTo(models.Category);
     Product.hasMany(models.Image);
     Product.belongsToMany(models.Order, {
       through: {

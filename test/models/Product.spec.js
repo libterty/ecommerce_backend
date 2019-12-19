@@ -22,23 +22,40 @@ describe('# Product Model', () => {
     [
       'name',
       'description',
+      'cost',
       'price',
       'height',
       'length',
       'width',
       'weight',
-      'material'
+      'material',
+      'rating',
+      'viewCounts',
+      'ratingCounts',
+      'CategoryId'
     ].forEach(checkPropertyExists(product));
   });
 
   context('associations', () => {
-    const [Image, Order, Cart, Color] = ['Image', 'Order', 'Cart', 'Color'];
+    const [Category, Image, Order, Cart, Color] = [
+      'Category',
+      'Image',
+      'Order',
+      'Cart',
+      'Color'
+    ];
 
     before(() => {
+      Product.associate({ Category });
       Product.associate({ Image });
       Product.associate({ Order });
       Product.associate({ Cart });
       Product.associate({ Color });
+    });
+
+    it('should have one Category', done => {
+      Product.belongsTo.should.have.been.calledWith(Category);
+      done();
     });
 
     it('should have many images', done => {
@@ -66,6 +83,7 @@ describe('# Product Model', () => {
     let data = null;
     const requiredColumns = {
       name: '',
+      cost: 1,
       price: 1
     };
     it('create', done => {
