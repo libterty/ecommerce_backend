@@ -28,12 +28,16 @@ const adminController = {
   getProduct: (req, res) => {
     return Product.findByPk(req.params.id, {
       include: [Category, Image, { model: Color, as: 'inventories' }]
-    }).then(product => {
-      product = product.dataValues;
-      return res.status(200).json({ status: 'success', product });
-    }).catch(() => {
-      return res.status(200).json({ status: 'error', message: 'Cannot find what you want' });
     })
+      .then(product => {
+        product = product.dataValues;
+        return res.status(200).json({ status: 'success', product });
+      })
+      .catch(() => {
+        return res
+          .status(200)
+          .json({ status: 'error', message: 'Cannot find what you want' });
+      });
   },
 
   postProducts: (req, res) => {
@@ -170,7 +174,7 @@ const adminController = {
   },
 
   postNewColorForProduct: (req, res) => {
-    const { ProductId, name } = req.body;
+    const { ProductId, name, quantity } = req.body;
     if (!name || !ProductId)
       return res
         .status(400)
@@ -181,10 +185,16 @@ const adminController = {
           .status(400)
           .json({ status: 'error', message: 'Color is already exist' });
       } else {
-        Color.create({ name, ProductId }).then(() => {
-          return res
-            .status(200)
-            .json({ status: 'success', message: 'Create New Color' });
+        Color.create({ name, ProductId }).then(color => {
+          Inventory.create({
+            quantity,
+            ProductId,
+            ColorId: color.dataValues.id
+          }).then(() => {
+            return res
+              .status(200)
+              .json({ status: 'success', message: 'Create New Color' });
+          });
         });
       }
     });

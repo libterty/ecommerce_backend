@@ -111,8 +111,8 @@ describe('# Admin Request', () => {
         db.Category.findAll().then(c => {
           expect(c).not.to.equal(null);
           return done();
-        })
-      })
+        });
+      });
 
       it('should return 200 with admintoken', done => {
         request(app)
@@ -142,7 +142,9 @@ describe('# Admin Request', () => {
             expect(res.body.product.Category.name).to.equal('測試種類');
             expect(res.body.product.Images[0].url).to.equal('test1.jpg');
             expect(res.body.product.inventories[0].name).to.equal('Yellow');
-            expect(res.body.product.inventories[0].Inventory.quantity).to.equal(20);
+            expect(res.body.product.inventories[0].Inventory.quantity).to.equal(
+              20
+            );
             done();
           });
       });
@@ -431,6 +433,7 @@ describe('# Admin Request', () => {
           material: '測試'
         });
         await db.Color.create({ name: 'white', ProductId: 1 });
+        await db.Inventory.create({ quantity: 32, ProductId: 1, ColorId: 2 });
       });
 
       it('should have one data in Product model', done => {
