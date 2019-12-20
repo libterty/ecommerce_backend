@@ -503,6 +503,7 @@ describe('# Admin Request', () => {
         await db.User.destroy({ where: {}, truncate: true });
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
   });
