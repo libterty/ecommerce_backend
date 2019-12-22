@@ -13,17 +13,29 @@ describe('# Cart request', () => {
       before(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.Product.destroy({ where: {}, truncate: true });
+        await db.Image.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
         await db.Product.create({ id: 1, name: 'Sofa', price: 9999 });
         await db.Product.create({ id: 2, name: 'Desk', price: 5999 });
+        await db.Color.create({ id: 1, name: 'white', ProductId: 1 });
+        await db.Color.create({ id: 2, name: 'black', ProductId: 1 });
+        await db.Image.create({
+          id: 1,
+          ProductId: 1,
+          url: 'https://i.imgur.com/3PeyRI9.jpg'
+        });
+        await db.Image.create({
+          id: 2,
+          ProductId: 2,
+          url: 'https://i.imgur.com/becWGwT.jpg'
+        });
       });
-      // TODO: should check inventories stock
-      it('should GET cart data and return success json message', done => {
+      it('should GET cart data and return success json message and total price', done => {
         let agent = request.agent(app);
         agent
           .post('/api/cart')
-          .send({ productId: 1, colorId: 1, quantity: 1, price: 500 })
+          .send({ productId: 1, colorId: 1, quantity: 1, price: 9999 })
           .expect(200)
           .end(function(err, res) {
             if (err) return done(err);
@@ -33,7 +45,8 @@ describe('# Cart request', () => {
               .expect(200)
               .end(function(err, res) {
                 if (err) done(err);
-                expect(res.body.cart.id).to.be.equal(1);
+                expect(res.body.cart[0].id).to.be.equal(1);
+                expect(res.body.totalPrice).to.be.equal(9999);
                 expect(res.body.status).to.be.equal('success');
                 done();
               });
@@ -51,6 +64,47 @@ describe('# Cart request', () => {
             done();
           });
       });
+      it('should get product of images which are in the cart', done => {
+        let agent = request.agent(app);
+        agent
+          .post('/api/cart')
+          .send({ productId: 1, colorId: 1, quantity: 1, price: 9999 })
+          .expect(200)
+          .end(function(err, res) {
+            if (err) return done(err);
+            agent
+              .get('/api/cart')
+              .set('Accept', 'application/json')
+              .expect(200)
+              .end(function(err, res) {
+                if (err) return done(err);
+                expect(res.body.cart[0].Image.url).to.be.equal(
+                  'https://i.imgur.com/3PeyRI9.jpg'
+                );
+                done();
+              });
+          });
+      });
+      it('should get product of colors which are in the cart', done => {
+        let agent = request.agent(app);
+        agent
+          .post('/api/cart')
+          .send({ productId: 1, colorId: 1, quantity: 1, price: 9999 })
+          .expect(200)
+          .end(function(err, res) {
+            if (err) return done(err);
+            agent
+              .get('/api/cart')
+              .set('Accept', 'application/json')
+              .expect(200)
+              .end(function(err, res) {
+                if (err) return done(err);
+                expect(res.body.cart[0].Color.name).to.be.equal('white');
+                done();
+              });
+          });
+      });
+
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.Product.destroy({ where: {}, truncate: true });
@@ -147,11 +201,14 @@ describe('# Cart request', () => {
               });
           });
       });
+
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
+        await db.CartItem.destroy({ where: {}, truncate: true });
       });
     });
+
   });
 });

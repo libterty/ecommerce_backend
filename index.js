@@ -13,16 +13,18 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-app.use(cors({ credentials: true }));
+app.use(cors({ credentials: true, origin: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   session({
     secret: 'trueAndFalse',
     name: 'trueAndFalse',
-    cookie: { maxAge: 80000 },
+    cookie: {
+      secure: false
+    },
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false
   })
 );
 app.use(bodyParser.json());

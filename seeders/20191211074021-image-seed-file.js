@@ -86,7 +86,7 @@ module.exports = {
         ProductId: 6,
         createdAt: new Date(),
         updatedAt: new Date()
-      },
+      }
     ]);
   },
 

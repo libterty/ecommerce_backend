@@ -2,6 +2,8 @@ const db = require('../models');
 const Cart = db.Cart;
 const CartItem = db.CartItem;
 const Product = db.Product;
+const Image = db.Image;
+const Color = db.Color;
 
 const cartController = {
   getCart: async (req, res) => {
@@ -12,26 +14,36 @@ const cartController = {
           message: 'No such a cart id data'
         });
       }
-      return Cart.findByPk(req.session.cartId, { include: 'items' }).then(
-        cart => {
-          cart = cart || { items: [] };
-          let totalPrice =
-            cart.items.length > 0
-              ? cart.items
-                  .map(d => d.price * d.CartItem.quantity)
-                  .reduce((a, b) => a + b)
-              : 0;
-          return res.json({
-            status: 'success',
-            message: 'Fetch cart data successfully',
-            cart,
-            totalPrice
-          });
-        }
-      );
+
+      const Products = await Product.findAll().then(products => products)
+      let cartItems = await CartItem.findAll({ where: { CartId: req.session.cartId } }).then(c => c);
+      const Colors = await Color.findAll().then(colors => colors)
+      const Images = await Image.findAll().then(images => images)
+
+
+      cartItems = cartItems.map(cart => ({
+        ...cart.dataValues,
+        Product: Products.filter(i => i.dataValues).find(product => product.id == cart.dataValues.ProductId),
+        Color: Colors.filter(i => i.dataValues).find(color => color.id == cart.dataValues.ColorId),
+        Image: Images.filter(i => i.dataValues).find(image => image.ProductId == cart.dataValues.ProductId)
+      }))
+
+      let totalPrice = cartItems.length > 0 ?
+        cartItems.map(d => d.price * d.quantity)
+        .reduce((a, b) => a + b) : 0
+
+      console.log('cart console', cartItems)
+
+      return res.json({
+        status: 'success',
+        message: 'Fetch cart data successfully',
+        cart: cartItems,
+        totalPrice
+      });
     } catch (error) {
+      // TODO: UT not create any data in before function
       return res
-        .status(400)
+        .status(500)
         .json({ status: 'error', message: 'Fail to fetch cart data' });
     }
   },
@@ -43,6 +55,7 @@ const cartController = {
         }
       }).spread(function(cart, created) {
         const { price, quantity, productId, colorId } = req.body;
+        console.log('price', price)
         if (!price) {
           return res.json({ status: 'error', message: 'price is missing' });
         }
@@ -60,31 +73,35 @@ const cartController = {
           where: {
             CartId: cart.id,
             ProductId: productId,
-            price,
-            quantity: quantity,
             ColorId: colorId
           },
           default: {
             CartId: cart.id,
             price,
-            quantity,
+            quantity: 0,
             ProductId: productId,
             ColorId: colorId
           }
         }).spread(function(cartItem, created) {
-          return cartItem
-            .update({
-              quantity: (cartItem.quantity || 0) + 1
-            })
-            .then(cartItem => {
-              req.session.cartId = cart.id;
-              return req.session.save(() => {
-                return res.json({
-                  status: 'success',
-                  message: 'Added to cart'
-                });
+          // console.log('cartItem before update', cartItem)
+          return cartItem.update({
+            quantity: (parseInt(cartItem.quantity) || 0) + 1,
+            price
+          }).then(cartItem => {
+            req.session.cartId = cart.id;
+            return req.session.save((err) => {
+              if (err) {
+                return res.send('session error' + err)
+              }
+              console.log('postCart req.session', req.session)
+              return res.json({
+                status: 'success',
+                message: 'Added to cart'
               });
             });
+          })
+
+
         });
       });
     } catch (error) {
