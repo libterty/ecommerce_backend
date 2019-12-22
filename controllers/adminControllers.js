@@ -200,24 +200,76 @@ const adminController = {
     });
   },
 
-  putColorForProduct: (req, res) => {
-    const { name } = req.body;
-    return Color.findByPk(req.params.id).then(color => {
-      if (name === color.name) {
-        return res
-          .status(400)
-          .json({ status: 'error', message: 'Color is already exist' });
-      }
-      color
-        .update({
-          name: name ? name : color.name,
-          updatedAt: new Date()
-        })
-        .then(color => {
-          return res
-            .status(200)
-            .json({ status: 'success', message: 'Update New Color' });
+  // putColorForProduct: (req, res) => {
+  //   const { name } = req.body;
+  //   return Color.findByPk(req.params.id).then(color => {
+  //     if (name === color.name) {
+  //       return res
+  //         .status(400)
+  //         .json({ status: 'error', message: 'Color is already exist' });
+  //     }
+  //     color
+  //       .update({
+  //         name: name ? name : color.name,
+  //         updatedAt: new Date()
+  //       })
+  //       .then(color => {
+  //         return res
+  //           .status(200)
+  //           .json({ status: 'success', message: 'Update New Color' });
+  //       });
+  //   });
+  // },
+
+  putColorForProduct: async (req, res) => {
+    const { ColorId, name } = req.body;
+    const ProductId = req.params.id;
+    let temp;
+    try {
+      await Inventory.findOne({ where: { ProductId, ColorId } }).then(
+        inventory => {
+          temp = inventory.dataValues.quantity;
+          inventory.destroy();
+        }
+      );
+      await Color.destroy({ where: { id: ColorId } });
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Something went wrong' });
+    }
+    Color.findOne({ where: { name, ProductId } }).then(color => {
+      if (color) {
+        Inventory.findOne({
+          where: {
+            ProductId,
+            ColorId: color.dataValues.id
+          }
+        }).then(inventory => {
+          const quantity = inventory.dataValues.quantity + temp;
+          inventory
+            .update({
+              quantity
+            })
+            .then(item => {
+              return res
+                .status(200)
+                .json({ status: 'success', message: 'Revise Color Success 1' });
+            });
         });
+      } else {
+        Color.create({ name, ProductId }).then(color => {
+          Inventory.create({
+            quantity: temp,
+            ProductId,
+            ColorId: color.id
+          }).then(() => {
+            return res
+              .status(200)
+              .json({ status: 'success', message: 'Revise Color Success 2' });
+          });
+        });
+      }
     });
   },
 

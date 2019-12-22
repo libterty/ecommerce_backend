@@ -16,8 +16,18 @@ describe('# Cart request', () => {
         await db.Image.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
-        await db.Product.create({ id: 1, name: 'Sofa', cost: 3333, price: 9999 });
-        await db.Product.create({ id: 2, name: 'Desk', cost: 3333, price: 5999 });
+        await db.Product.create({
+          id: 1,
+          name: 'Sofa',
+          cost: 3333,
+          price: 9999
+        });
+        await db.Product.create({
+          id: 2,
+          name: 'Desk',
+          cost: 3333,
+          price: 5999
+        });
         await db.Color.create({ id: 1, name: 'white', ProductId: 1 });
         await db.Color.create({ id: 2, name: 'black', ProductId: 1 });
         await db.Image.create({
@@ -29,7 +39,6 @@ describe('# Cart request', () => {
           id: 2,
           ProductId: 2,
           url: 'https://i.imgur.com/becWGwT.jpg'
-
         });
       });
       it('should GET cart data and return success json message and total price', done => {
@@ -220,6 +229,5 @@ describe('# Cart request', () => {
         await db.CartItem.destroy({ where: {}, truncate: true });
       });
     });
-
   });
 });

@@ -15,24 +15,32 @@ const cartController = {
         });
       }
 
-      const Products = await Product.findAll().then(products => products)
-      let cartItems = await CartItem.findAll({ where: { CartId: req.session.cartId } }).then(c => c);
-      const Colors = await Color.findAll().then(colors => colors)
-      const Images = await Image.findAll().then(images => images)
-
+      const Products = await Product.findAll().then(products => products);
+      let cartItems = await CartItem.findAll({
+        where: { CartId: req.session.cartId }
+      }).then(c => c);
+      const Colors = await Color.findAll().then(colors => colors);
+      const Images = await Image.findAll().then(images => images);
 
       cartItems = cartItems.map(cart => ({
         ...cart.dataValues,
-        Product: Products.filter(i => i.dataValues).find(product => product.id == cart.dataValues.ProductId),
-        Color: Colors.filter(i => i.dataValues).find(color => color.id == cart.dataValues.ColorId),
-        Image: Images.filter(i => i.dataValues).find(image => image.ProductId == cart.dataValues.ProductId)
-      }))
+        Product: Products.filter(i => i.dataValues).find(
+          product => product.id == cart.dataValues.ProductId
+        ),
+        Color: Colors.filter(i => i.dataValues).find(
+          color => color.id == cart.dataValues.ColorId
+        ),
+        Image: Images.filter(i => i.dataValues).find(
+          image => image.ProductId == cart.dataValues.ProductId
+        )
+      }));
 
-      let totalPrice = cartItems.length > 0 ?
-        cartItems.map(d => d.price * d.quantity)
-        .reduce((a, b) => a + b) : 0
+      let totalPrice =
+        cartItems.length > 0
+          ? cartItems.map(d => d.price * d.quantity).reduce((a, b) => a + b)
+          : 0;
 
-      console.log('cart console', cartItems)
+      console.log('cart console', cartItems);
 
       return res.json({
         status: 'success',
@@ -55,7 +63,7 @@ const cartController = {
         }
       }).spread(function(cart, created) {
         const { price, quantity, productId, colorId } = req.body;
-        console.log('price', price)
+        console.log('price', price);
         if (!price) {
           return res.json({ status: 'error', message: 'price is missing' });
         }
@@ -84,24 +92,24 @@ const cartController = {
           }
         }).spread(function(cartItem, created) {
           // console.log('cartItem before update', cartItem)
-          return cartItem.update({
-            quantity: (parseInt(cartItem.quantity) || 0) + 1,
-            price
-          }).then(cartItem => {
-            req.session.cartId = cart.id;
-            return req.session.save((err) => {
-              if (err) {
-                return res.send('session error' + err)
-              }
-              console.log('postCart req.session', req.session)
-              return res.json({
-                status: 'success',
-                message: 'Added to cart'
+          return cartItem
+            .update({
+              quantity: (parseInt(cartItem.quantity) || 0) + 1,
+              price
+            })
+            .then(cartItem => {
+              req.session.cartId = cart.id;
+              return req.session.save(err => {
+                if (err) {
+                  return res.send('session error' + err);
+                }
+                console.log('postCart req.session', req.session);
+                return res.json({
+                  status: 'success',
+                  message: 'Added to cart'
+                });
               });
             });
-          })
-
-
         });
       });
     } catch (error) {
