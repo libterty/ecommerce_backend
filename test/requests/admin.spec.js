@@ -592,13 +592,14 @@ describe('# Admin Request', () => {
           .set('Accept', 'application/json')
           .expect(200)
           .end((err, res) => {
-            db.Inventory.findOne({ where: { ProductId: id, ColorId: 3 }})
-              .then(inventory => {
+            db.Inventory.findOne({ where: { ProductId: id, ColorId: 3 } }).then(
+              inventory => {
                 expect(res.body.status).to.equal('success');
                 expect(res.body.message).to.equal('Revise Color Success 2');
                 expect(inventory.dataValues.quantity).to.equal(13);
                 return done();
-              })
+              }
+            );
           });
       });
 
@@ -610,13 +611,14 @@ describe('# Admin Request', () => {
           .set('Accept', 'application/json')
           .expect(200)
           .end((err, res) => {
-            db.Inventory.findOne({ where: { ProductId: id, ColorId: 1 }})
-              .then(inventory => {
+            db.Inventory.findOne({ where: { ProductId: id, ColorId: 1 } }).then(
+              inventory => {
                 expect(res.body.status).to.equal('success');
                 expect(res.body.message).to.equal('Revise Color Success 1');
                 expect(inventory.dataValues.quantity).to.equal(33);
                 return done();
-              })
+              }
+            );
           });
       });
 

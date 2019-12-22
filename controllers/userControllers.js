@@ -1,3 +1,4 @@
+const Sequelize = require('sequelize');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../models');
@@ -28,7 +29,10 @@ const userController = {
         message: 'Passwords are not the same'
       });
     } else {
-      User.findOne({ where: { email } }).then(user => {
+      User.findOne({
+        where: { email },
+        lock: Sequelize.Transaction.LOCK.SHARE
+      }).then(user => {
         if (user) {
           return res.status(400).json({
             status: 'error',
@@ -59,7 +63,10 @@ const userController = {
     let username = req.body.email;
     let password = req.body.password;
 
-    User.findOne({ where: { email: username } }).then(user => {
+    User.findOne({
+      where: { email: username },
+      lock: Sequelize.Transaction.LOCK.SHARE
+    }).then(user => {
       if (!user)
         return res.status(401).json({
           status: 'error',
