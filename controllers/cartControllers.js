@@ -1,3 +1,4 @@
+const Sequelize = require('sequelize');
 const db = require('../models');
 const Cart = db.Cart;
 const CartItem = db.CartItem;
@@ -36,11 +37,9 @@ const cartController = {
       }));
 
       let totalPrice =
-        cartItems.length > 0
-          ? cartItems.map(d => d.price * d.quantity).reduce((a, b) => a + b)
-          : 0;
-
-      console.log('cart console', cartItems);
+        cartItems.length > 0 ?
+        cartItems.map(d => d.price * d.quantity).reduce((a, b) => a + b) :
+        0;
 
       return res.json({
         status: 'success',
@@ -60,10 +59,10 @@ const cartController = {
       return Cart.findOrCreate({
         where: {
           id: req.session.cartId || 0
-        }
+        },
+        lock: Sequelize.Transaction.LOCK.SHARE
       }).spread(function(cart, created) {
         const { price, quantity, productId, colorId } = req.body;
-
         if (!price) {
           return res.json({ status: 'error', message: 'price is missing' });
         }

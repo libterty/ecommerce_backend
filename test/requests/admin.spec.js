@@ -530,6 +530,9 @@ describe('# Admin Request', () => {
           material: '測試'
         });
         await db.Color.create({ name: 'white', ProductId: 1 });
+        await db.Inventory.create({ quantity: 20, ColorId: 1, ProductId: 1 });
+        await db.Color.create({ name: 'black', ProductId: 1 });
+        await db.Inventory.create({ quantity: 13, ColorId: 2, ProductId: 1 });
       });
 
       it('should have one data in Product model', done => {
@@ -553,31 +556,69 @@ describe('# Admin Request', () => {
           });
       });
 
-      it('should return 400 when Color is already exist', done => {
+      it('should return 400 when no ProductId is set', done => {
         request(app)
-          .put(`/api/admin/products/colors/${id}`)
-          .send({ name: 'white' })
+          .put(`/api/admin/products/colors/3`)
+          .send({})
           .set('Authorization', 'bearer ' + token)
           .set('Accept', 'application/json')
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal('Color is already exist');
+            expect(res.body.message).to.equal('Something went wrong');
             done();
+          });
+      });
+
+      it('should return 400 when no body is set', done => {
+        request(app)
+          .put(`/api/admin/products/colors/${id}`)
+          .send({})
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Something went wrong');
+            return done();
           });
       });
 
       it('should return 200 with json data', done => {
         request(app)
           .put(`/api/admin/products/colors/${id}`)
-          .send({ name: 'Black' })
+          .send({ name: 'yellow', ColorId: 2 })
           .set('Authorization', 'bearer ' + token)
           .set('Accept', 'application/json')
           .expect(200)
           .end((err, res) => {
-            expect(res.body.status).to.equal('success');
-            expect(res.body.message).to.equal('Update New Color');
-            done();
+            db.Inventory.findOne({ where: { ProductId: id, ColorId: 3 } }).then(
+              inventory => {
+                expect(res.body.status).to.equal('success');
+                expect(res.body.message).to.equal('Revise Color Success 2');
+                expect(inventory.dataValues.quantity).to.equal(13);
+                return done();
+              }
+            );
+          });
+      });
+
+      it('should return 200 with json data', done => {
+        request(app)
+          .put(`/api/admin/products/colors/${id}`)
+          .send({ name: 'white', ColorId: 3 })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            db.Inventory.findOne({ where: { ProductId: id, ColorId: 1 } }).then(
+              inventory => {
+                expect(res.body.status).to.equal('success');
+                expect(res.body.message).to.equal('Revise Color Success 1');
+                expect(inventory.dataValues.quantity).to.equal(33);
+                return done();
+              }
+            );
           });
       });
 
@@ -585,6 +626,7 @@ describe('# Admin Request', () => {
         await db.User.destroy({ where: {}, truncate: true });
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
   });
