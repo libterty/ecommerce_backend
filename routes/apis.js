@@ -97,6 +97,7 @@ router.delete(
 );
 
 router.post('/signin', userControlloer.signIn);
+router.post('/signup', userControlloer.signUp);
 
 // cart
 router.get('/cart', cartController.getCart);
