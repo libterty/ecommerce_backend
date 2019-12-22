@@ -5,6 +5,7 @@ const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
 const Inventory = db.Inventory;
+const Category = db.Category;
 const Op = Sequelize.Op;
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 
@@ -22,6 +23,21 @@ const adminController = {
       }));
       return res.status(200).json({ status: 'success', products });
     });
+  },
+
+  getProduct: (req, res) => {
+    return Product.findByPk(req.params.id, {
+      include: [Category, Image, { model: Color, as: 'inventories' }]
+    })
+      .then(product => {
+        product = product.dataValues;
+        return res.status(200).json({ status: 'success', product });
+      })
+      .catch(() => {
+        return res
+          .status(200)
+          .json({ status: 'error', message: 'Cannot find what you want' });
+      });
   },
 
   postProducts: (req, res) => {
@@ -58,7 +74,10 @@ const adminController = {
         .json({ status: 'error', message: "required fields didn't exist" });
     }
 
-    return Product.findOne({ where: { name: name } }).then(async product => {
+    return Product.findOne({
+      where: { name: name },
+      lock: Sequelize.Transaction.LOCK.SHARE
+    }).then(async product => {
       if (product)
         return res
           .status(400)
@@ -126,7 +145,10 @@ const adminController = {
       CategoryId
     } = req.body;
 
-    return Product.findOne({ where: { name: name } }).then(pro => {
+    return Product.findOne({
+      where: { name: name },
+      lock: Sequelize.Transaction.LOCK.SHARE
+    }).then(pro => {
       if (pro) {
         return res
           .status(400)
@@ -158,44 +180,91 @@ const adminController = {
   },
 
   postNewColorForProduct: (req, res) => {
-    const { ProductId, name } = req.body;
+    const { ProductId, name, quantity } = req.body;
     if (!name || !ProductId)
       return res
         .status(400)
         .json({ status: 'error', message: "required fields didn't exist" });
-    return Color.findOne({ where: { name, ProductId } }).then(color => {
+    return Color.findOne({
+      where: { name, ProductId },
+      lock: Sequelize.Transaction.LOCK.SHARE
+    }).then(color => {
       if (color) {
         return res
           .status(400)
           .json({ status: 'error', message: 'Color is already exist' });
       } else {
-        Color.create({ name, ProductId }).then(() => {
-          return res
-            .status(200)
-            .json({ status: 'success', message: 'Create New Color' });
+        Color.create({ name, ProductId }).then(color => {
+          Inventory.create({
+            quantity,
+            ProductId,
+            ColorId: color.dataValues.id
+          }).then(() => {
+            return res
+              .status(200)
+              .json({ status: 'success', message: 'Create New Color' });
+          });
         });
       }
     });
   },
 
-  putColorForProduct: (req, res) => {
-    const { name } = req.body;
-    return Color.findByPk(req.params.id).then(color => {
-      if (name === color.name) {
-        return res
-          .status(400)
-          .json({ status: 'error', message: 'Color is already exist' });
-      }
-      color
-        .update({
-          name: name ? name : color.name,
-          updatedAt: new Date()
-        })
-        .then(color => {
-          return res
-            .status(200)
-            .json({ status: 'success', message: 'Update New Color' });
+  putColorForProduct: async (req, res) => {
+    const { ColorId, name } = req.body;
+    const ProductId = req.params.id;
+    let temp;
+    try {
+      await Inventory.findOne({
+        where: { ProductId, ColorId },
+        lock: Sequelize.Transaction.LOCK.SHARE
+      }).then(inventory => {
+        temp = inventory.dataValues.quantity;
+        inventory.destroy();
+      });
+      await Color.destroy({
+        where: { id: ColorId },
+        lock: Sequelize.Transaction.LOCK.SHARE
+      });
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Something went wrong' });
+    }
+    return Color.findOne({
+      where: { name, ProductId },
+      lock: Sequelize.Transaction.LOCK.SHARE
+    }).then(color => {
+      if (color) {
+        Inventory.findOne({
+          where: {
+            ProductId,
+            ColorId: color.dataValues.id
+          }
+        }).then(inventory => {
+          const quantity = inventory.dataValues.quantity + temp;
+          inventory
+            .update({
+              quantity
+            })
+            .then(item => {
+              return res
+                .status(200)
+                .json({ status: 'success', message: 'Revise Color Success 1' });
+            });
         });
+      } else {
+        Color.create({ name, ProductId }).then(color => {
+          Inventory.create({
+            quantity: temp,
+            ProductId,
+            ColorId: color.id
+          }).then(() => {
+            return res
+              .status(200)
+              .json({ status: 'success', message: 'Revise Color Success 2' });
+          });
+        });
+      }
     });
   },
 
@@ -207,7 +276,9 @@ const adminController = {
         .json({ status: 'error', message: 'required field is less than zero' });
     }
 
-    return Inventory.findByPk(req.params.id).then(inventory => {
+    return Inventory.findByPk(req.params.id, {
+      lock: Sequelize.Transaction.LOCK.SHARE
+    }).then(inventory => {
       inventory
         .update({
           quantity: quantity ? quantity : inventory.quantity,
@@ -226,10 +297,13 @@ const adminController = {
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID);
       imgur.upload(file.path, (err, img) => {
-        return Image.create({
-          url: file ? img.data.link : null,
-          ProductId: req.params.id
-        }).then(() => {
+        return Image.create(
+          {
+            url: file ? img.data.link : null,
+            ProductId: req.params.id
+          },
+          { lock: Sequelize.Transaction.LOCK.SHARE }
+        ).then(() => {
           return res
             .status(200)
             .json({ status: 'success', message: 'create success' });
@@ -243,7 +317,9 @@ const adminController = {
   },
 
   deleteProduct: (req, res) => {
-    return Product.findByPk(req.params.id).then(async product => {
+    return Product.findByPk(req.params.id, {
+      lock: Sequelize.Transaction.LOCK.SHARE
+    }).then(async product => {
       if (product) {
         await Color.destroy({
           where: { ProductId: product.dataValues.id }

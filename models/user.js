@@ -1,8 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
-    'User',
-    {
+    'User', {
       name: DataTypes.STRING,
       email: DataTypes.STRING,
       password: DataTypes.STRING,
@@ -12,11 +11,18 @@ module.exports = (sequelize, DataTypes) => {
       address: DataTypes.STRING,
       tel: DataTypes.STRING,
       role: DataTypes.STRING
-    },
-    {}
+    }, {}
   );
   User.associate = function(models) {
     User.hasMany(models.Order);
+    User.belongsToMany(models.Coupon, {
+      through: {
+        model: models.CouponItem,
+        unique: false
+      },
+      foreignKey: 'UserId',
+      as: 'coupons'
+    });
   };
   return User;
 };

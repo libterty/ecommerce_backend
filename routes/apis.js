@@ -45,6 +45,12 @@ router.get(
   authenticatedAdmin,
   adminController.getProducts
 );
+router.get(
+  '/admin/products/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getProduct
+);
 router.post(
   '/admin/products',
   upload.single('url'),
@@ -91,6 +97,7 @@ router.delete(
 );
 
 router.post('/signin', userControlloer.signIn);
+router.post('/signup', userControlloer.signUp);
 
 // cart
 router.get('/cart', cartController.getCart);
