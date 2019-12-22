@@ -16,8 +16,13 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
+      cost: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: false
+      },
       price: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.INTEGER,
         defaultValue: 0,
         allowNull: false
       },
@@ -47,6 +52,9 @@ module.exports = {
       ratingCounts: {
         type: Sequelize.INTEGER,
         defaultValue: 0
+      },
+      CategoryId: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

@@ -1,32 +1,26 @@
 language: node_js
 node_js:
-  - "12"
-
+- '12'
 services:
-  - mysql
-
+- mysql
 env:
-  - NODE_ENV=test
-
+  secure: ijYmJ1vaXCZS5v8Guw84fio7J+jFLkTYwn6rvQluYc1J0hFo5Y99LOcdOmlXkjWk5rb0VcEMiOpws6QADPeIF/vWgmHP/CijX8EpwKRCsnmks6g6S4tYl9kIKOOGoA79cul1Bk6h90IflVvKEc+Fy5DUW6U3p1bBwpGSAeMAvODkkIavoDJwN5Sqryqq8ig337cnTU7EAJ2GFUJ9Uiyg0VcE+BnwHGEIxFzXiP1g7bJajx8Cm4UFW2eC16N8VgrKnKf/rwSUIuvV/0gwk8lQa0hb4J+aueQoLA+Fx55R0XI0BBFTJC0WgdUTBrd2x3J3Fuv27+c5oA5nPBPi+GRyUi3FSIHFzFywYh/ni9uo9IXVbqBS0NoSxfRUk7/cXT1M/OX7sHiTohEqaFTUKzzVyCrym+4Wsc7H5gLbq6Ghxf3GN4vxClT5Ixv1NKmFzNjBSJVqNFt4Ra2Itvb9/YyS/OnKPv0K7KJWiH5tRYVw28EzXzVStfc9hm+TFsjTTIy+YRUseb0dJ95f9dEdQC72mtV6ck5wTPStnbb9/G+tKRvtieaUUSRDHep2jJhFWCcoCHsbhfVhh8NSE9bH6qFiihaMxdqRS87FIJO2OosfbkvwDSw/ygbirN0xQQZ7VzXtueLH7ceL6w+kiMwvmYTfZi6JoA324wDA8BrHkbqqBqQ=
 before_install:
-  - npm install
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS ec_web_test default character set utf8mb4 collate utf8mb4_unicode_ci;'
-  - npm install sequelize-cli -g
-
+- npm install
+- mysql -e 'CREATE DATABASE IF NOT EXISTS ec_web_test default character set utf8mb4
+  collate utf8mb4_unicode_ci;'
+- npm install sequelize-cli -g
 before_script:
-  - sequelize db:migrate
-
+- sequelize db:migrate
 script:
-  - npm test
-
+- npm test
 deploy:
   provider: heroku
   app: secret-brushlands-82653
   api_key:
     secure: be4f0ef4-f01a-43e7-a514-ad48d433e354
   run:
-    - "npm install sequelize-cli -g"
-    - "sequelize db:migrate"
-
+  - npm install sequelize-cli -g
+  - sequelize db:migrate
 after_success:
-  - npm run coveralls
+- npm run coveralls

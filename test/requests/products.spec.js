@@ -12,8 +12,16 @@ describe('# Product request', () => {
   context('# Home Request', () => {
     describe('When Visit HomePage', () => {
       before(async () => {
-        await db.Product.create({ name: 'Product1 Test', price: 3000 });
-        await db.Product.create({ name: 'Product2 Test', price: 3000 });
+        await db.Product.create({
+          name: 'Product1 Test',
+          cost: 1111,
+          price: 3000
+        });
+        await db.Product.create({
+          name: 'Product2 Test',
+          cost: 1111,
+          price: 3000
+        });
         await db.Image.create({ url: 'test1.jpg', ProductId: 1 });
         await db.Image.create({ url: 'test2.jpg', ProductId: 2 });
       });
@@ -39,8 +47,16 @@ describe('# Product request', () => {
 
     describe('When Visit HomePage with Image data', () => {
       before(async () => {
-        await db.Product.create({ name: 'Product1 Test', price: 3000 });
-        await db.Product.create({ name: 'Product2 Test', price: 3000 });
+        await db.Product.create({
+          name: 'Product1 Test',
+          cost: 1111,
+          price: 3000
+        });
+        await db.Product.create({
+          name: 'Product2 Test',
+          cost: 1111,
+          price: 3000
+        });
       });
 
       it('should return 200 and get json data', done => {
@@ -63,12 +79,22 @@ describe('# Product request', () => {
 
     describe('When Visit Specific Product Page', () => {
       before(async () => {
-        await db.Product.create({ name: 'Product1 Test', price: 3000 });
-        await db.Product.create({ name: 'Product2 Test', price: 3000 });
+        await db.Product.create({
+          name: 'Product1 Test',
+          cost: 1111,
+          price: 3000
+        });
+        await db.Product.create({
+          name: 'Product2 Test',
+          cost: 1111,
+          price: 3000
+        });
         await db.Image.create({ url: 'test1.jpg', ProductId: 1 });
         await db.Image.create({ url: 'test2.jpg', ProductId: 2 });
         await db.Color.create({ name: 'Yellow', ProductId: 1 });
         await db.Color.create({ name: 'Green', ProductId: 2 });
+        await db.Inventory.create({ quantity: 23, ProductId: 1 });
+        await db.Inventory.create({ quantity: 12, ProductId: 2 });
       });
 
       it('should return 200 and get json data', done => {
@@ -82,6 +108,7 @@ describe('# Product request', () => {
             expect(res.body.product.name).to.equal('Product1 Test');
             expect(res.body.Images[0].url).to.equal('test1.jpg');
             expect(res.body.Colors[0].name).to.equal('Yellow');
+            expect(res.body.Colors[0].Inventory.quantity).to.equal(23);
             done();
           });
       });
@@ -103,6 +130,7 @@ describe('# Product request', () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Image.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
   });

@@ -9,7 +9,7 @@ coverage/
 
 # Ingore file upload
 temp/
-upload/
+# upload/
 
 # local file system
 .DS_Store
