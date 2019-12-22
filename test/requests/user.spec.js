@@ -20,77 +20,101 @@ describe('# User Request', () => {
           password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
           admin: true
         });
-      })
+      });
       it('1. should return 400 and get error message', done => {
         request(app)
           .post('/api/signup')
-          .send({ email: 'user1@example.com', password: '123456', passwordCheck: '12345678' })
+          .send({
+            email: 'user1@example.com',
+            password: '123456',
+            passwordCheck: '12345678'
+          })
           .set('Accept', 'application/json')
           .expect(400)
           .end((err, res) => {
             if (err) return done(err);
-            expect(res.body.status).to.be.equal('error')
-            expect(res.body.message).to.be.equal('Passwords are not the same')
+            expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.be.equal('Passwords are not the same');
             done();
-          })
-      })
+          });
+      });
       it('2. should return 400 and get error message', done => {
         request(app)
           .post('/api/signup')
-          .send({ email: 'user1@example.com', password: '12345', passwordCheck: '12345' })
+          .send({
+            email: 'user1@example.com',
+            password: '12345',
+            passwordCheck: '12345'
+          })
           .set('Accept', 'application/json')
           .expect(400)
           .end((err, res) => {
             if (err) return done(err);
-            expect(res.body.status).to.be.equal('error')
-            expect(res.body.message).to.be.equal('Password length must greater or equal than 6')
+            expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.be.equal(
+              'Password length must greater or equal than 6'
+            );
             done();
-          })
-      })
+          });
+      });
       it('3. should return 400 and get error message', done => {
         request(app)
           .post('/api/signup')
-          .send({ email: 'user1@example.com', password: '123456', passwordCheck: '' })
+          .send({
+            email: 'user1@example.com',
+            password: '123456',
+            passwordCheck: ''
+          })
           .set('Accept', 'application/json')
           .expect(400)
           .end((err, res) => {
             if (err) return done(err);
-            expect(res.body.status).to.be.equal('error')
-            expect(res.body.message).to.be.equal('All fields are required')
+            expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.be.equal('All fields are required');
             done();
-          })
-      })
+          });
+      });
       it('4. should return 400 status code and error message', done => {
         request(app)
           .post('/api/signup')
-          .send({ email: 'test1@example.com', password: '12345678', passwordCheck: '12345678' })
+          .send({
+            email: 'test1@example.com',
+            password: '12345678',
+            passwordCheck: '12345678'
+          })
           .set('Accept', 'application/json')
           .expect(400)
           .end((err, res) => {
             if (err) return done(err);
-            expect(res.body.status).to.be.equal('error')
-            expect(res.body.message).to.be.equal('This Email is already registered')
+            expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.be.equal(
+              'This Email is already registered'
+            );
             done();
-          })
-      })
+          });
+      });
       it('5. should return 200 status code and create User', done => {
         request(app)
           .post('/api/signup')
-          .send({ email: 'user2@example.com', password: '123456', passwordCheck: '123456' })
+          .send({
+            email: 'user2@example.com',
+            password: '123456',
+            passwordCheck: '123456'
+          })
           .set('Accept', 'application/json')
           .expect(200)
           .end((err, res) => {
             if (err) return done(err);
-            expect(res.body.status).to.be.equal('success')
-            expect(res.body.message).to.be.equal('Register successfully!')
+            expect(res.body.status).to.be.equal('success');
+            expect(res.body.message).to.be.equal('Register successfully!');
             done();
-          })
-      })
+          });
+      });
       after(async () => {
         await db.User.destroy({ where: {}, truncate: true });
-      })
-    })
-  })
+      });
+    });
+  });
   context('# SignIn Request', () => {
     describe('When request signin', () => {
       before(async () => {
