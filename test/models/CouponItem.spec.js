@@ -26,7 +26,7 @@ describe('# CouponItem Model', () => {
     it('create', done => {
       db.CouponItem.create()
         .then(couponItem => {
-          console.log(couponItem)
+          console.log(couponItem);
           data = couponItem;
           should.exist(data);
           done();

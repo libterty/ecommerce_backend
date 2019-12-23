@@ -109,4 +109,12 @@ router.delete('/cart/:id', cartController.deleteCartItem);
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/:id', productController.getProduct);
 
+router.get('/users/:id', authenticated, userControlloer.getUserInfo);
+router.put(
+  '/users/:id',
+  upload.single('avatar'),
+  authenticated,
+  userControlloer.putUserInfo
+);
+
 module.exports = router;
