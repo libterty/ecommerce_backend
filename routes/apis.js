@@ -102,6 +102,9 @@ router.post('/signup', userControlloer.signUp);
 // cart
 router.get('/cart', cartController.getCart);
 router.post('/cart', cartController.postCart);
+router.post('/cart/:id/add', cartController.addCartItem);
+router.post('/cart/:id/sub', cartController.subCartItem);
+router.delete('/cart/:id', cartController.deleteCartItem);
 
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/:id', productController.getProduct);
