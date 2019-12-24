@@ -327,9 +327,7 @@ describe('# User Request', () => {
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal(
-              'Email is already in use'
-            );
+            expect(res.body.message).to.equal('Email is already in use');
             done();
           });
       });

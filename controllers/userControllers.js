@@ -130,8 +130,10 @@ const userController = {
       });
     }
 
-    const isEmail = await User.findOne({ where: { email } }).then(user => { return user });
-    
+    const isEmail = await User.findOne({ where: { email } }).then(user => {
+      return user;
+    });
+
     if (isEmail) {
       return res.status(400).json({
         status: 'error',

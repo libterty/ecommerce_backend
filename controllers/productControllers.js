@@ -4,6 +4,7 @@ const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
 const Inventory = db.Inventory;
+const Category = db.Category;
 const Op = Sequelize.Op;
 
 const productController = {
@@ -22,6 +23,50 @@ const productController = {
       }));
       // console.log('products log', products);
       return res.status(200).json({ status: 'success', products });
+    });
+  },
+
+  getProducts: (req, res) => {
+    const pageLimit = 10;
+    let offset = 0;
+    let whereQuery = {};
+    let categoryId = '';
+    if (req.query.page) {
+      offset = (req.query.page - 1) * pageLimit;
+    }
+    if (req.query.categoryId) {
+      categoryId = Number(req.query.categoryId);
+      whereQuery['CategoryId'] = categoryId;
+    }
+
+    Product.findAndCountAll({
+      inclue: Category,
+      where: whereQuery,
+      offset: offset,
+      limit: pageLimit
+    }).then(result => {
+      let page = Number(req.query.page) || 1;
+      let pages = Math.ceil(result.count / pageLimit);
+      let totalPage = Array.from({ length: pages }).map(
+        (item, index) => index + 1
+      );
+      let prev = page - 1 < 1 ? 1 : page - 1;
+      let next = page + 1 > pages ? pages : page + 1;
+      const data = result.rows.map(r => ({
+        ...r.dataValues
+      }));
+      Category.findAll().then(categories => {
+        return res.status(200).json({
+          status: 'success',
+          products: data,
+          categories,
+          categoryId,
+          page,
+          totalPage,
+          prev,
+          next
+        });
+      });
     });
   },
 

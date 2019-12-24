@@ -74,6 +74,48 @@ module.exports = {
         ProductId: 5,
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        name: 'black',
+        ProductId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'blue',
+        ProductId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'white',
+        ProductId: 9,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'white',
+        ProductId: 10,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'white',
+        ProductId: 11,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'white',
+        ProductId: 12,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'white',
+        ProductId: 13,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ]);
   },
