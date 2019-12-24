@@ -378,8 +378,8 @@ describe('# User Request', () => {
           .put('/api/users/1')
           .set('Authorization', 'bearer ' + token)
           .send({
-            name: 'testSuccess',
-            email: 'testSuccess@example.com',
+            name: 'testSuccess2',
+            email: 'testSuccess2@example.com',
             password: '12345678',
             address: 'test road test street',
             tel: '02-8888-8888'

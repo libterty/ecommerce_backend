@@ -89,13 +89,18 @@ const productController = {
             item => item.id == color.id
           )
         }));
+        product
+          .increment('viewCounts')
+          .then(product => {
+            return res
+              .status(200)
+              .json({ status: 'success', product, Images, Colors });
+          })
+      } else {
         return res
-          .status(200)
-          .json({ status: 'success', product, Images, Colors });
+          .status(400)
+          .json({ status: 'error', message: 'Fail to find product' });
       }
-      return res
-        .status(400)
-        .json({ status: 'error', message: 'Fail to find product' });
     });
   }
 };

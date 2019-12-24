@@ -221,12 +221,15 @@ describe('# Product request', () => {
           .expect(200)
           .end((err, res) => {
             if (err) return done(err);
-            expect(res.body.status).to.equal('success');
-            expect(res.body.product.name).to.equal('Product1 Test');
-            expect(res.body.Images[0].url).to.equal('test1.jpg');
-            expect(res.body.Colors[0].name).to.equal('Yellow');
-            expect(res.body.Colors[0].Inventory.quantity).to.equal(23);
-            done();
+            db.Product.findByPk(1).then(product => {
+              expect(res.body.status).to.equal('success');
+              expect(res.body.product.name).to.equal('Product1 Test');
+              expect(res.body.Images[0].url).to.equal('test1.jpg');
+              expect(res.body.Colors[0].name).to.equal('Yellow');
+              expect(res.body.product.viewCounts + 1).to.equal(product.dataValues.viewCounts);
+              expect(res.body.Colors[0].Inventory.quantity).to.equal(23);
+              return done();
+            })
           });
       });
 
