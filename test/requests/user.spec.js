@@ -316,6 +316,24 @@ describe('# User Request', () => {
           });
       });
 
+      it('should return 400 when email is already in use', done => {
+        request(app)
+          .put('/api/users/1')
+          .set('Authorization', 'bearer ' + token)
+          .send({
+            email: 'test2@example.com'
+          })
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal(
+              'Email is already in use'
+            );
+            done();
+          });
+      });
+
       it.skip('should return 400 when image upload fail', done => {
         request(app)
           .put('/api/users/1')

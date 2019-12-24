@@ -115,7 +115,7 @@ const userController = {
         .json({ status: 'error', message: 'Can not find any user data' });
     });
   },
-  putUserInfo: (req, res) => {
+  putUserInfo: async (req, res) => {
     const { name, email, password, birthday, address, tel } = req.body;
     if (helpers.getUser(req).id !== Number(req.params.id)) {
       return res
@@ -129,6 +129,16 @@ const userController = {
         message: 'Password length must greater or equal than 6'
       });
     }
+
+    const isEmail = await User.findOne({ where: { email } }).then(user => { return user });
+    
+    if (isEmail) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Email is already in use'
+      });
+    }
+
     return User.findByPk(req.params.id, {
       lock: Sequelize.Transaction.LOCK.SHARE
     }).then(user => {
