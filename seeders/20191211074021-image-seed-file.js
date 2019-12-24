@@ -86,6 +86,48 @@ module.exports = {
         ProductId: 6,
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        url: 'https://i.imgur.com/PfpI6Px.png',
+        ProductId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        url: 'https://i.imgur.com/efa55pU.png',
+        ProductId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        url: 'https://i.imgur.com/3sFyW9M.png',
+        ProductId: 9,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        url: 'https://i.imgur.com/8G7zWeT.png',
+        ProductId: 10,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        url: 'https://i.imgur.com/U2lATjy.png',
+        ProductId: 11,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        url: 'https://i.imgur.com/C7PGe0N.png',
+        ProductId: 12,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        url: 'https://i.imgur.com/3oR1275.png',
+        ProductId: 13,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ]);
   },

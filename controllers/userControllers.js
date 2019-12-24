@@ -1,8 +1,11 @@
 const Sequelize = require('sequelize');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const imgur = require('imgur-node-api');
 const db = require('../models');
 const User = db.User;
+const helpers = require('../_helpers');
+const IMGUR_CLIENT_ID = process.env.imgur_id;
 
 const userController = {
   signUp: (req, res) => {
@@ -95,6 +98,96 @@ const userController = {
           isAdmin: user.admin
         }
       });
+    });
+  },
+  getUserInfo: (req, res) => {
+    if (helpers.getUser(req).id !== Number(req.params.id)) {
+      return res
+        .status(401)
+        .json({ status: 'error', message: 'Can not find any user data' });
+    }
+    return User.findByPk(req.params.id).then(user => {
+      if (user) {
+        return res.status(200).json({ status: 'success', user });
+      }
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Can not find any user data' });
+    });
+  },
+  putUserInfo: async (req, res) => {
+    const { name, email, password, birthday, address, tel } = req.body;
+    if (helpers.getUser(req).id !== Number(req.params.id)) {
+      return res
+        .status(401)
+        .json({ status: 'error', message: 'Can not find any user data' });
+    }
+
+    if (password && password.length < 6) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Password length must greater or equal than 6'
+      });
+    }
+
+    const isEmail = await User.findOne({ where: { email } }).then(user => {
+      return user;
+    });
+
+    if (isEmail) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Email is already in use'
+      });
+    }
+
+    return User.findByPk(req.params.id, {
+      lock: Sequelize.Transaction.LOCK.SHARE
+    }).then(user => {
+      const { file } = req;
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID);
+        imgur.upload(file.path, (err, img) => {
+          if (!img.data)
+            return res
+              .status(400)
+              .json({ status: 'error', message: 'Image Upload Fail' });
+          return user
+            .update({
+              name: name ? name : user.dataValues.name,
+              email: email ? email : user.dataValues.email,
+              password: password
+                ? bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
+                : user.dataValues.password,
+              birthday: birthday ? birthday : user.dataValues.birthday,
+              avatar: file ? img.data.link : user.dataValues.avatar,
+              address: address ? address : user.dataValues.address,
+              tel: tel ? tel : user.dataValues.tel
+            })
+            .then(() => {
+              return res
+                .status(200)
+                .json({ status: 'success', message: 'update info success 1' });
+            });
+        });
+      } else {
+        return user
+          .update({
+            name: name ? name : user.dataValues.name,
+            email: email ? email : user.dataValues.email,
+            password: password
+              ? bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
+              : user.dataValues.password,
+            birthday: birthday ? birthday : user.dataValues.birthday,
+            address: address ? address : user.dataValues.address,
+            tel: tel ? tel : user.dataValues.tel
+          })
+          .then(() => {
+            return res
+              .status(200)
+              .json({ status: 'success', message: 'update info success 2' });
+          });
+      }
     });
   }
 };

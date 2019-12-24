@@ -86,6 +86,55 @@ module.exports = {
         ColorId: 12,
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        quantity: 23,
+        ProductId: 7,
+        ColorId: 13,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        quantity: 13,
+        ProductId: 8,
+        ColorId: 14,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        quantity: 12,
+        ProductId: 9,
+        ColorId: 15,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        quantity: 8,
+        ProductId: 10,
+        ColorId: 16,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        quantity: 28,
+        ProductId: 11,
+        ColorId: 17,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        quantity: 22,
+        ProductId: 12,
+        ColorId: 18,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        quantity: 16,
+        ProductId: 13,
+        ColorId: 19,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ]);
   },
