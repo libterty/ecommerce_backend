@@ -102,8 +102,20 @@ router.post('/signup', userControlloer.signUp);
 // cart
 router.get('/cart', cartController.getCart);
 router.post('/cart', cartController.postCart);
+router.post('/cart/:id/add', cartController.addCartItem);
+router.post('/cart/:id/sub', cartController.subCartItem);
+router.delete('/cart/:id', cartController.deleteCartItem);
 
 router.get('/furnitures', productController.getHomePageProducts);
+router.get('/furnitures/pagination', productController.getProducts);
 router.get('/furnitures/:id', productController.getProduct);
+
+router.get('/users/:id', authenticated, userControlloer.getUserInfo);
+router.put(
+  '/users/:id',
+  upload.single('avatar'),
+  authenticated,
+  userControlloer.putUserInfo
+);
 
 module.exports = router;

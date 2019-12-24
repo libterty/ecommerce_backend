@@ -37,9 +37,9 @@ const cartController = {
       }));
 
       let totalPrice =
-        cartItems.length > 0 ?
-        cartItems.map(d => d.price * d.quantity).reduce((a, b) => a + b) :
-        0;
+        cartItems.length > 0
+          ? cartItems.map(d => d.price * d.quantity).reduce((a, b) => a + b)
+          : 0;
 
       return res.json({
         status: 'success',
@@ -114,6 +114,76 @@ const cartController = {
       return res
         .status(400)
         .json({ status: 'error', message: 'Fail to add to cart' });
+    }
+  },
+  addCartItem: async (req, res) => {
+    try {
+      const cart = await Cart.findByPk(req.session.cartId);
+      if (!cart) {
+        return res.json({
+          status: 'error',
+          message: 'Cannot update item not in the cart'
+        });
+      }
+
+      const cartItem = await CartItem.findByPk(req.params.id);
+      cartItem.update({
+        quantity: cartItem.quantity + 1,
+        price: cartItem.price
+      });
+
+      return res.json({
+        status: 'success',
+        message: 'Update cart successfully'
+      });
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Fail to add up cart item' });
+    }
+  },
+  subCartItem: async (req, res) => {
+    try {
+      const cart = await Cart.findByPk(req.session.cartId);
+      if (!cart) {
+        return res.json({
+          status: 'error',
+          message: 'Cannot update item not in the cart'
+        });
+      }
+      const cartItem = await CartItem.findByPk(req.params.id);
+      cartItem.update({
+        quantity: cartItem.quantity - 1 >= 1 ? cartItem.quantity - 1 : 1,
+        price: cartItem.price
+      });
+
+      return res.json({
+        status: 'success',
+        message: 'Update cart successfully'
+      });
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Fail to subtract cart item' });
+    }
+  },
+  deleteCartItem: async (req, res) => {
+    try {
+      const cart = await Cart.findByPk(req.session.cartId);
+      if (!cart) {
+        return res.json({
+          status: 'error',
+          message: 'Cannot update item not in the cart'
+        });
+      }
+      const cartItem = await CartItem.findByPk(req.params.id);
+      cartItem.destroy();
+      return res.json({ status: 'success', message: 'Removed item from cart' });
+    } catch (error) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Fail to remove the item from cart'
+      });
     }
   }
 };

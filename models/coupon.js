@@ -1,13 +1,15 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Coupon = sequelize.define(
-    'Coupon', {
+    'Coupon',
+    {
       coupon_code: { type: DataTypes.STRING, allowNull: false },
       limited_usage: DataTypes.INTEGER,
       expire_date: DataTypes.DATE,
       type: DataTypes.STRING,
       percent: DataTypes.FLOAT
-    }, {}
+    },
+    {}
   );
   Coupon.associate = function(models) {
     Coupon.belongsToMany(models.User, {
