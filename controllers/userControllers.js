@@ -80,7 +80,9 @@ const userController = {
       };
       let token = jwt.sign(
         payload,
-        process.env.JWT_SECRET, { expiresIn: '7d' }, { algorithm: 'RS256' }
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' },
+        { algorithm: 'RS256' }
       );
 
       return res.status(200).json({
