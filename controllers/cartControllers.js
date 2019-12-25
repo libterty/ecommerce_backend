@@ -59,8 +59,7 @@ const cartController = {
       return Cart.findOrCreate({
         where: {
           id: req.session.cartId || 0
-        },
-        lock: Sequelize.Transaction.LOCK.SHARE
+        }
       }).spread(function(cart, created) {
         const { price, quantity, productId, colorId } = req.body;
         if (!price) {

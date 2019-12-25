@@ -210,7 +210,8 @@ module.exports = {
       },
       {
         name: '莎爾圖斯CHARTREUSE咖啡茶几',
-        description: '經典風格的車枳腳和BLUM隱藏式緩衝抽屜滑軌，餐廳客廳的經典系列',
+        description:
+          '經典風格的車枳腳和BLUM隱藏式緩衝抽屜滑軌，餐廳客廳的經典系列',
         cost: 5330,
         price: 19900,
         height: 43,
