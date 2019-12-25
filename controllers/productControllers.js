@@ -40,7 +40,7 @@ const productController = {
     }
 
     Product.findAndCountAll({
-      inclue: Category,
+      include: [Category, Image],
       where: whereQuery,
       offset: offset,
       limit: pageLimit
