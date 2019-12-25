@@ -108,6 +108,7 @@ router.delete('/cart/:id', cartController.deleteCartItem);
 
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);
+router.get('/furnitures/search', productController.searchProducts);
 router.get('/furnitures/:id', productController.getProduct);
 
 router.get('/users/:id', authenticated, userControlloer.getUserInfo);

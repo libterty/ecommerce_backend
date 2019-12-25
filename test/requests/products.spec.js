@@ -255,5 +255,87 @@ describe('# Product request', () => {
         await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
+
+    describe('When user search products', () => {
+      before(async () => {
+        await db.Product.create({
+          name: 'Async 衣櫃',
+          cost: 1111,
+          price: 3000,
+          viewCounts: 3
+        });
+        await db.Product.create({
+          name: '櫥櫃',
+          cost: 1111,
+          price: 3000,
+          viewCounts: 1
+        });
+        await db.Product.create({
+          name: '長椅',
+          cost: 1111,
+          price: 3000,
+          viewCounts: 3
+        }); 
+        await db.Product.create({
+          name: '八腳椅',
+          cost: 1111,
+          price: 3000,
+          viewCounts: 7
+        }); 
+        await db.Product.create({
+          name: '四腳椅',
+          cost: 1111,
+          price: 3000,
+          viewCounts: 10
+        });  
+      });
+
+      it('should return 400 when no query is defined', done => {
+        request(app)
+          .get('/api/furnitures/search')
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("required fields didn't exist");
+            done();
+          });
+      });
+
+      it('should return 400 when no products can be found', done => {
+        request(app)
+          .get('/api/furnitures/search')
+          .query({ items: '床' })
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("Cannot find products");
+            done();
+          });
+      });
+
+      it('should return 200 when products can be found', done => {
+        request(app)
+          .get('/api/furnitures/search')
+          .query({ items: '椅' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('success');
+            expect(res.body.products.length).to.equal(3);
+            expect(res.body.products[0].name).to.equal("四腳椅");
+            expect(res.body.products[0].viewCounts).to.equal(10);
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.Product.destroy({ where: {}, truncate: true });
+      })
+    })
   });
 });
