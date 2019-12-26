@@ -33,6 +33,7 @@ const orderController = {
       const tempCartItems = cart.CartItems;
       let id;
       let temp = {};
+      console.log('tempCartItems', tempCartItems);
       return Order.create({
         order_status: '訂單處理中',
         shipping_status: '未出貨',
@@ -67,8 +68,8 @@ const orderController = {
               });
               await order.update({
                 total_amount: order.total_amount
-                  ? order.total_amount + tempCartItems[i].price
-                  : tempCartItems[i].price
+                  ? order.total_amount + tempCartItems[i].price * tempCartItems[i].quantity
+                  : tempCartItems[i].price * tempCartItems[i].quantity
               });
               const newQuantity =
                 inventory.quantity - tempCartItems[i].quantity;
@@ -81,7 +82,7 @@ const orderController = {
           });
         }
         setTimeout(() => {
-          if (temp.nonCreate) {
+          if (temp.nonCreate || tempCartItems.length === 0) {
             Order.destroy({ where: { id: order.id } });
             return res
               .status(200)

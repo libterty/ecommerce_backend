@@ -192,7 +192,7 @@ describe('# Order Request', () => {
             db.Order.findByPk(2).then(order => {
               expect(res.body.status).to.equal('success');
               expect(res.body.message).to.equal('Create order success');
-              expect(order.total_amount).to.equal(12000);
+              expect(order.total_amount).to.equal(24000);
               return done();
             });
           });
