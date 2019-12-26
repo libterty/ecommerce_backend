@@ -275,19 +275,19 @@ describe('# Product request', () => {
           cost: 1111,
           price: 3000,
           viewCounts: 3
-        }); 
+        });
         await db.Product.create({
           name: '八腳椅',
           cost: 1111,
           price: 3000,
           viewCounts: 7
-        }); 
+        });
         await db.Product.create({
           name: '四腳椅',
           cost: 1111,
           price: 3000,
           viewCounts: 10
-        });  
+        });
       });
 
       it('should return 400 when no query is defined', done => {
@@ -312,7 +312,7 @@ describe('# Product request', () => {
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal("Cannot find products");
+            expect(res.body.message).to.equal('Cannot find products');
             done();
           });
       });
@@ -327,7 +327,7 @@ describe('# Product request', () => {
             if (err) return done(err);
             expect(res.body.status).to.equal('success');
             expect(res.body.products.length).to.equal(3);
-            expect(res.body.products[0].name).to.equal("四腳椅");
+            expect(res.body.products[0].name).to.equal('四腳椅');
             expect(res.body.products[0].viewCounts).to.equal(10);
             done();
           });
@@ -335,7 +335,7 @@ describe('# Product request', () => {
 
       after(async () => {
         await db.Product.destroy({ where: {}, truncate: true });
-      })
-    })
+      });
+    });
   });
 });

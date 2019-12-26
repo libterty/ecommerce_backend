@@ -14,6 +14,11 @@ describe('# Admin Request', () => {
     describe('When Visit Admin Home page', () => {
       let token;
       before(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Image.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -30,12 +35,12 @@ describe('# Admin Request', () => {
           cost: 1500,
           price: 3000
         });
-        await db.Image.create({ url: 'test1.jpg', ProductId: 2 });
-        await db.Image.create({ url: 'test2.jpg', ProductId: 3 });
-        await db.Color.create({ name: 'Yellow', ProductId: 2 });
-        await db.Color.create({ name: 'Black', ProductId: 3 });
-        await db.Inventory.create({ quantity: 20, ProductId: 2, ColorId: 2 });
-        await db.Inventory.create({ quantity: 10, ProductId: 3, ColorId: 3 });
+        await db.Image.create({ url: 'test1.jpg', ProductId: 1 });
+        await db.Image.create({ url: 'test2.jpg', ProductId: 2 });
+        await db.Color.create({ name: 'Yellow', ProductId: 1 });
+        await db.Color.create({ name: 'Black', ProductId: 2 });
+        await db.Inventory.create({ quantity: 20, ProductId: 1, ColorId: 1 });
+        await db.Inventory.create({ quantity: 10, ProductId: 2, ColorId: 2 });
       });
 
       it('should return 200 with admintoken', done => {

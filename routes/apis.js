@@ -6,6 +6,7 @@ const cartController = require('../controllers/cartControllers');
 const productController = require('../controllers/productControllers');
 const userControlloer = require('../controllers/userControllers');
 const adminController = require('../controllers/adminControllers');
+const orderController = require('../controllers/orderControllers');
 const passport = require('../config/passport');
 const helpers = require('../_helpers');
 const authenticated = passport.authenticate('jwt', { session: false });
@@ -105,6 +106,8 @@ router.post('/cart', cartController.postCart);
 router.post('/cart/:id/add', cartController.addCartItem);
 router.post('/cart/:id/sub', cartController.subCartItem);
 router.delete('/cart/:id', cartController.deleteCartItem);
+
+router.post('/orders/create', authenticated, orderController.createOrder);
 
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);
