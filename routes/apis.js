@@ -108,7 +108,10 @@ router.post('/cart/:id/sub', cartController.subCartItem);
 router.delete('/cart/:id', cartController.deleteCartItem);
 
 router.post('/orders/create', authenticated, orderController.createOrder);
+// orderController.getOrder params are default for UserId
 router.get('/orders/:id', authenticated, orderController.getOrder);
+// orderController.putOrders params are default for OrderId
+router.put('/orders/:id', authenticated, orderController.putOrder);
 
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);

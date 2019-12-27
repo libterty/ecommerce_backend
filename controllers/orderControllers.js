@@ -8,6 +8,7 @@ const User = db.User;
 const Inventory = db.Inventory;
 const Order = db.Order;
 const OrderItem = db.OrderItem;
+const Shipping = db.Shipping;
 const Op = Sequelize.Op;
 
 const orderController = {
@@ -116,6 +117,85 @@ const orderController = {
       return res
         .status(200)
         .json({ status: 'success', message: 'Nothing in your order list' });
+    });
+  },
+
+  putOrder: (req, res) => {
+    const {
+      orderId,
+      name,
+      address,
+      email,
+      phone,
+      shippingMethod,
+      shippingStatus,
+      shippingFee
+    } = req.body;
+
+    if (helpers.getUser(req).id !== Number(req.params.id)) {
+      return res
+        .status(401)
+        .json({ status: 'error', message: 'Can not find any user data' });
+    }
+
+    if (!shippingMethod || !shippingStatus || !shippingFee) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "required field didn't exist" });
+    }
+
+    if (shippingMethod !== '黑貓宅急便') {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "shippingMethod didn't exist" });
+    }
+
+    if (shippingStatus !== '未出貨') {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "wrong shippingStatus" });
+    }
+
+    if (shippingFee !== 350) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "shippingFee didn't exist" });
+    }
+
+    return Order.findByPk(orderId).then(async order => {
+      if (order) {
+        try {
+          await order.update({
+            total_amount: order.total_amount + shippingFee,
+            name: name ? name : order.name,
+            address: address ? address : order.address,
+            email: email ? email : order.email,
+            phone: phone ? phone : order.phone,
+            updatedAt: new Date()
+          });
+          await Shipping.create({
+            shipping_method: shippingMethod,
+            shipping_status: shippingStatus,
+            shipping_fee: shippingFee,
+            name: name ? name : order.name,
+            address: address ? address : order.address,
+            email: email ? email : order.email,
+            phone: phone ? phone : order.phone,
+            OrderId: order.id
+          });
+          return res
+            .status(200)
+            .json({ status: 'success', message: 'Update order success' });
+        } catch (error) {
+          console.log(error);
+          return res
+            .status(500)
+            .json({ status: 'error', message: 'Something went wrong' });
+        }
+      }
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Cannot find this Order' });
     });
   }
 };

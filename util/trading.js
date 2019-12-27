@@ -10,7 +10,7 @@ class Trade {
     this.PayGateWay = 'https://ccore.spgateway.com/MPG/mpg_gateway';
     this.ReturnURL = this.URL + '/spgateway/callback?from=ReturnURL';
     this.NotifyURL = this.URL + '/spgateway/callback?from=NotifyURL';
-    this.ClientBackURL = 'http://localhost:8080/order'
+    this.ClientBackURL = 'http://localhost:8080/order';
   }
 
   genDataChain(TradeInfo) {
@@ -29,7 +29,11 @@ class Trade {
   }
 
   createMpgAesDecrypt(TradeInfo) {
-    const decrypt = crypto.createDecipheriv('aes256', this.HashKey, this.HashIV);
+    const decrypt = crypto.createDecipheriv(
+      'aes256',
+      this.HashKey,
+      this.HashIV
+    );
     decrypt.setAutoPadding(false);
     const text = decrypt.update(TradeInfo, 'hex', 'utf8');
     const plainText = text + decrypt.final('utf8');
@@ -96,4 +100,3 @@ class Trade {
 }
 
 module.exports = Trade;
-
