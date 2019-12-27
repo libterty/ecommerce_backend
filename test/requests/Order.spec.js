@@ -211,4 +211,214 @@ describe('# Order Request', () => {
       });
     });
   });
+
+  context('# Get Order', () => {
+    describe('When user request to get Orders', () => {
+      before(async () => {
+        let test1token;
+        this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 1 });
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.User.create({
+          name: 'test2',
+          email: 'test2@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.Product.create({
+          name: 'test1Product',
+          cost: 5000,
+          price: 10000
+        });
+        await db.Product.create({
+          name: 'test2Product',
+          cost: 5000,
+          price: 10000
+        });
+        await db.Product.create({
+          name: 'test3Product',
+          cost: 5000,
+          price: 10000
+        });
+        await db.Order.create({
+          payment_status: '未付款',
+          total_amount: 20000,
+          name: 'test1',
+          UserId: 1
+        });
+        await db.Order.create({
+          payment_status: '已付款',
+          total_amount: 30000,
+          name: 'test1',
+          UserId: 2
+        });
+        await db.OrderItem.create({
+          price: 10000,
+          quantity: 1,
+          OrderId: 1,
+          ProductId: 2,
+          ColorId: 4
+        });
+        await db.OrderItem.create({
+          price: 10000,
+          quantity: 1,
+          OrderId: 1,
+          ProductId: 3,
+          ColorId: 4
+        });
+      });
+
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test1token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 401 when malware request', done => {
+        request(app)
+          .get('/api/orders/2')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(401)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Can not find any user data');
+            done();
+          });
+      });
+
+      it('should return 200 when Order is exist', done => {
+        request(app)
+          .get('/api/orders/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            db.OrderItem.findAll({
+              where: { OrderId: 1 }
+            }).then(orders => {
+              expect(res.body.status).to.equal('success');
+              expect(res.body.orders[0].total_amount).to.equal(20000);
+              expect(res.body.orders[0].items.length).to.equal(2);
+              return done();
+            });
+          });
+      });
+
+      after(async () => {
+        this.getUser.restore();
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Order.destroy({ where: {}, truncate: true });
+        await db.OrderItem.destroy({ where: {}, truncate: true });
+      });
+    });
+
+    describe('When user request to get Orders', () => {
+      before(async () => {
+        let test2token;
+        this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 2 });
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.User.create({
+          name: 'test2',
+          email: 'test2@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.Product.create({
+          name: 'test1Product',
+          cost: 5000,
+          price: 10000
+        });
+        await db.Product.create({
+          name: 'test2Product',
+          cost: 5000,
+          price: 10000
+        });
+        await db.Product.create({
+          name: 'test3Product',
+          cost: 5000,
+          price: 10000
+        });
+        await db.Order.create({
+          payment_status: '未付款',
+          total_amount: 20000,
+          name: 'test1',
+          UserId: 1
+        });
+        await db.Order.create({
+          payment_status: '已付款',
+          total_amount: 30000,
+          name: 'test1',
+          UserId: 2
+        });
+        await db.OrderItem.create({
+          price: 10000,
+          quantity: 1,
+          OrderId: 1,
+          ProductId: 2,
+          ColorId: 4
+        });
+        await db.OrderItem.create({
+          price: 10000,
+          quantity: 1,
+          OrderId: 1,
+          ProductId: 3,
+          ColorId: 4
+        });
+      });
+
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test2@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test2token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 200 when Order is exist', done => {
+        request(app)
+          .get('/api/orders/2')
+          .set('Authorization', 'bearer ' + test2token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal('Nothing in your order list');
+            done();
+          });
+      });
+
+      after(async () => {
+        this.getUser.restore();
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Order.destroy({ where: {}, truncate: true });
+        await db.OrderItem.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
 });

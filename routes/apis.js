@@ -108,6 +108,7 @@ router.post('/cart/:id/sub', cartController.subCartItem);
 router.delete('/cart/:id', cartController.deleteCartItem);
 
 router.post('/orders/create', authenticated, orderController.createOrder);
+router.get('/orders/:id', authenticated, orderController.getOrder);
 
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);
