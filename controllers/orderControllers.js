@@ -85,7 +85,7 @@ const orderController = {
           if (temp.nonCreate || tempCartItems.length === 0) {
             Order.destroy({ where: { id: order.id } });
             return res
-              .status(200)
+              .status(400)
               .json({ status: 'error', message: 'Create order fail' });
           }
           return res
