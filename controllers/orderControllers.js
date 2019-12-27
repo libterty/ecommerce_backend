@@ -98,7 +98,7 @@ const orderController = {
   },
 
   getOrder: (req, res) => {
-    if (helpers.getUser(req).id !== Number(req.params.id)) {
+    if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
         .status(401)
         .json({ status: 'error', message: 'Can not find any user data' });
@@ -107,7 +107,7 @@ const orderController = {
     return Order.findAll({
       include: [{ model: Product, as: 'items' }],
       where: {
-        UserId: req.params.id,
+        UserId: req.params.UserId,
         payment_status: '未付款'
       }
     }).then(orders => {
@@ -122,7 +122,6 @@ const orderController = {
 
   putOrder: (req, res) => {
     const {
-      orderId,
       name,
       address,
       email,
@@ -132,7 +131,7 @@ const orderController = {
       shippingFee
     } = req.body;
 
-    if (helpers.getUser(req).id !== Number(req.params.id)) {
+    if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
         .status(401)
         .json({ status: 'error', message: 'Can not find any user data' });
@@ -153,7 +152,7 @@ const orderController = {
     if (shippingStatus !== '未出貨') {
       return res
         .status(400)
-        .json({ status: 'error', message: "wrong shippingStatus" });
+        .json({ status: 'error', message: 'wrong shippingStatus' });
     }
 
     if (shippingFee !== 350) {
@@ -161,8 +160,7 @@ const orderController = {
         .status(400)
         .json({ status: 'error', message: "shippingFee didn't exist" });
     }
-
-    return Order.findByPk(orderId).then(async order => {
+    return Order.findByPk(req.params.OrderId).then(async order => {
       if (order) {
         try {
           await order.update({
@@ -196,6 +194,50 @@ const orderController = {
       return res
         .status(400)
         .json({ status: 'error', message: 'Cannot find this Order' });
+    });
+  },
+
+  deleteOrder: (req, res) => {
+    if (helpers.getUser(req).id !== Number(req.params.UserId)) {
+      return res
+        .status(401)
+        .json({ status: 'error', message: 'Can not find any user data' });
+    }
+
+    return Order.findByPk(req.params.OrderId, {
+      include: OrderItem
+    }).then(async order => {
+      if (order) {
+        try {
+          for (let i = 0; i < order.OrderItems.length; i++) {
+            await Inventory.findOne({
+              where: {
+                ProductId: order.OrderItems[i].ProductId,
+                ColorId: order.OrderItems[i].ColorId
+              }
+            }).then(inventory => {
+              inventory.update({
+                quantity: inventory.quantity + order.OrderItems[i].quantity
+              });
+            });
+            await OrderItem.findByPk(order.OrderItems[i].id).then(orderItem => {
+              orderItem.destroy();
+            });
+          }
+          await order.destroy();
+
+          return res
+            .status(200)
+            .json({ status: 'success', message: 'Delete order success' });
+        } catch (error) {
+          return res
+            .status(500)
+            .json({ status: 'error', message: 'Something went wrong' });
+        }
+      }
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Cannot find this order' });
     });
   }
 };

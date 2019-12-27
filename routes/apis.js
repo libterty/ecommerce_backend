@@ -109,9 +109,19 @@ router.delete('/cart/:id', cartController.deleteCartItem);
 
 router.post('/orders/create', authenticated, orderController.createOrder);
 // orderController.getOrder params are default for UserId
-router.get('/orders/:id', authenticated, orderController.getOrder);
-// orderController.putOrders params are default for OrderId
-router.put('/orders/:id', authenticated, orderController.putOrder);
+router.get('/orders/:UserId', authenticated, orderController.getOrder);
+// orderController.putOrders params are default for OrderId and UserId
+router.put(
+  '/orders/:OrderId/users/:UserId',
+  authenticated,
+  orderController.putOrder
+);
+// orderController.deleteOrder params are default for OrderId and UserId
+router.delete(
+  '/orders/:OrderId/users/:UserId',
+  authenticated,
+  orderController.deleteOrder
+);
 
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);

@@ -450,7 +450,7 @@ describe('# Order Request', () => {
           phone: '02-8888-8888',
           UserId: 1
         });
-      })
+      });
 
       it('should return 200 and test1 token', done => {
         request(app)
@@ -468,7 +468,7 @@ describe('# Order Request', () => {
 
       it('should return 401 when malware request', done => {
         request(app)
-          .put('/api/orders/2')
+          .put('/api/orders/1/users/2')
           .set('Authorization', 'bearer ' + test1token)
           .send({})
           .set('Accept', 'application/json')
@@ -482,7 +482,7 @@ describe('# Order Request', () => {
 
       it('should return 400 when non shipping data is send', done => {
         request(app)
-          .put('/api/orders/1')
+          .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({})
           .set('Accept', 'application/json')
@@ -496,7 +496,7 @@ describe('# Order Request', () => {
 
       it('should return 400 when malware shippingMethod data is send', done => {
         request(app)
-          .put('/api/orders/1')
+          .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
             shippingMethod: '郵局',
@@ -514,7 +514,7 @@ describe('# Order Request', () => {
 
       it('should return 400 when malware shippingStatus data is send', done => {
         request(app)
-          .put('/api/orders/1')
+          .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
             shippingMethod: '黑貓宅急便',
@@ -525,14 +525,14 @@ describe('# Order Request', () => {
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal("wrong shippingStatus");
+            expect(res.body.message).to.equal('wrong shippingStatus');
             done();
           });
       });
 
       it('should return 400 when malware shippingStatus data is send', done => {
         request(app)
-          .put('/api/orders/1')
+          .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
             shippingMethod: '黑貓宅急便',
@@ -550,10 +550,9 @@ describe('# Order Request', () => {
 
       it('should return 400 when no Order data is found', done => {
         request(app)
-          .put('/api/orders/1')
+          .put('/api/orders/2/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
-            orderId: 2,
             shippingMethod: '黑貓宅急便',
             shippingStatus: '未出貨',
             shippingFee: 350
@@ -562,17 +561,16 @@ describe('# Order Request', () => {
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal("Cannot find this Order");
+            expect(res.body.message).to.equal('Cannot find this Order');
             done();
           });
       });
 
       it('should return 400 when no Order data is found', done => {
         request(app)
-          .put('/api/orders/1')
+          .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
-            orderId: 1,
             shippingMethod: '黑貓宅急便',
             shippingStatus: '未出貨',
             shippingFee: 350
@@ -593,7 +591,152 @@ describe('# Order Request', () => {
         this.getUser.restore();
         await db.User.destroy({ where: {}, truncate: true });
         await db.Order.destroy({ where: {}, truncate: true });
-      })
+      });
     });
-  })
+  });
+
+  context('# Delete Order', () => {
+    describe('When user request to delete order context', () => {
+      before(async () => {
+        let test1token;
+        this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 1 });
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.User.create({
+          name: 'test2',
+          email: 'test2@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.Order.create({
+          order_status: '訂單處理中',
+          shipping_status: '未出貨',
+          payment_status: '未付款',
+          total_amount: 300,
+          name: 'test1',
+          address: '測試路',
+          email: 'test1@example.com',
+          phone: '02-8888-8888',
+          UserId: 1
+        });
+        await db.Product.create({
+          name: 'test1Product',
+          cost: 300,
+          price: 400
+        });
+        await db.Product.create({
+          name: 'test2Product',
+          cost: 300,
+          price: 400
+        });
+        await db.Color.create({
+          name: 'black',
+          ProductId: 1
+        });
+        await db.Color.create({
+          name: 'black',
+          ProductId: 2
+        });
+        await db.Inventory.create({
+          quantity: 3,
+          ProductId: 1,
+          ColorId: 1
+        });
+        await db.Inventory.create({
+          quantity: 5,
+          ProductId: 2,
+          ColorId: 2
+        });
+        await db.OrderItem.create({
+          price: 150,
+          quantity: 3,
+          OrderId: 1,
+          ProductId: 1,
+          ColorId: 1
+        });
+        await db.OrderItem.create({
+          price: 150,
+          quantity: 3,
+          OrderId: 1,
+          ProductId: 2,
+          ColorId: 2
+        });
+      });
+
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test1token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 401 when malware request', done => {
+        request(app)
+          .delete('/api/orders/1/users/2')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(401)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Can not find any user data');
+            done();
+          });
+      });
+
+      it('should return 200 when delete order success', done => {
+        request(app)
+          .delete('/api/orders/1/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            db.Inventory.findAll().then(inventories => {
+              expect(res.body.status).to.equal('success');
+              expect(res.body.message).to.equal('Delete order success');
+              expect(inventories[0].quantity).to.equal(6);
+              expect(inventories[1].quantity).to.equal(8);
+              return done();
+            });
+          });
+      });
+
+      it('should return 400 when order is not exist', done => {
+        request(app)
+          .delete('/api/orders/1/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            db.Inventory.findAll().then(inventories => {
+              expect(res.body.status).to.equal('error');
+              expect(res.body.message).to.equal('Cannot find this order');
+              expect(inventories[0].quantity).to.equal(6);
+              expect(inventories[1].quantity).to.equal(8);
+              return done();
+            });
+          });
+      });
+
+      after(async () => {
+        this.getUser.restore();
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
+        await db.Order.destroy({ where: {}, truncate: true });
+        await db.OrderItem.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
 });

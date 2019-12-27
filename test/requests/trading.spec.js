@@ -60,29 +60,29 @@ describe('# Trading', () => {
     });
 
     describe('Request createMpgAesDecrypt', () => {
-        const data = {
-          MerchantID: 'test1test1', // 商店代號
-          RespondType: 'JSON', // 回傳格式
-          TimeStamp: Date.now(), // 時間戳記
-          Version: 1.5, // 串接程式版本
-          MerchantOrderNo: Date.now(), // 商店訂單編號
-          LoginType: 0, // 智付通會員
-          OrderComment: 'OrderComment', // 商店備註
-          Amt: 3700, // 訂單金額
-          ItemDesc: 1, // 產品名稱
-          Email: 'test1@example.com', // 付款人電子信箱
-          ReturnURL: 'http://localhost:3000/ReturnURL', // 支付完成返回商店網址
-          NotifyURL: 'http://localhost:3000/NotifyURL', // 支付通知網址/每期授權結果通知
-          ClientBackURL: 'http://localhost:3000/ClientBackURL' // 支付取消返回商店網址
-        };
-        const mpgAesEncrypt = trade.createMpgAesEncrypt(data);
-  
-        it('Should return Decrypt Data hex when we call the function', () => {
-          const data = trade.createMpgAesDecrypt(mpgAesEncrypt);
-          expect(data.includes('test1test1')).to.equal(true);
-          expect(data.includes('test1@example.com')).to.equal(true);
-        });
+      const data = {
+        MerchantID: 'test1test1', // 商店代號
+        RespondType: 'JSON', // 回傳格式
+        TimeStamp: Date.now(), // 時間戳記
+        Version: 1.5, // 串接程式版本
+        MerchantOrderNo: Date.now(), // 商店訂單編號
+        LoginType: 0, // 智付通會員
+        OrderComment: 'OrderComment', // 商店備註
+        Amt: 3700, // 訂單金額
+        ItemDesc: 1, // 產品名稱
+        Email: 'test1@example.com', // 付款人電子信箱
+        ReturnURL: 'http://localhost:3000/ReturnURL', // 支付完成返回商店網址
+        NotifyURL: 'http://localhost:3000/NotifyURL', // 支付通知網址/每期授權結果通知
+        ClientBackURL: 'http://localhost:3000/ClientBackURL' // 支付取消返回商店網址
+      };
+      const mpgAesEncrypt = trade.createMpgAesEncrypt(data);
+
+      it('Should return Decrypt Data hex when we call the function', () => {
+        const data = trade.createMpgAesDecrypt(mpgAesEncrypt);
+        expect(data.includes('test1test1')).to.equal(true);
+        expect(data.includes('test1@example.com')).to.equal(true);
       });
+    });
 
     describe('Request createMpgShaEncrypt', () => {
       const data = {
@@ -104,7 +104,9 @@ describe('# Trading', () => {
 
       it('Should return hash hex when we call the function', () => {
         const data = trade.createMpgShaEncrypt(mpgAesEncrypt);
-        expect(data).not.to.equal('D14C996FEE9D0A77DF0D3779178EA90700402CE7524C8F8AE655E9DB964F156D');
+        expect(data).not.to.equal(
+          'D14C996FEE9D0A77DF0D3779178EA90700402CE7524C8F8AE655E9DB964F156D'
+        );
       });
     });
 
