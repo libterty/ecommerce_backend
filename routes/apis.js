@@ -101,7 +101,14 @@ router.get(
   authenticated,
   authenticatedAdmin,
   adminController.getOrders
-)
+);
+// test email function
+router.get(
+  '/admin/orders/test',
+  authenticated,
+  authenticatedAdmin,
+  adminController.testOrders
+);
 
 router.post('/signin', userControlloer.signIn);
 router.post('/signup', userControlloer.signUp);

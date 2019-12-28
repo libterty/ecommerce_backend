@@ -968,8 +968,8 @@ describe('# Admin Request', () => {
         db.Order.findAll().then(orders => {
           expect(orders).not.to.equal(null);
           return done();
-        })
-      })
+        });
+      });
 
       it('should return 200 with orders data', done => {
         request(app)
@@ -980,8 +980,12 @@ describe('# Admin Request', () => {
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
             expect(res.body.orders[0].orderItems.length).to.equal(2);
-            expect(res.body.orders[0].orderItems[0].Color.name).to.equal('black');
-            expect(res.body.orders[0].orderItems[1].Color.name).to.equal('white');
+            expect(res.body.orders[0].orderItems[0].Color.name).to.equal(
+              'black'
+            );
+            expect(res.body.orders[0].orderItems[1].Color.name).to.equal(
+              'white'
+            );
             done();
           });
       });

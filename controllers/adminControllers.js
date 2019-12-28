@@ -11,6 +11,7 @@ const CartItem = db.CartItem;
 const Order = db.Order;
 const OrderItem = db.OrderItem;
 const Op = Sequelize.Op;
+const email = require('../util/email');
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 
 const adminController = {
@@ -337,20 +338,41 @@ const adminController = {
   getOrders: (req, res) => {
     return Order.findAll().then(async orders => {
       try {
-        let orderItems = await OrderItem.findAll({include: [Product, Color]}).then(items => items);
+        let orderItems = await OrderItem.findAll({
+          include: [Product, Color]
+        }).then(items => items);
         orderItems = orderItems.map(orderItem => ({ ...orderItem.dataValues }));
         orders = orders.map(order => ({
           ...order.dataValues,
-          orderItems: orderItems.filter(item => item.OrderId === order.dataValues.id)
-        }))
+          orderItems: orderItems.filter(
+            item => item.OrderId === order.dataValues.id
+          )
+        }));
         return res.status(200).json({ status: 'success', orders });
       } catch (error) {
-        return 
-          res
-            .status(500)
-            .json({ status: 'error', message: 'Something went wrong' });
+        return res
+          .status(500)
+          .json({ status: 'error', message: 'Something went wrong' });
       }
     });
+  },
+
+  testOrders: async (req, res) => {
+    try {
+      const buyerEmail = process.env.testEmail;
+      const emailSubject = `[Test 對與不對系統測試]：您的測試訂單已成功付款！`;
+      const emailContent = `<h4>測試使用者 你好</h4>
+                <p>您的訂單已成功付款，本次訂單金額為 ????? 元，若有任何問題，歡迎隨時與我們聯繫，感謝！</p>`;
+      await email.sendEmail(buyerEmail, emailSubject, emailContent);
+      return res
+        .status(200)
+        .json({ status: 'success', message: 'Send Email Success' });
+    } catch (error) {
+      console.log(error.message);
+      return res
+        .status(500)
+        .json({ status: 'error', message: 'Something went wrong' });
+    }
   }
 };
 
