@@ -4,6 +4,8 @@ node_js:
 - '10'
 services:
 - mysql
+env:
+- NODE_ENV=test
 before_install:
 - openssl aes-256-cbc -K $encrypted_7f5915ae251c_key -iv $encrypted_7f5915ae251c_iv
   -in super_secret.txt.enc -out super_secret.txt -d
