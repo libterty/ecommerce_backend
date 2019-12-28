@@ -7,8 +7,7 @@ services:
 env:
 - NODE_ENV=test
 before_install:
-- openssl aes-256-cbc -K $encrypted_7f5915ae251c_key -iv $encrypted_7f5915ae251c_iv
-  -in super_secret.txt.enc -out super_secret.txt -d
+- openssl aes-256-cbc -K $encrypted_7f5915ae251c_key -iv $encrypted_7f5915ae251c_iv -in super_secret.txt.enc -out super_secret.txt -d
 - npm install
 - mysql -e 'CREATE DATABASE IF NOT EXISTS ec_web_test default character set utf8mb4
   collate utf8mb4_unicode_ci;'
