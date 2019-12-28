@@ -109,6 +109,19 @@ router.get(
   authenticatedAdmin,
   adminController.testOrders
 );
+router.get(
+  '/admin/shippings',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getShippings
+);
+router.put(
+  '/admin/shippings/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.putShippings
+);
+
 
 router.post('/signin', userControlloer.signIn);
 router.post('/signup', userControlloer.signUp);

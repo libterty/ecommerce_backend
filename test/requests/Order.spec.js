@@ -566,7 +566,7 @@ describe('# Order Request', () => {
           });
       });
 
-      it('should return 400 when no Order data is found', done => {
+      it('should return 200 when Order data is found', done => {
         request(app)
           .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)

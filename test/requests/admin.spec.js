@@ -999,4 +999,207 @@ describe('# Admin Request', () => {
       });
     });
   });
+
+  context('# Get All Shippings', () => {
+    describe('When admin request to get all Shippings', () => {
+      before(async () => {
+        let test1token, test2token;
+        await db.Shipping.destroy({ where: {}, truncate: true });
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+        await db.User.create({
+          name: 'test2',
+          email: 'test2@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.Order.create({
+          order_status: '訂單處理中',
+          shipping_status: '未出貨',
+          payment_status: '未付款',
+          total_amount: 300,
+          name: 'test1',
+          address: '測試路',
+          email: 'test1@example.com',
+          phone: '02-8888-8888',
+          UserId: 1
+        });
+      });
+
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test1token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 200 and test2 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test2@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test2token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 404 when non shipping data is find', done => {
+        request(app)
+          .get('/api/admin/shippings')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(404)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("Cannot find shippings");
+            done();
+          });
+      });
+
+      it('should return 200 when Order data is found', done => {
+        request(app)
+          .put('/api/orders/1/users/2')
+          .set('Authorization', 'bearer ' + test2token)
+          .send({
+            shippingMethod: '黑貓宅急便',
+            shippingStatus: '未出貨',
+            shippingFee: 350
+          })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            db.Order.findByPk(1).then(order => {
+              expect(res.body.status).to.equal('success');
+              expect(res.body.message).to.equal('Update order success');
+              expect(order.total_amount).to.equal(650);
+              return done();
+            });
+          });
+      });
+
+      it('should return 200 when shipping data is find', done => {
+        request(app)
+          .get('/api/admin/shippings')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.shippings).not.to.equal(undefined);
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Order.destroy({ where: {}, truncate: true });
+        await db.Shipping.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
+
+  context('# Put Shippings', () => {
+    describe('When admin request to change shipping status', () => {
+      before(async () => {
+        let test1token;
+        await db.Shipping.destroy({ where: {}, truncate: true });
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+        await db.Shipping.create({
+          shipping_method: '黑貓宅急便',
+          shipping_status: '未出貨',
+          shipping_fee: 350,
+          name: 'test1',
+          email: process.env.testEmail,
+          address: '測試',
+          phone: '02-8888-8888',
+          OrderId: 1
+        });
+      });
+
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test1token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 400 and when no shipping status is provided', done => {
+        request(app)
+          .put('/api/admin/shippings/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .send({})
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("required fields didn't exist");
+            done();
+          });
+      });
+
+      it('should return 400 and when wrong shipping status is provided', done => {
+        request(app)
+          .put('/api/admin/shippings/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .send({
+            shippingStatus: '未出貨'
+          })
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("required fields didn't exist");
+            done();
+          });
+      });
+
+      it('should return 200 and when shipping status is updated', done => {
+        request(app)
+          .put('/api/admin/shippings/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .send({
+            shippingStatus: '出貨中'
+          })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal("Update shipping status success");
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Shipping.destroy({ where: {}, truncate: true });
+      })
+    });
+  });
 });
