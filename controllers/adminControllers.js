@@ -405,7 +405,7 @@ const adminController = {
         const buyerEmail = shipping.email;
         const emailSubject = `[傢俱網 物流狀態通知]：您的訂單 #${shipping.OrderId} 已更新物流狀態！`;
         const emailContent = `<h4>${shipping.name} 使用者 你好</h4>
-                  <p>您的訂單 #${shipping.OrderId} 已更新物流狀態到 ${shipping.shipping_status}，若有任何問題，歡迎隨時與我們聯繫，感謝！</p>`;
+                  <p>您的訂單 #${shipping.OrderId} 已更新物流狀態，若有任何問題，歡迎隨時與我們聯繫，感謝！</p>`;
         await shipping.update({
           shipping_status: shippingStatus,
           updatedAt: new Date()
