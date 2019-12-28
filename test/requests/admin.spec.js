@@ -893,4 +893,106 @@ describe('# Admin Request', () => {
       });
     });
   });
+
+  context('# Get All orders', () => {
+    describe('When admin request to get all orders data', () => {
+      before(async () => {
+        let token;
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+        await db.Product.create({
+          name: 'test1Item',
+          description: 'description',
+          cost: 300,
+          price: 3000,
+          height: 30,
+          width: 30,
+          length: 30,
+          weight: 15,
+          material: '測試'
+        });
+        await db.Color.create({
+          name: 'black',
+          ProductId: 1
+        });
+        await db.Color.create({
+          name: 'white',
+          ProductId: 1
+        });
+        await db.Order.create({
+          order_status: '訂單處理中',
+          shipping_status: '未出貨',
+          payment_status: '未付款',
+          total_amount: 18000,
+          name: 'test1',
+          address: '測試路',
+          email: 'test1@example.com',
+          phone: '02-8888-8888',
+          UserId: 1
+        });
+        await db.OrderItem.create({
+          price: 3000,
+          quantity: 3,
+          OrderId: 1,
+          ProductId: 1,
+          ColorId: 1
+        });
+        await db.OrderItem.create({
+          price: 3000,
+          quantity: 3,
+          OrderId: 1,
+          ProductId: 1,
+          ColorId: 2
+        });
+      });
+
+      it('should return 200 with admintoken', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            token = res.body.token;
+            done();
+          });
+      });
+
+      it('should have one order in db', done => {
+        db.Order.findAll().then(orders => {
+          expect(orders).not.to.equal(null);
+          return done();
+        })
+      })
+
+      it('should return 200 with orders data', done => {
+        request(app)
+          .get('/api/admin/orders')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.orders[0].orderItems.length).to.equal(2);
+            expect(res.body.orders[0].orderItems[0].Color.name).to.equal('black');
+            expect(res.body.orders[0].orderItems[1].Color.name).to.equal('white');
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Product.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
+        await db.Order.destroy({ where: {}, truncate: true });
+        await db.OrderItem.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
 });

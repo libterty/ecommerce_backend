@@ -96,6 +96,12 @@ router.delete(
   authenticatedAdmin,
   adminController.deleteProduct
 );
+router.get(
+  '/admin/orders',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getOrders
+)
 
 router.post('/signin', userControlloer.signIn);
 router.post('/signup', userControlloer.signUp);

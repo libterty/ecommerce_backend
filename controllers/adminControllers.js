@@ -6,6 +6,10 @@ const Image = db.Image;
 const Color = db.Color;
 const Inventory = db.Inventory;
 const Category = db.Category;
+const Cart = db.Cart;
+const CartItem = db.CartItem;
+const Order = db.Order;
+const OrderItem = db.OrderItem;
 const Op = Sequelize.Op;
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 
@@ -326,6 +330,25 @@ const adminController = {
         return res
           .status(400)
           .json({ status: 'error', message: 'nothing to delete' });
+      }
+    });
+  },
+
+  getOrders: (req, res) => {
+    return Order.findAll().then(async orders => {
+      try {
+        let orderItems = await OrderItem.findAll({include: [Product, Color]}).then(items => items);
+        orderItems = orderItems.map(orderItem => ({ ...orderItem.dataValues }));
+        orders = orders.map(order => ({
+          ...order.dataValues,
+          orderItems: orderItems.filter(item => item.OrderId === order.dataValues.id)
+        }))
+        return res.status(200).json({ status: 'success', orders });
+      } catch (error) {
+        return 
+          res
+            .status(500)
+            .json({ status: 'error', message: 'Something went wrong' });
       }
     });
   }
