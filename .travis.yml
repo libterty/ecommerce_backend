@@ -4,9 +4,9 @@ node_js:
 - '10'
 services:
 - mysql
-env:
-  secure: dbdHaf00C4yG+enK8VaCYn0obRXdqcSBZYh+6K6JloLbJwmPucsnyLpyG9wMOSix6lNb8e5l9kwEK6vg236pGNVYR1l6cnYvr0v4pJ/5GXer3aV9wQ8DK552Zkcn2+Di6u+0V+d7J3BBlgXfGV2p3deuiLFMBxkVmfc72bJqiC5cREkPP90Zk8AhdlRgu36Nqdc05EUFqCDFsoDgDl1HVRvksb3KbWkxPAei2gQNR+qyrvLVGt7uwuNjkMjqYfQ0oh+sBoxauXI7fCfHA3wNHHnyAsakBsvXphoqcOILkqQ65yQoeIBFJ2Mx1+AxIOmGucOdwo3/cLn2a3E7JnOd7wYdrBvgzyYOOCho8RBXDjr0n3euCR5Iy7i9YFDVQ+o4kQwQJQVWSexoaH924XZwwwWeMo9wWqzH3t3fGdJXjDPE0sYxNPm9pVq0Wk9NX9Fu/69giu+ZlelpCTJXBN9fHjoeatelg8Oc4c99l2gzNLwM4Ckru7thjCEDpNQQSsgTtoTt/+UeRyx+kyduVjgAPLwCsinH5ITq51O8sq6Eti5VUX2c38oWJZca4gb4x3vNG8uQopZT1r91FKvwET2/dHf/HhKFrpWTs2B/FQyYDcaTjgDc5CX2DZGI3rqdvEBi9ZRi2eA+qxVtIk3S5FlmhaqAAFv3SY0L3TbTbsBpicc=
 before_install:
+- openssl aes-256-cbc -K $encrypted_7f5915ae251c_key -iv $encrypted_7f5915ae251c_iv
+  -in super_secret.txt.enc -out super_secret.txt -d
 - npm install
 - mysql -e 'CREATE DATABASE IF NOT EXISTS ec_web_test default character set utf8mb4
   collate utf8mb4_unicode_ci;'
