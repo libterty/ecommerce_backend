@@ -291,7 +291,6 @@ const adminController = {
         });
     });
   },
-
   posttImageForProduct: (req, res) => {
     const { file } = req;
     if (file) {

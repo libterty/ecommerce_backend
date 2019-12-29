@@ -145,8 +145,8 @@ describe('# Product request', () => {
           price: 3000,
           CategoryId: 2
         });
-        await db.Category.create({ name: 'test1' })
-        await db.Category.create({ name: 'test2' })
+        await db.Category.create({ name: 'test1' });
+        await db.Category.create({ name: 'test2' });
       });
 
       it('When Visit Pagination without any query', done => {
@@ -160,7 +160,7 @@ describe('# Product request', () => {
             expect(res.body.page).to.equal(1);
             done();
           });
-      })
+      });
 
       it('When Visit Pagination with querying category', done => {
         request(app)
@@ -173,7 +173,7 @@ describe('# Product request', () => {
             expect(res.body.page).to.equal(1);
             done();
           });
-      })
+      });
 
       it('When Visit Pagination with querying page', done => {
         request(app)
@@ -186,7 +186,7 @@ describe('# Product request', () => {
             expect(res.body.page).to.equal(2);
             done();
           });
-      })
+      });
 
       after(async () => {
         await db.Product.destroy({ where: {}, truncate: true });
@@ -226,10 +226,12 @@ describe('# Product request', () => {
               expect(res.body.product.name).to.equal('Product1 Test');
               expect(res.body.Images[0].url).to.equal('test1.jpg');
               expect(res.body.Colors[0].name).to.equal('Yellow');
-              expect(res.body.product.viewCounts + 1).to.equal(product.dataValues.viewCounts);
+              expect(res.body.product.viewCounts + 1).to.equal(
+                product.dataValues.viewCounts
+              );
               expect(res.body.Colors[0].Inventory.quantity).to.equal(23);
               return done();
-            })
+            });
           });
       });
 

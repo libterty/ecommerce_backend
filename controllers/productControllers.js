@@ -89,13 +89,11 @@ const productController = {
             item => item.id == color.id
           )
         }));
-        product
-          .increment('viewCounts')
-          .then(product => {
-            return res
-              .status(200)
-              .json({ status: 'success', product, Images, Colors });
-          })
+        product.increment('viewCounts').then(product => {
+          return res
+            .status(200)
+            .json({ status: 'success', product, Images, Colors });
+        });
       } else {
         return res
           .status(400)

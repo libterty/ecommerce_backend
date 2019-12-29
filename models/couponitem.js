@@ -14,6 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  CouponItem.associate = function(models) {};
+  CouponItem.associate = function(models) {
+    CouponItem.belongsTo(models.Coupon);
+  };
   return CouponItem;
 };

@@ -18,3 +18,5 @@ temp/
 # Dependency directories
 node_modules/
 
+# Secure Key
+super_secret.txt

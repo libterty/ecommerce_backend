@@ -4,8 +4,10 @@ const router = express.Router();
 
 const cartController = require('../controllers/cartControllers');
 const productController = require('../controllers/productControllers');
-const userControlloer = require('../controllers/userControllers');
+const userController = require('../controllers/userControllers');
 const adminController = require('../controllers/adminControllers');
+const adminCouponController = require('../controllers/adminCouponController');
+const userCouponController = require('../controllers/userCouponController');
 const passport = require('../config/passport');
 const helpers = require('../_helpers');
 const authenticated = passport.authenticate('jwt', { session: false });
@@ -96,8 +98,8 @@ router.delete(
   adminController.deleteProduct
 );
 
-router.post('/signin', userControlloer.signIn);
-router.post('/signup', userControlloer.signUp);
+router.post('/signin', userController.signIn);
+router.post('/signup', userController.signUp);
 
 // cart
 router.get('/cart', cartController.getCart);
@@ -109,13 +111,50 @@ router.delete('/cart/:id', cartController.deleteCartItem);
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);
 router.get('/furnitures/:id', productController.getProduct);
+// user coupons
+router.get('/users/coupons/', authenticated, userCouponController.getCoupons);
 
-router.get('/users/:id', authenticated, userControlloer.getUserInfo);
+router.get('/users/:id', authenticated, userController.getUserInfo);
 router.put(
   '/users/:id',
   upload.single('avatar'),
   authenticated,
-  userControlloer.putUserInfo
+  userController.putUserInfo
 );
+
+// coupon
+// admin coupon
+router.post(
+  '/admin/coupons/',
+  authenticated,
+  authenticatedAdmin,
+  adminCouponController.addCoupon
+);
+router.get(
+  '/admin/coupons/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminCouponController.getCoupon
+);
+router.put(
+  '/admin/coupons/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminCouponController.editCoupon
+);
+router.delete(
+  '/admin/coupons/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminCouponController.deleteCoupon
+);
+router.get(
+  '/admin/coupons/',
+  authenticated,
+  authenticatedAdmin,
+  adminCouponController.getCoupons
+);
+
+// TODO: send user coupon
 
 module.exports = router;

@@ -33,10 +33,11 @@ describe('# User Model', () => {
   });
 
   context('associations', () => {
-    const [Order, Coupon] = ['Order', 'Coupon'];
+    const [Order, Coupon, CouponItem] = ['Order', 'Coupon', 'CouponItem'];
     before(() => {
       User.associate({ Order });
       User.associate({ Coupon });
+      User.associate({ CouponItem });
     });
 
     it('should have many orders', done => {
@@ -45,6 +46,10 @@ describe('# User Model', () => {
     });
     it('should belong to many coupons', done => {
       User.belongsToMany.should.have.been.calledWith(Coupon);
+      done();
+    });
+    it('should has many CouponItem', done => {
+      User.hasMany.should.have.been.calledWith(CouponItem);
       done();
     });
   });

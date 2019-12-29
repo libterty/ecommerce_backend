@@ -6,8 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       coupon_code: { type: DataTypes.STRING, allowNull: false },
       limited_usage: DataTypes.INTEGER,
       expire_date: DataTypes.DATE,
-      type: DataTypes.STRING,
-      percent: DataTypes.FLOAT
+      percent: DataTypes.INTEGER
     },
     {}
   );
