@@ -23,7 +23,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       percent: {
-        type: Sequelize.FLOAT
+        type: Sequelize.INTEGER
+      },
+      shipping_free: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

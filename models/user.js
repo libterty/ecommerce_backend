@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'UserId',
       as: 'coupons'
     });
+    User.hasMany(models.CouponItem);
   };
   return User;
 };

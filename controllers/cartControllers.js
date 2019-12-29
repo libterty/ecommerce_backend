@@ -89,7 +89,6 @@ const cartController = {
             ColorId: colorId
           }
         }).spread(function(cartItem, created) {
-          // console.log('cartItem before update', cartItem)
           return cartItem
             .update({
               quantity: (parseInt(cartItem.quantity) || 0) + 1,

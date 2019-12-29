@@ -21,6 +21,17 @@ describe('# CouponItem Model', () => {
     const couponItem = new CouponItem();
     ['UserId', 'CouponId'].forEach(checkPropertyExists(couponItem));
   });
+  context('associations', () => {
+    const [Coupon] = ['Coupon'];
+    before(() => {
+      CouponItem.associate({ Coupon });
+    });
+
+    it('should belong to many coupons', done => {
+      CouponItem.belongsTo.should.have.been.calledWith(Coupon);
+      done();
+    });
+  });
   context('action', () => {
     let data = null;
     it('create', done => {
