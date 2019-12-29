@@ -18,7 +18,7 @@ describe('# Coupon Model', () => {
 
   context('properties', () => {
     const coupon = new Coupon();
-    ['coupon_code', 'limited_usage', 'expire_date', 'type', 'percent'].forEach(
+    ['coupon_code', 'limited_usage', 'expire_date', 'percent'].forEach(
       checkPropertyExists(coupon)
     );
   });
