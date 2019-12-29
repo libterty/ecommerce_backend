@@ -66,6 +66,47 @@ const paymentController = {
         .status(500)
         .json({ status: 'error', message: 'Something went wrong' });
     }
+  },
+
+  spgatewayCallback: async (req, res) => {
+    const { TradeInfo } = req.body;
+
+    try {
+      console.log('tradeInfo', TradeInfo);
+      const data = JSON.parse(trade.createMpgAesDecrypt(TradeInfo));
+
+      const order = await Order.findOne({ where: { sn: data.Result.MerchantOrderNo } });
+      const shipping = await Shipping.findOne({ where: { sn: data.Result.MerchantOrderNo } });
+      const payment = await Payment.findOne({ where: { sn: data.Result.MerchantOrderNo } });
+
+      // Please redirect in Front-end either order is success or fail
+      if (data.Status === 'SUCCESS') {
+        await order.update({
+          payment_status: '已付款'
+        });
+        await shipping.update({
+          shipping_status: '出貨中'
+        })
+        await payment.update({
+          params: JSON.stringify(data),
+          payment_method: data.Result.PaymentType,
+          payment_status: '已付款'
+        })
+
+        return res.status(200).json({ status: 'success', message: 'Payment proceed success' });
+      } else if (data.Status === 'MPG03009') {
+        await payment.update({
+          payment_status: '付款失敗'
+        })
+
+        return res.status(400).json({ status: 'error', message: 'Payment proceed fail' });
+      }
+    } catch (error) {
+      console.log(error.message);
+      return res
+        .status(500)
+        .json({ status: 'error', message: 'Something went wrong' });
+    }
   }
 };
 

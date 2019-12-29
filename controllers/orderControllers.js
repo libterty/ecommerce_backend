@@ -12,7 +12,7 @@ const Shipping = db.Shipping;
 const Op = Sequelize.Op;
 
 const orderController = {
-  createOrder: (req, res) => {
+  createOrder: async (req, res) => {
     const { CartId, UserId } = req.body;
 
     if (helpers.getUser(req).id !== Number(UserId)) {
@@ -25,6 +25,14 @@ const orderController = {
       return res
         .status(400)
         .json({ status: 'error', message: "required field didn't exist" });
+    }
+
+    const order = await Order.findAll({ where: { UserId, payment_status: '未付款' }});
+
+    if (order.length > 0) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "Please submit your order first before creating new one" });
     }
 
     return Cart.findByPk(CartId, {
@@ -104,19 +112,19 @@ const orderController = {
         .json({ status: 'error', message: 'Can not find any user data' });
     }
 
-    return Order.findAll({
+    return Order.findOne({
       include: [{ model: Product, as: 'items' }],
       where: {
         UserId: req.params.UserId,
         payment_status: '未付款'
       }
-    }).then(orders => {
-      if (orders && orders.length > 0) {
-        return res.status(200).json({ status: 'success', orders });
+    }).then(order => {
+      if (order) {
+        return res.status(200).json({ status: 'success', order });
       }
       return res
-        .status(200)
-        .json({ status: 'success', message: 'Nothing in your order list' });
+        .status(400)
+        .json({ status: 'error', message: 'Nothing in your order list' });
     });
   },
 

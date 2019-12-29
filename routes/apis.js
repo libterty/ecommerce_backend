@@ -154,6 +154,7 @@ router.get(
   authenticated,
   paymentController.createPayment
 );
+router.post('/spgateway/callback', paymentController.spgatewayCallback)
 
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);

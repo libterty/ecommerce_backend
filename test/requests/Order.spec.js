@@ -198,6 +198,23 @@ describe('# Order Request', () => {
           });
       });
 
+      it('should return 400 when User has already have order in list', done => {
+        request(app)
+          .post('/api/orders/create')
+          .set('Authorization', 'bearer ' + token)
+          .send({
+            CartId: 1,
+            UserId: 1
+          })
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Please submit your order first before creating new one');
+            done();
+          });
+      });
+
       after(async () => {
         this.getUser.restore();
         await db.User.destroy({ where: {}, truncate: true });
@@ -249,12 +266,6 @@ describe('# Order Request', () => {
           total_amount: 20000,
           name: 'test1',
           UserId: 1
-        });
-        await db.Order.create({
-          payment_status: '已付款',
-          total_amount: 30000,
-          name: 'test1',
-          UserId: 2
         });
         await db.OrderItem.create({
           price: 10000,
@@ -310,8 +321,7 @@ describe('# Order Request', () => {
               where: { OrderId: 1 }
             }).then(orders => {
               expect(res.body.status).to.equal('success');
-              expect(res.body.orders[0].total_amount).to.equal(20000);
-              expect(res.body.orders[0].items.length).to.equal(2);
+              expect(res.body.order.total_amount).to.equal(20000);
               return done();
             });
           });
@@ -404,9 +414,9 @@ describe('# Order Request', () => {
           .get('/api/orders/2')
           .set('Authorization', 'bearer ' + test2token)
           .set('Accept', 'application/json')
-          .expect(200)
+          .expect(400)
           .end((err, res) => {
-            expect(res.body.status).to.equal('success');
+            expect(res.body.status).to.equal('error');
             expect(res.body.message).to.equal('Nothing in your order list');
             done();
           });
