@@ -8,6 +8,7 @@ const userController = require('../controllers/userControllers');
 const adminController = require('../controllers/adminControllers');
 const adminCouponController = require('../controllers/adminCouponController');
 const userCouponController = require('../controllers/userCouponController');
+const orderController = require('../controllers/orderControllers');
 const passport = require('../config/passport');
 const helpers = require('../_helpers');
 const authenticated = passport.authenticate('jwt', { session: false });
@@ -97,6 +98,32 @@ router.delete(
   authenticatedAdmin,
   adminController.deleteProduct
 );
+router.get(
+  '/admin/orders',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getOrders
+);
+// test email function
+router.get(
+  '/admin/orders/test',
+  authenticated,
+  authenticatedAdmin,
+  adminController.testOrders
+);
+router.get(
+  '/admin/shippings',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getShippings
+);
+router.put(
+  '/admin/shippings/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.putShippings
+);
+
 
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
@@ -108,8 +135,25 @@ router.post('/cart/:id/add', cartController.addCartItem);
 router.post('/cart/:id/sub', cartController.subCartItem);
 router.delete('/cart/:id', cartController.deleteCartItem);
 
+router.post('/orders/create', authenticated, orderController.createOrder);
+// orderController.getOrder params are default for UserId
+router.get('/orders/:UserId', authenticated, orderController.getOrder);
+// orderController.putOrders params are default for OrderId and UserId
+router.put(
+  '/orders/:OrderId/users/:UserId',
+  authenticated,
+  orderController.putOrder
+);
+// orderController.deleteOrder params are default for OrderId and UserId
+router.delete(
+  '/orders/:OrderId/users/:UserId',
+  authenticated,
+  orderController.deleteOrder
+);
+
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);
+router.get('/furnitures/search', productController.searchProducts);
 router.get('/furnitures/:id', productController.getProduct);
 // user coupons
 router.get('/users/coupons/', authenticated, userCouponController.getCoupons);

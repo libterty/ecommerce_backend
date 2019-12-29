@@ -35,17 +35,19 @@ describe('# Order Model', () => {
   });
 
   context('associations', () => {
-    const [User, Shipping, Payment, Product] = [
+    const [User, Shipping, Payment, Product, OrderItem] = [
       'User',
       'Shipping',
       'Payment',
-      'Product'
+      'Product',
+      'OrderItem'
     ];
     before(() => {
       Order.associate({ User });
       Order.associate({ Shipping });
       Order.associate({ Payment });
       Order.associate({ Product });
+      Order.associate({ OrderItem });
     });
 
     it('should belong to one user', done => {
@@ -65,6 +67,11 @@ describe('# Order Model', () => {
 
     it('should belong to many products', done => {
       Order.belongsToMany.should.have.been.calledWith(Product);
+      done();
+    });
+
+    it('should have many OrderItem', done => {
+      Order.hasMany.should.have.been.calledWith(OrderItem);
       done();
     });
   });

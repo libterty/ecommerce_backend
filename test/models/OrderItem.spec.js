@@ -25,9 +25,23 @@ describe('# OrderItem Model', () => {
   });
 
   context('associations', () => {
+    const Order = 'Order';
+    const Product = 'Product';
     const Color = 'Color';
     before(() => {
+      OrderItem.associate({ Order });
+      OrderItem.associate({ Product });
       OrderItem.associate({ Color });
+    });
+
+    it('should belong to one Order', done => {
+      OrderItem.belongsTo.should.have.been.calledWith(Order);
+      done();
+    });
+
+    it('should belong to one Product', done => {
+      OrderItem.belongsTo.should.have.been.calledWith(Product);
+      done();
     });
 
     it('should belong to one color', done => {

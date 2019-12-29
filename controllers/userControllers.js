@@ -27,8 +27,7 @@ const userController = {
       });
     } else {
       User.findOne({
-        where: { email },
-        lock: Sequelize.Transaction.LOCK.SHARE
+        where: { email }
       }).then(user => {
         if (user) {
           return res.status(400).json({
@@ -61,8 +60,7 @@ const userController = {
     let password = req.body.password;
 
     User.findOne({
-      where: { email: username },
-      lock: Sequelize.Transaction.LOCK.SHARE
+      where: { email: username }
     }).then(user => {
       if (!user)
         return res.status(401).json({
@@ -141,9 +139,7 @@ const userController = {
       });
     }
 
-    return User.findByPk(req.params.id, {
-      lock: Sequelize.Transaction.LOCK.SHARE
-    }).then(user => {
+    return User.findByPk(req.params.id).then(user => {
       const { file } = req;
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID);

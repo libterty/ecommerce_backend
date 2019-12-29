@@ -40,7 +40,7 @@ const productController = {
     }
 
     Product.findAndCountAll({
-      inclue: Category,
+      include: [Category, Image],
       where: whereQuery,
       offset: offset,
       limit: pageLimit
@@ -99,6 +99,34 @@ const productController = {
           .status(400)
           .json({ status: 'error', message: 'Fail to find product' });
       }
+    });
+  },
+
+  searchProducts: (req, res) => {
+    const search = req.query.items;
+
+    if (!search) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "required fields didn't exist" });
+    }
+
+    return Product.findAll({
+      include: [Category, Image],
+      limit: 10,
+      where: {
+        name: {
+          [Op.substring]: search
+        }
+      }
+    }).then(products => {
+      if (products.length > 0) {
+        products = products.sort((a, b) => b.viewCounts - a.viewCounts);
+        return res.status(200).json({ status: 'success', products });
+      }
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Cannot find products' });
     });
   }
 };
