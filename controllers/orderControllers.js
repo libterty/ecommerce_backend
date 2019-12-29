@@ -171,14 +171,25 @@ const orderController = {
     return Order.findByPk(req.params.OrderId).then(async order => {
       if (order) {
         try {
-          await order.update({
-            total_amount: order.total_amount + shippingFee,
-            name: name ? name : order.name,
-            address: address ? address : order.address,
-            email: email ? email : order.email,
-            phone: phone ? phone : order.phone,
-            updatedAt: new Date()
-          });
+          if (order.total_amount > 3000) {
+            await order.update({
+              total_amount: order.total_amount,
+              name: name ? name : order.name,
+              address: address ? address : order.address,
+              email: email ? email : order.email,
+              phone: phone ? phone : order.phone,
+              updatedAt: new Date()
+            });
+          } else {
+            await order.update({
+              total_amount: order.total_amount + shippingFee,
+              name: name ? name : order.name,
+              address: address ? address : order.address,
+              email: email ? email : order.email,
+              phone: phone ? phone : order.phone,
+              updatedAt: new Date()
+            });
+          }
           await Shipping.create({
             shipping_method: shippingMethod,
             shipping_status: shippingStatus,

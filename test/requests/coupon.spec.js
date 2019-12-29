@@ -614,4 +614,137 @@ describe('# User Coupon Request', () => {
       });
     });
   });
+
+  context('# Get All Valid Coupons', () => {
+    describe('When User Visit Order Page', () => {
+      let token;
+      before(async () => {
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.Coupon.create({
+          id: 1,
+          coupon_code: 'HUGEDISCOUNT',
+          limited_usage: 1,
+          expire_date: '2020/03/20',
+          percent: 40
+        });
+        await db.Coupon.create({
+          id: 2,
+          coupon_code: 'BIGSELL',
+          limited_usage: 1,
+          expire_date: '2019/02/20',
+          percent: 20
+        });
+      });
+      
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 200 and get valid coupons', done => {
+        request(app)
+          .get('/api/orders/coupons')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.coupons.length).to.equal(1);
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Coupon.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
+
+  context('# Put Valid Coupons', () => {
+    describe('When User Request to use Coupons on Order Page', () => {
+      let token;
+      before(async () => {
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.Coupon.create({
+          id: 1,
+          coupon_code: 'HUGEDISCOUNT',
+          limited_usage: 1,
+          expire_date: '2020/03/20',
+          percent: 40
+        });
+        await db.Coupon.create({
+          id: 2,
+          coupon_code: 'BIGSELL',
+          limited_usage: 1,
+          expire_date: '2019/02/20',
+          percent: 20
+        });
+      });
+      
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 200 and use valid coupons', done => {
+        request(app)
+          .get('/api/orders/coupons/1')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal('Use coupon success');
+            done();
+          });
+      });
+
+      it('should return 404 when no valid coupons', done => {
+        request(app)
+          .get('/api/orders/coupons')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(404)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('No coupons available now');
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Coupon.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
 });

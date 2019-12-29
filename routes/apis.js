@@ -136,6 +136,8 @@ router.post('/cart/:id/add', cartController.addCartItem);
 router.post('/cart/:id/sub', cartController.subCartItem);
 router.delete('/cart/:id', cartController.deleteCartItem);
 
+router.get('/orders/coupons', authenticated, userCouponController.getValidCoupons);
+router.get('/orders/coupons/:id', authenticated, userCouponController.useValidCoupon);
 router.post('/orders/create', authenticated, orderController.createOrder);
 // orderController.getOrder params are default for UserId
 router.get('/orders/:UserId', authenticated, orderController.getOrder);
@@ -164,7 +166,7 @@ router.get('/furnitures/pagination', productController.getProducts);
 router.get('/furnitures/search', productController.searchProducts);
 router.get('/furnitures/:id', productController.getProduct);
 // user coupons
-router.get('/users/coupons/', authenticated, userCouponController.getCoupons);
+router.get('/users/coupons', authenticated, userCouponController.getCoupons);
 
 router.get('/users/:id', authenticated, userController.getUserInfo);
 router.put(
