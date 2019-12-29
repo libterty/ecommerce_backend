@@ -21,7 +21,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       total_amount: {
-        type: Sequelize.FLOAT
+        type: Sequelize.INTEGER
       },
       name: {
         type: Sequelize.STRING

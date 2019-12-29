@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       order_status: DataTypes.STRING,
       shipping_status: DataTypes.STRING,
       payment_status: DataTypes.STRING,
-      total_amount: DataTypes.FLOAT,
+      total_amount: DataTypes.INTEGER,
       name: DataTypes.STRING,
       address: DataTypes.STRING,
       email: DataTypes.STRING,
@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'OrderId',
       as: 'items'
     });
+    Order.hasMany(models.OrderItem);
   };
   return Order;
 };

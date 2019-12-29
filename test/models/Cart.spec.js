@@ -24,12 +24,19 @@ describe('# Cart Model', () => {
 
   context('associations', () => {
     const Product = 'Product';
+    const CartItem = 'CartItem';
     before(() => {
       Cart.associate({ Product });
+      Cart.associate({ CartItem });
     });
 
     it('should belong to many products', done => {
       Cart.belongsToMany.should.have.been.calledWith(Product);
+      done();
+    });
+
+    it('should has many CartItem', done => {
+      Cart.hasMany.should.have.been.calledWith(CartItem);
       done();
     });
   });

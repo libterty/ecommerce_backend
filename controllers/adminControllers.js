@@ -6,7 +6,13 @@ const Image = db.Image;
 const Color = db.Color;
 const Inventory = db.Inventory;
 const Category = db.Category;
+const Cart = db.Cart;
+const CartItem = db.CartItem;
+const Order = db.Order;
+const OrderItem = db.OrderItem;
+const Shipping = db.Shipping;
 const Op = Sequelize.Op;
+const email = require('../util/email');
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 
 const adminController = {
@@ -328,6 +334,92 @@ const adminController = {
           .json({ status: 'error', message: 'nothing to delete' });
       }
     });
+  },
+
+  getOrders: (req, res) => {
+    return Order.findAll().then(async orders => {
+      try {
+        let orderItems = await OrderItem.findAll({
+          include: [Product, Color]
+        }).then(items => items);
+        orderItems = orderItems.map(orderItem => ({ ...orderItem.dataValues }));
+        orders = orders.map(order => ({
+          ...order.dataValues,
+          orderItems: orderItems.filter(
+            item => item.OrderId === order.dataValues.id
+          )
+        }));
+        return res.status(200).json({ status: 'success', orders });
+      } catch (error) {
+        return res
+          .status(500)
+          .json({ status: 'error', message: 'Something went wrong' });
+      }
+    });
+  },
+
+  testOrders: async (req, res) => {
+    try {
+      const buyerEmail = process.env.testEmail;
+      const emailSubject = `[Test 對與不對系統測試]：您的測試訂單已成功付款！`;
+      const emailContent = `<h4>測試使用者 你好</h4>
+                <p>您的訂單已成功付款，本次訂單金額為 ????? 元，若有任何問題，歡迎隨時與我們聯繫，感謝！</p>`;
+      await email.sendEmail(buyerEmail, emailSubject, emailContent);
+      return res
+        .status(200)
+        .json({ status: 'success', message: 'Send Email Success' });
+    } catch (error) {
+      console.log(error.message);
+      return res
+        .status(500)
+        .json({ status: 'error', message: 'Something went wrong' });
+    }
+  },
+
+  getShippings: (req, res) => {
+    return Shipping.findAll().then(shippings => {
+      if (shippings.length > 0) {
+        shippings = shippings.map(item => ({ ...item.dataValues }));
+        return res.status(200).json({ status: 'success', shippings });
+      }
+      return res.status(404).json({ status: 'error', message: 'Cannot find shippings' });
+    })
+  },
+
+  putShippings: (req, res) => {
+    const { shippingStatus } = req.body;
+
+    if (!shippingStatus) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "required fields didn't exist" });
+    }
+    if (shippingStatus !== '出貨中' && shippingStatus !== '已送達') {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "required fields didn't exist" });
+    }
+
+    return Shipping.findByPk(req.params.id).then(async shipping => {
+      try {
+        const buyerEmail = shipping.email;
+        const emailSubject = `[傢俱網 物流狀態通知]：您的訂單 #${shipping.OrderId} 已更新物流狀態！`;
+        const emailContent = `<h4>${shipping.name} 使用者 你好</h4>
+                  <p>您的訂單 #${shipping.OrderId} 已更新物流狀態，若有任何問題，歡迎隨時與我們聯繫，感謝！</p>`;
+        await shipping.update({
+          shipping_status: shippingStatus,
+          updatedAt: new Date()
+        });
+        await email.sendEmail(buyerEmail, emailSubject, emailContent);
+
+        return res.status(200).json({ status: 'success', message: 'Update shipping status success' });
+      } catch (error) {
+        console.log(error.message);
+        return res
+          .status(500)
+          .json({ status: 'error', message: 'Something went wrong' });
+      }
+    })
   }
 };
 
