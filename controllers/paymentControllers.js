@@ -72,8 +72,9 @@ const paymentController = {
     const { TradeInfo } = req.body;
 
     try {
-      console.log('tradeInfo', TradeInfo);
+      // console.log('tradeInfo', TradeInfo);
       const data = JSON.parse(trade.createMpgAesDecrypt(TradeInfo));
+      // console.log('data', data);
 
       const order = await Order.findOne({ where: { sn: data.Result.MerchantOrderNo } });
       const shipping = await Shipping.findOne({ where: { sn: data.Result.MerchantOrderNo } });
@@ -104,7 +105,7 @@ const paymentController = {
     } catch (error) {
       console.log(error.message);
       return res
-        .status(500)
+        .status(401)
         .json({ status: 'error', message: 'Something went wrong' });
     }
   }

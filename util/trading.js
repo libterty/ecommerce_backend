@@ -37,15 +37,9 @@ class Trade {
       this.HashIV
     );
     decrypt.setAutoPadding(false);
-    console.log('Trdae', TradeInfo);
     const text = decrypt.update(TradeInfo, 'hex', 'utf8');
-    console.log('------------------------------------');
-    console.log('text', text);
     const plainText = text + decrypt.final('utf8');
-    console.log('------------------------------------');
-    console.log('plainText', plainText);
     let result = plainText.replace(/[\x00-\x20]+/g, '');
-    console.log('result', result);
     return result;
   }
 
@@ -60,9 +54,9 @@ class Trade {
   }
 
   getTradeInfo(Amt, Desc, email) {
-    console.log('===== getTradeInfo =====');
-    console.log(Amt, Desc, email);
-    console.log('==========');
+    // console.log('===== getTradeInfo =====');
+    // console.log(Amt, Desc, email);
+    // console.log('==========');
 
     const data = {
       MerchantID: this.MerchantID, // 商店代號
@@ -100,7 +94,7 @@ class Trade {
     };
 
     // console.log('===== getTradeInfo: tradeInfo =====')
-    console.log(tradeInfo)
+    // console.log(tradeInfo)
 
     return tradeInfo;
   }
