@@ -7,6 +7,7 @@ const productController = require('../controllers/productControllers');
 const userControlloer = require('../controllers/userControllers');
 const adminController = require('../controllers/adminControllers');
 const orderController = require('../controllers/orderControllers');
+const paymentController = require('../controllers/paymentControllers');
 const passport = require('../config/passport');
 const helpers = require('../_helpers');
 const authenticated = passport.authenticate('jwt', { session: false });
@@ -122,7 +123,6 @@ router.put(
   adminController.putShippings
 );
 
-
 router.post('/signin', userControlloer.signIn);
 router.post('/signup', userControlloer.signUp);
 
@@ -147,6 +147,12 @@ router.delete(
   '/orders/:OrderId/users/:UserId',
   authenticated,
   orderController.deleteOrder
+);
+
+router.get(
+  '/payments/:OrderId/users/:UserId',
+  authenticated,
+  paymentController.createPayment
 );
 
 router.get('/furnitures', productController.getHomePageProducts);

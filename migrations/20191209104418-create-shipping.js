@@ -9,7 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       sn: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       shipping_method: {
         type: Sequelize.STRING

@@ -1066,7 +1066,7 @@ describe('# Admin Request', () => {
           .expect(404)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal("Cannot find shippings");
+            expect(res.body.message).to.equal('Cannot find shippings');
             done();
           });
       });
@@ -1191,7 +1191,7 @@ describe('# Admin Request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
-            expect(res.body.message).to.equal("Update shipping status success");
+            expect(res.body.message).to.equal('Update shipping status success');
             done();
           });
       });
@@ -1199,7 +1199,7 @@ describe('# Admin Request', () => {
       after(async () => {
         await db.User.destroy({ where: {}, truncate: true });
         await db.Shipping.destroy({ where: {}, truncate: true });
-      })
+      });
     });
   });
 });

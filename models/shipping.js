@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Shipping = sequelize.define(
     'Shipping',
     {
-      sn: DataTypes.INTEGER,
+      sn: DataTypes.STRING,
       shipping_method: DataTypes.STRING,
       shipping_status: DataTypes.STRING,
       shipping_fee: DataTypes.INTEGER,
