@@ -124,7 +124,6 @@ router.put(
   adminController.putShippings
 );
 
-
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
 
