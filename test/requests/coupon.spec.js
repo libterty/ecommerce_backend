@@ -640,7 +640,7 @@ describe('# User Coupon Request', () => {
           percent: 20
         });
       });
-      
+
       it('should return 200 and test1 token', done => {
         request(app)
           .post('/api/signin')
@@ -700,7 +700,7 @@ describe('# User Coupon Request', () => {
           percent: 20
         });
       });
-      
+
       it('should return 200 and test1 token', done => {
         request(app)
           .post('/api/signin')

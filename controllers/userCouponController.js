@@ -49,16 +49,20 @@ const userCouponController = {
         coupons = coupons.map(coupon => ({ ...coupon.dataValues }));
         return res.status(200).json({ status: 'success', coupons });
       }
-      return res.status(404).json({ status: 'error', message: 'No coupons available now' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'No coupons available now' });
     });
   },
 
   useValidCoupon: (req, res) => {
     return Coupon.findByPk(req.params.id).then(coupon => {
       coupon.decrement('limited_usage').then(() => {
-        return res.status(200).json({ status: 'success', message: 'Use coupon success' });
-      })
-    })
+        return res
+          .status(200)
+          .json({ status: 'success', message: 'Use coupon success' });
+      });
+    });
   }
 };
 

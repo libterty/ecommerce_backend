@@ -125,7 +125,6 @@ router.put(
   adminController.putShippings
 );
 
-
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
 
@@ -136,8 +135,16 @@ router.post('/cart/:id/add', cartController.addCartItem);
 router.post('/cart/:id/sub', cartController.subCartItem);
 router.delete('/cart/:id', cartController.deleteCartItem);
 
-router.get('/orders/coupons', authenticated, userCouponController.getValidCoupons);
-router.get('/orders/coupons/:id', authenticated, userCouponController.useValidCoupon);
+router.get(
+  '/orders/coupons',
+  authenticated,
+  userCouponController.getValidCoupons
+);
+router.get(
+  '/orders/coupons/:id',
+  authenticated,
+  userCouponController.useValidCoupon
+);
 router.post('/orders/create', authenticated, orderController.createOrder);
 // orderController.getOrder params are default for UserId
 router.get('/orders/:UserId', authenticated, orderController.getOrder);
@@ -159,7 +166,7 @@ router.get(
   authenticated,
   paymentController.createPayment
 );
-router.post('/spgateway/callback',  paymentController.spgatewayCallback)
+router.post('/spgateway/callback', paymentController.spgatewayCallback);
 
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);

@@ -27,12 +27,15 @@ const orderController = {
         .json({ status: 'error', message: "required field didn't exist" });
     }
 
-    const order = await Order.findAll({ where: { UserId, payment_status: '未付款' }});
+    const order = await Order.findAll({
+      where: { UserId, payment_status: '未付款' }
+    });
 
     if (order.length > 0) {
-      return res
-        .status(400)
-        .json({ status: 'error', message: "Please submit your order first before creating new one" });
+      return res.status(400).json({
+        status: 'error',
+        message: 'Please submit your order first before creating new one'
+      });
     }
 
     return Cart.findByPk(CartId, {

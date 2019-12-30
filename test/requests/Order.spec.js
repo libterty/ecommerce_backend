@@ -210,7 +210,9 @@ describe('# Order Request', () => {
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal('Please submit your order first before creating new one');
+            expect(res.body.message).to.equal(
+              'Please submit your order first before creating new one'
+            );
             done();
           });
       });

@@ -76,9 +76,15 @@ const paymentController = {
       const data = JSON.parse(trade.createMpgAesDecrypt(TradeInfo));
       // console.log('data', data);
 
-      const order = await Order.findOne({ where: { sn: data.Result.MerchantOrderNo } });
-      const shipping = await Shipping.findOne({ where: { sn: data.Result.MerchantOrderNo } });
-      const payment = await Payment.findOne({ where: { sn: data.Result.MerchantOrderNo } });
+      const order = await Order.findOne({
+        where: { sn: data.Result.MerchantOrderNo }
+      });
+      const shipping = await Shipping.findOne({
+        where: { sn: data.Result.MerchantOrderNo }
+      });
+      const payment = await Payment.findOne({
+        where: { sn: data.Result.MerchantOrderNo }
+      });
 
       // Please redirect in Front-end either order is success or fail
       if (data.Status === 'SUCCESS') {
@@ -87,20 +93,24 @@ const paymentController = {
         });
         await shipping.update({
           shipping_status: '出貨中'
-        })
+        });
         await payment.update({
           params: JSON.stringify(data),
           payment_method: data.Result.PaymentType,
           payment_status: '已付款'
-        })
+        });
 
-        return res.status(200).json({ status: 'success', message: 'Payment proceed success' });
+        return res
+          .status(200)
+          .json({ status: 'success', message: 'Payment proceed success' });
       } else if (data.Status === 'MPG03009') {
         await payment.update({
           payment_status: '付款失敗'
-        })
+        });
 
-        return res.status(400).json({ status: 'error', message: 'Payment proceed fail' });
+        return res
+          .status(400)
+          .json({ status: 'error', message: 'Payment proceed fail' });
       }
     } catch (error) {
       console.log(error.message);
