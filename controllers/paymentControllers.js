@@ -61,7 +61,6 @@ const paymentController = {
         paymentInfo
       });
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json({ status: 'error', message: 'Something went wrong' });
@@ -113,7 +112,6 @@ const paymentController = {
           .json({ status: 'error', message: 'Payment proceed fail' });
       }
     } catch (error) {
-      console.log(error.message);
       return res
         .status(401)
         .json({ status: 'error', message: 'Something went wrong' });

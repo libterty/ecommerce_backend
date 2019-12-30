@@ -462,6 +462,17 @@ describe('# Order Request', () => {
           phone: '02-8888-8888',
           UserId: 1
         });
+        await db.Order.create({
+          order_status: '訂單處理中',
+          shipping_status: '未出貨',
+          payment_status: '未付款',
+          total_amount: 3001,
+          name: 'test1',
+          address: '測試路',
+          email: 'test1@example.com',
+          phone: '02-8888-8888',
+          UserId: 1
+        });
       });
 
       it('should return 200 and test1 token', done => {
@@ -562,7 +573,7 @@ describe('# Order Request', () => {
 
       it('should return 400 when no Order data is found', done => {
         request(app)
-          .put('/api/orders/2/users/1')
+          .put('/api/orders/3/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
             shippingMethod: '黑貓宅急便',
@@ -578,7 +589,7 @@ describe('# Order Request', () => {
           });
       });
 
-      it('should return 200 when Order data is found', done => {
+      it('should return 200 when Order data is found and need to add shipping fee', done => {
         request(app)
           .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
@@ -594,6 +605,27 @@ describe('# Order Request', () => {
               expect(res.body.status).to.equal('success');
               expect(res.body.message).to.equal('Update order success');
               expect(order.total_amount).to.equal(650);
+              return done();
+            });
+          });
+      });
+
+      it('should return 200 when Order data is found but no need to add shipping fee', done => {
+        request(app)
+          .put('/api/orders/2/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .send({
+            shippingMethod: '黑貓宅急便',
+            shippingStatus: '未出貨',
+            shippingFee: 350
+          })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            db.Order.findByPk(2).then(order => {
+              expect(res.body.status).to.equal('success');
+              expect(res.body.message).to.equal('Update order success');
+              expect(order.total_amount).to.equal(3001);
               return done();
             });
           });

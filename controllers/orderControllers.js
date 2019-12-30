@@ -207,7 +207,6 @@ const orderController = {
             .status(200)
             .json({ status: 'success', message: 'Update order success' });
         } catch (error) {
-          console.log(error);
           return res
             .status(500)
             .json({ status: 'error', message: 'Something went wrong' });

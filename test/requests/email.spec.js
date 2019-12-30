@@ -19,6 +19,18 @@ describe('# Email', () => {
           password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
           admin: true
         });
+        await db.Order.create({
+          sn: '',
+          order_status: '訂單處理中',
+          shipping_status: '未出貨',
+          payment_status: '未付款',
+          total_amount: 300,
+          name: 'test1',
+          address: '測試路',
+          email: 'test1@example.com',
+          phone: '02-8888-8888',
+          UserId: 1
+        });
       });
 
       it('should return 200 with admintoken', done => {
@@ -38,7 +50,7 @@ describe('# Email', () => {
 
       it('should return 200 and without fail', done => {
         request(app)
-          .get('/api/admin/orders/test')
+          .get('/api/admin/orders/notify/1')
           .set('Authorization', 'bearer ' + token)
           .set('Accept', 'application/json')
           .expect(200)
@@ -51,6 +63,7 @@ describe('# Email', () => {
 
       after(async () => {
         await db.User.destroy({ where: {}, truncate: true });
+        await db.Order.destroy({ where: {}, truncate: true });
       });
     });
   });

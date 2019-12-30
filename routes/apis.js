@@ -105,12 +105,12 @@ router.get(
   authenticatedAdmin,
   adminController.getOrders
 );
-// test email function
+// Notify email function
 router.get(
-  '/admin/orders/test',
+  '/admin/orders/notify/:OrderId',
   authenticated,
   authenticatedAdmin,
-  adminController.testOrders
+  adminController.notifyOrders
 );
 router.get(
   '/admin/shippings',

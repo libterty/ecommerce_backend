@@ -357,18 +357,20 @@ const adminController = {
     });
   },
 
-  testOrders: async (req, res) => {
+  notifyOrders: async (req, res) => {
     try {
-      const buyerEmail = process.env.testEmail;
-      const emailSubject = `[Test 對與不對系統測試]：您的測試訂單已成功付款！`;
-      const emailContent = `<h4>測試使用者 你好</h4>
-                <p>您的訂單已成功付款，本次訂單金額為 ????? 元，若有任何問題，歡迎隨時與我們聯繫，感謝！</p>`;
+      const order = await Order.findByPk(req.params.OrderId, {});
+
+      const buyerEmail = order.email;
+      const emailSubject = `[傢俱網 訂單狀態通知]：您的訂單尚未付款！`;
+      const emailContent = `<h4>${order.name}使用者 你好</h4>
+                <p>您的訂單目前尚未付款，請記得付款。
+                若有任何問題，歡迎隨時與我們聯繫，感謝！</p>`;
       await email.sendEmail(buyerEmail, emailSubject, emailContent);
       return res
         .status(200)
         .json({ status: 'success', message: 'Send Email Success' });
     } catch (error) {
-      console.log(error.message);
       return res
         .status(500)
         .json({ status: 'error', message: 'Something went wrong' });
@@ -418,7 +420,6 @@ const adminController = {
           message: 'Update shipping status success'
         });
       } catch (error) {
-        console.log(error.message);
         return res
           .status(500)
           .json({ status: 'error', message: 'Something went wrong' });
