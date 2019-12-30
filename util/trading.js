@@ -39,7 +39,6 @@ class Trade {
     decrypt.setAutoPadding(false);
     const text = decrypt.update(TradeInfo, 'hex', 'utf8');
     const plainText = text + decrypt.final('utf8');
-    // eslint-disable-line
     let result = plainText.replace(/[\x00-\x20]+/g, '');
     return result;
   }
@@ -55,9 +54,9 @@ class Trade {
   }
 
   getTradeInfo(Amt, Desc, email) {
-    console.log('===== getTradeInfo =====');
-    console.log(Amt, Desc, email);
-    console.log('==========');
+    // console.log('===== getTradeInfo =====');
+    // console.log(Amt, Desc, email);
+    // console.log('==========');
 
     const data = {
       MerchantID: this.MerchantID, // 商店代號
