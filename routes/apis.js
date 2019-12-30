@@ -9,6 +9,7 @@ const adminController = require('../controllers/adminControllers');
 const adminCouponController = require('../controllers/adminCouponController');
 const userCouponController = require('../controllers/userCouponController');
 const orderController = require('../controllers/orderControllers');
+const paymentController = require('../controllers/paymentControllers');
 const passport = require('../config/passport');
 const helpers = require('../_helpers');
 const authenticated = passport.authenticate('jwt', { session: false });
@@ -124,7 +125,6 @@ router.put(
   adminController.putShippings
 );
 
-
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
 
@@ -135,6 +135,16 @@ router.post('/cart/:id/add', cartController.addCartItem);
 router.post('/cart/:id/sub', cartController.subCartItem);
 router.delete('/cart/:id', cartController.deleteCartItem);
 
+router.get(
+  '/orders/coupons',
+  authenticated,
+  userCouponController.getValidCoupons
+);
+router.get(
+  '/orders/coupons/:id',
+  authenticated,
+  userCouponController.useValidCoupon
+);
 router.post('/orders/create', authenticated, orderController.createOrder);
 // orderController.getOrder params are default for UserId
 router.get('/orders/:UserId', authenticated, orderController.getOrder);
@@ -151,12 +161,19 @@ router.delete(
   orderController.deleteOrder
 );
 
+router.get(
+  '/payments/:OrderId/users/:UserId',
+  authenticated,
+  paymentController.createPayment
+);
+router.post('/spgateway/callback', paymentController.spgatewayCallback);
+
 router.get('/furnitures', productController.getHomePageProducts);
 router.get('/furnitures/pagination', productController.getProducts);
 router.get('/furnitures/search', productController.searchProducts);
 router.get('/furnitures/:id', productController.getProduct);
 // user coupons
-router.get('/users/coupons/', authenticated, userCouponController.getCoupons);
+router.get('/users/coupons', authenticated, userCouponController.getCoupons);
 
 router.get('/users/:id', authenticated, userController.getUserInfo);
 router.put(

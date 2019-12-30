@@ -30,7 +30,7 @@ module.exports = {
       {
         coupon_code: 'EIDL01',
         limited_usage: null,
-        expire_date: new Date('2020/02/30'),
+        expire_date: new Date('2019/09/30'),
         percent: 95,
         createdAt: new Date(),
         updatedAt: new Date()

@@ -9,10 +9,13 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       sn: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       params: {
         type: Sequelize.TEXT
+      },
+      total_amount: {
+        type: Sequelize.INTEGER
       },
       payment_method: {
         type: Sequelize.STRING

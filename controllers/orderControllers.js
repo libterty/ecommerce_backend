@@ -12,7 +12,7 @@ const Shipping = db.Shipping;
 const Op = Sequelize.Op;
 
 const orderController = {
-  createOrder: (req, res) => {
+  createOrder: async (req, res) => {
     const { CartId, UserId } = req.body;
 
     if (helpers.getUser(req).id !== Number(UserId)) {
@@ -25,6 +25,17 @@ const orderController = {
       return res
         .status(400)
         .json({ status: 'error', message: "required field didn't exist" });
+    }
+
+    const order = await Order.findAll({
+      where: { UserId, payment_status: '未付款' }
+    });
+
+    if (order.length > 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Please submit your order first before creating new one'
+      });
     }
 
     return Cart.findByPk(CartId, {
@@ -104,19 +115,19 @@ const orderController = {
         .json({ status: 'error', message: 'Can not find any user data' });
     }
 
-    return Order.findAll({
+    return Order.findOne({
       include: [{ model: Product, as: 'items' }],
       where: {
         UserId: req.params.UserId,
         payment_status: '未付款'
       }
-    }).then(orders => {
-      if (orders && orders.length > 0) {
-        return res.status(200).json({ status: 'success', orders });
+    }).then(order => {
+      if (order) {
+        return res.status(200).json({ status: 'success', order });
       }
       return res
-        .status(200)
-        .json({ status: 'success', message: 'Nothing in your order list' });
+        .status(400)
+        .json({ status: 'error', message: 'Nothing in your order list' });
     });
   },
 
@@ -163,14 +174,25 @@ const orderController = {
     return Order.findByPk(req.params.OrderId).then(async order => {
       if (order) {
         try {
-          await order.update({
-            total_amount: order.total_amount + shippingFee,
-            name: name ? name : order.name,
-            address: address ? address : order.address,
-            email: email ? email : order.email,
-            phone: phone ? phone : order.phone,
-            updatedAt: new Date()
-          });
+          if (order.total_amount > 3000) {
+            await order.update({
+              total_amount: order.total_amount,
+              name: name ? name : order.name,
+              address: address ? address : order.address,
+              email: email ? email : order.email,
+              phone: phone ? phone : order.phone,
+              updatedAt: new Date()
+            });
+          } else {
+            await order.update({
+              total_amount: order.total_amount + shippingFee,
+              name: name ? name : order.name,
+              address: address ? address : order.address,
+              email: email ? email : order.email,
+              phone: phone ? phone : order.phone,
+              updatedAt: new Date()
+            });
+          }
           await Shipping.create({
             shipping_method: shippingMethod,
             shipping_status: shippingStatus,

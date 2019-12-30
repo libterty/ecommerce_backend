@@ -381,8 +381,10 @@ const adminController = {
         shippings = shippings.map(item => ({ ...item.dataValues }));
         return res.status(200).json({ status: 'success', shippings });
       }
-      return res.status(404).json({ status: 'error', message: 'Cannot find shippings' });
-    })
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Cannot find shippings' });
+    });
   },
 
   putShippings: (req, res) => {
@@ -411,14 +413,17 @@ const adminController = {
         });
         await email.sendEmail(buyerEmail, emailSubject, emailContent);
 
-        return res.status(200).json({ status: 'success', message: 'Update shipping status success' });
+        return res.status(200).json({
+          status: 'success',
+          message: 'Update shipping status success'
+        });
       } catch (error) {
         console.log(error.message);
         return res
           .status(500)
           .json({ status: 'error', message: 'Something went wrong' });
       }
-    })
+    });
   }
 };
 
