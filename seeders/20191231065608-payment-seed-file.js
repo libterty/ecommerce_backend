@@ -32,7 +32,7 @@ module.exports = {
         total_amount: 28500,
         payment_method: '信用卡',
         payment_status: '已付款',
-        paid_at: new Date('2019/05/08'),
+        paid_at: new Date('2019/04/18'),
         OrderId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
