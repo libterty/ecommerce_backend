@@ -11,6 +11,7 @@ const CartItem = db.CartItem;
 const Order = db.Order;
 const OrderItem = db.OrderItem;
 const Shipping = db.Shipping;
+const Payment = db.Payment;
 const Op = Sequelize.Op;
 const email = require('../util/email');
 const IMGUR_CLIENT_ID = process.env.imgur_id;
@@ -289,6 +290,7 @@ const adminController = {
         });
     });
   },
+
   posttImageForProduct: (req, res) => {
     const { file } = req;
     if (file) {
@@ -336,7 +338,11 @@ const adminController = {
   },
 
   getOrders: (req, res) => {
-    return Order.findAll().then(async orders => {
+    return Order.findAll({
+      where: {
+        payment_status: '未付款'
+      }
+    }).then(async orders => {
       try {
         let orderItems = await OrderItem.findAll({
           include: [Product, Color]
@@ -424,6 +430,14 @@ const adminController = {
           .status(500)
           .json({ status: 'error', message: 'Something went wrong' });
       }
+    });
+  },
+
+  getPayments: (req, res) => {
+    return Payment.findAll({
+      include: Order
+    }).then(payments => {
+      return res.status(200).json({ status: 'success', payments });
     });
   }
 };

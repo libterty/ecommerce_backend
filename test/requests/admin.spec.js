@@ -5,6 +5,7 @@ const request = require('supertest');
 const sinon = require('sinon');
 const app = require('../../index');
 const bcrypt = require('bcryptjs');
+const shortId = require('shortid');
 const should = chai.should();
 const expect = chai.expect;
 const db = require('../../models');
@@ -1199,6 +1200,76 @@ describe('# Admin Request', () => {
       after(async () => {
         await db.User.destroy({ where: {}, truncate: true });
         await db.Shipping.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
+
+  context('# Get All Payments', () => {
+    describe('When Admin request to get all payments', () => {
+      before(async () => {
+        let test1token;
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: true
+        });
+        await db.Order.create({
+          order_status: '訂單處理中',
+          shipping_status: '未出貨',
+          payment_status: '未付款',
+          total_amount: 19000,
+          name: 'test1',
+          address: '測試路',
+          email: 'test1@example.com',
+          phone: '02-8888-8888',
+          UserId: 1
+        });
+        await db.Payment.create({
+          sn: `${shortId.generate()}`,
+          params: `${shortId.generate()}`,
+          total_amount: 19000,
+          payment_method: '信用卡',
+          payment_status: '已付款',
+          paid_at: new Date('2019/05/09'),
+          OrderId: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+      });
+
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test1token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 200 and get payments data', done => {
+        request(app)
+          .get('/api/admin/payments')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.payments.length).to.equal(1);
+            expect(res.body.payments[0].total_amount).to.equal(19000);
+            done();
+          });
+      });
+
+      after(async () => {
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Order.destroy({ where: {}, truncate: true });
+        await db.Payment.destroy({ where: {}, truncate: true });
       });
     });
   });

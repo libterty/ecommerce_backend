@@ -124,6 +124,12 @@ router.put(
   authenticatedAdmin,
   adminController.putShippings
 );
+router.get(
+  '/admin/payments',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getPayments
+);
 
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
