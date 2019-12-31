@@ -7,7 +7,7 @@ module.exports = {
       {
         sn: `${shortId.generate()}`,
         params: `${shortId.generate()}`,
-        total_amount: 19000,
+        total_amount: 47500,
         payment_method: '信用卡',
         payment_status: '尚未付款',
         paid_at: null,
@@ -29,7 +29,7 @@ module.exports = {
       {
         sn: `${shortId.generate()}`,
         params: `${shortId.generate()}`,
-        total_amount: 19000,
+        total_amount: 28500,
         payment_method: '信用卡',
         payment_status: '已付款',
         paid_at: new Date('2019/05/08'),
@@ -40,7 +40,7 @@ module.exports = {
       {
         sn: `${shortId.generate()}`,
         params: `${shortId.generate()}`,
-        total_amount: 19000,
+        total_amount: 66500,
         payment_method: '信用卡',
         payment_status: '已付款',
         paid_at: new Date('2019/05/09'),
@@ -62,7 +62,7 @@ module.exports = {
       {
         sn: `${shortId.generate()}`,
         params: `${shortId.generate()}`,
-        total_amount: 19000,
+        total_amount: 9500,
         payment_method: '信用卡',
         payment_status: '已付款',
         paid_at: new Date('2019/08/08'),
@@ -73,7 +73,7 @@ module.exports = {
       {
         sn: `${shortId.generate()}`,
         params: `${shortId.generate()}`,
-        total_amount: 19000,
+        total_amount: 9500,
         payment_method: '信用卡',
         payment_status: '已付款',
         paid_at: new Date('2019/09/08'),

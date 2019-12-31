@@ -5,7 +5,7 @@ module.exports = {
     return queryInterface.bulkInsert('OrderItems', [
       {
         price: 9500,
-        quantity: 1,
+        quantity: 3,
         OrderId: 1,
         ProductId: 1,
         ColorId: 1,
@@ -14,7 +14,7 @@ module.exports = {
       },
       {
         price: 9500,
-        quantity: 1,
+        quantity: 2,
         OrderId: 1,
         ProductId: 1,
         ColorId: 2,
@@ -50,7 +50,7 @@ module.exports = {
       },
       {
         price: 9500,
-        quantity: 1,
+        quantity: 2,
         OrderId: 3,
         ProductId: 1,
         ColorId: 2,
@@ -59,7 +59,7 @@ module.exports = {
       },
       {
         price: 9500,
-        quantity: 1,
+        quantity: 7,
         OrderId: 4,
         ProductId: 1,
         ColorId: 1,
@@ -68,7 +68,7 @@ module.exports = {
       },
       {
         price: 9500,
-        quantity: 1,
+        quantity: 2,
         OrderId: 5,
         ProductId: 1,
         ColorId: 2,
