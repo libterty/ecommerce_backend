@@ -434,9 +434,7 @@ const adminController = {
   },
 
   getPayments: (req, res) => {
-    return Payment.findAll({
-      include: Order
-    }).then(payments => {
+    return Order.findAll().then(payments => {
       return res.status(200).json({ status: 'success', payments });
     });
   }

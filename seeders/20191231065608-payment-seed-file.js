@@ -9,7 +9,7 @@ module.exports = {
         params: `${shortId.generate()}`,
         total_amount: 47500,
         payment_method: '信用卡',
-        payment_status: '尚未付款',
+        payment_status: '未付款',
         paid_at: null,
         OrderId: 1,
         createdAt: new Date(),

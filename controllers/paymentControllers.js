@@ -88,28 +88,27 @@ const paymentController = {
       // Please redirect in Front-end either order is success or fail
       if (data.Status === 'SUCCESS') {
         await order.update({
-          payment_status: '已付款'
+          order_status: '訂單已結案',
+          shipping_status: '出貨中',
+          payment_status: '已付款',
+          updatedAt: new Date()
         });
         await shipping.update({
-          shipping_status: '出貨中'
+          shipping_status: '出貨中',
+          updatedAt: new Date()
         });
         await payment.update({
           params: JSON.stringify(data),
           payment_method: data.Result.PaymentType,
-          payment_status: '已付款'
+          payment_status: '已付款',
+          updatedAt: new Date()
         });
-
-        return res
-          .status(200)
-          .json({ status: 'success', message: 'Payment proceed success' });
+        return res.redirect('http://localhost:8080/order');
       } else if (data.Status === 'MPG03009') {
         await payment.update({
           payment_status: '付款失敗'
         });
-
-        return res
-          .status(400)
-          .json({ status: 'error', message: 'Payment proceed fail' });
+        return res.redirect('http://localhost:8080/order');
       }
     } catch (error) {
       return res

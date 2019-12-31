@@ -31,8 +31,8 @@ module.exports = {
         phone: '08-8383-3838',
         invoice: `${shortId.generate()}`,
         UserId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date('2019/03/08'),
+        updatedAt: new Date('2019/03/08')
       },
       {
         sn: `${shortId.generate()}`,
@@ -46,8 +46,8 @@ module.exports = {
         phone: '08-8383-3838',
         invoice: `${shortId.generate()}`,
         UserId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date('2019/04/18'),
+        updatedAt: new Date('2019/04/18')
       },
       {
         sn: `${shortId.generate()}`,
@@ -61,8 +61,8 @@ module.exports = {
         phone: '03-8383-3838',
         invoice: `${shortId.generate()}`,
         UserId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date('2019/05/09'),
+        updatedAt: new Date('2019/05/09')
       },
       {
         sn: `${shortId.generate()}`,
@@ -76,8 +76,8 @@ module.exports = {
         phone: '03-8383-3838',
         invoice: `${shortId.generate()}`,
         UserId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date('2019/07/08'),
+        updatedAt: new Date('2019/07/08')
       },
       {
         sn: `${shortId.generate()}`,
@@ -91,8 +91,8 @@ module.exports = {
         phone: '03-8383-3838',
         invoice: `${shortId.generate()}`,
         UserId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date('2019/08/08'),
+        updatedAt: new Date('2019/08/08')
       },
       {
         sn: `${shortId.generate()}`,
@@ -106,8 +106,8 @@ module.exports = {
         phone: '03-8383-3838',
         invoice: `${shortId.generate()}`,
         UserId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date('2019/09/08'),
+        updatedAt: new Date('2019/09/08')
       }
     ]);
   },
