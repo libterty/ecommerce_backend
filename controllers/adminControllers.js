@@ -624,7 +624,7 @@ const adminController = {
    * /admin/products/:id:
    *    delete:
    *      description: Delete Existing Product
-   *      operationId: placeProductId
+   *      operationId: deleteProductById
    *      parameters:
    *      - name: Bearer_Token
    *        type: string

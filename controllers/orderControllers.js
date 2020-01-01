@@ -12,8 +12,44 @@ const Shipping = db.Shipping;
 const Op = Sequelize.Op;
 
 const orderController = {
+  /**
+   * @swagger
+   * /orders/create:
+   *    post:
+   *      description: Create Orders for Existing Product
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: CartId
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: UserId
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: address
+   *        type: string
+   *        in: body
+   *        required: false
+   *      - name: tel
+   *        type: string
+   *        in: body
+   *        required: false
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: error
+   */
   createOrder: async (req, res) => {
-    const { CartId, UserId } = req.body;
+    const { CartId, UserId, address, tel } = req.body;
 
     if (helpers.getUser(req).id !== Number(UserId)) {
       return res
@@ -50,9 +86,9 @@ const orderController = {
         shipping_status: '未出貨',
         payment_status: '未付款',
         name: UserInfo.name,
-        address: UserInfo.address ? UserInfo.address : '',
+        address: UserInfo.address ? UserInfo.address : req.body.address,
         email: UserInfo.email,
-        phone: UserInfo.tel ? UserInfo.tel : '',
+        phone: UserInfo.tel ? UserInfo.tel : req.body.tel,
         UserId: UserInfo.id
       }).then(order => {
         for (let i = 0; i < tempCartItems.length; i++) {
@@ -107,7 +143,34 @@ const orderController = {
       });
     });
   },
-
+  /**
+   * @swagger
+   * /orders/:UserId:
+   *    get:
+   *      description: Find Order by ID
+   *      operationId: getUserId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: error
+   */
   getOrder: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
@@ -130,7 +193,69 @@ const orderController = {
         .json({ status: 'error', message: 'Nothing in your order list' });
     });
   },
-
+  /**
+   * @swagger
+   * /orders/:OrderId/users/:UserId:
+   *    put:
+   *      description: Revise order by it's own user
+   *      operationId: replaceOrderById
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: OrderId
+   *        in: path
+   *        description: ID of order to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: name
+   *        type: string
+   *        in: body
+   *        required: false
+   *      - name: address
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: email
+   *        type: string
+   *        in: body
+   *        required: false
+   *      - name: phone
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: shippingMethod
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: shippingStatus
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: shippingFee
+   *        type: string
+   *        in: body
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: error
+   */
   putOrder: (req, res) => {
     const {
       name,
@@ -230,7 +355,41 @@ const orderController = {
         .json({ status: 'error', message: 'Cannot find this Order' });
     });
   },
-
+  /**
+   * @swagger
+   * /orders/:OrderId/users/:UserId:
+   *    delete:
+   *      description: Delete Existing Order
+   *      operationId: deleteOrderById
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: OrderId
+   *        in: path
+   *        description: ID of order to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: error
+   */
   deleteOrder: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
@@ -272,6 +431,54 @@ const orderController = {
       return res
         .status(400)
         .json({ status: 'error', message: 'Cannot find this order' });
+    });
+  },
+  /**
+   * @swagger
+   * /orders/users/:UserId:
+   *    get:
+   *      description: Find all user's order by ID
+   *      operationId: getUserId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: error
+   */
+  getOrders: (req, res) => {
+    if (helpers.getUser(req).id !== Number(req.params.UserId)) {
+      return res
+        .status(401)
+        .json({ status: 'error', message: 'Can not find any user data' });
+    }
+
+    return Order.findAll({
+      where: {
+        UserId: req.params.UserId
+      }
+    }).then(orders => {
+      if (orders.length > 0) {
+        return res.status(200).json({ status: 'success', orders });
+      }
+      return res
+        .status(400)
+        .json({ status: 'error', message: "You don't have any orders record" });
     });
   }
 };

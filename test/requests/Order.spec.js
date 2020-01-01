@@ -834,4 +834,160 @@ describe('# Order Request', () => {
       });
     });
   });
+
+  context('# Get User Orders', () => {
+    describe('When user request to get order but no order data', () => {
+      before(async () => {
+        let test1token;
+        this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 1 });
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.User.create({
+          name: 'test2',
+          email: 'test2@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+      });
+
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test1token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 401 when malware request', done => {
+        request(app)
+          .get('/api/orders/users/2')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(401)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Can not find any user data');
+            done();
+          });
+      });
+
+      it("should return 400 when user don't have existed order", done => {
+        request(app)
+          .get('/api/orders/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal(
+              "You don't have any orders record"
+            );
+            done();
+          });
+      });
+
+      after(async () => {
+        this.getUser.restore();
+        await db.User.destroy({ where: {}, truncate: true });
+      });
+    });
+
+    describe('When user request to get order but no order data', () => {
+      before(async () => {
+        let test1token;
+        this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 1 });
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.User.create({
+          name: 'test2',
+          email: 'test2@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+        await db.Order.create({
+          order_status: '訂單處理中',
+          shipping_status: '未出貨',
+          payment_status: '未付款',
+          total_amount: 300,
+          name: 'test1',
+          address: '測試路',
+          email: 'test1@example.com',
+          phone: '02-8888-8888',
+          UserId: 1
+        });
+        await db.Order.create({
+          order_status: '訂單已結案',
+          shipping_status: '已出貨',
+          payment_status: '已付款',
+          total_amount: 300,
+          name: 'test1',
+          address: '測試路',
+          email: 'test1@example.com',
+          phone: '02-8888-8888',
+          UserId: 1
+        });
+      });
+
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test1token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 401 when malware request', done => {
+        request(app)
+          .get('/api/orders/users/2')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(401)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Can not find any user data');
+            done();
+          });
+      });
+
+      it('should return 200 when user has existed orders', done => {
+        request(app)
+          .get('/api/orders/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            db.Inventory.findAll().then(inventories => {
+              expect(res.body.status).to.equal('success');
+              expect(res.body.orders.length).to.equal(2);
+              return done();
+            });
+          });
+      });
+
+      after(async () => {
+        this.getUser.restore();
+        await db.User.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
 });

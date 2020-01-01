@@ -152,6 +152,7 @@ router.get(
   userCouponController.useValidCoupon
 );
 router.post('/orders/create', authenticated, orderController.createOrder);
+router.get('/orders/users/:UserId', authenticated, orderController.getOrders);
 // orderController.getOrder params are default for UserId
 router.get('/orders/:UserId', authenticated, orderController.getOrder);
 // orderController.putOrders params are default for OrderId and UserId
