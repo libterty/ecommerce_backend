@@ -9,6 +9,34 @@ const Payment = db.Payment;
 const trade = new Trade();
 
 const paymentController = {
+  /**
+   * @swagger
+   * /payments/:OrderId/users/:UserId:
+   *    get:
+   *      description: Create Payments by OrderId and UserId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: OrderId
+   *        type: integer
+   *        in: path
+   *        required: true
+   *      - name: UserId
+   *        type: integer
+   *        in: path
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         500:
+   *           description: error
+   *         401:
+   *           description: error
+   */
   createPayment: async (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
@@ -66,7 +94,38 @@ const paymentController = {
         .json({ status: 'error', message: 'Something went wrong' });
     }
   },
-
+  /**
+   * @swagger
+   * /spgateway/callback:
+   *    post:
+   *      description: Sending Data to Third Party
+   *      parameters:
+   *      - name: PayGateWay
+   *        type: string
+   *        in: path
+   *        required: true
+   *      - name: MerchantID
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: TradeInfo
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: TradeSha
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: Version
+   *        type: string
+   *        in: body
+   *        required: true
+   *      responses:
+   *         302:
+   *           description: Third Party Response Data
+   *         401:
+   *           description: error
+   */
   spgatewayCallback: async (req, res) => {
     const { TradeInfo } = req.body;
 
@@ -103,12 +162,12 @@ const paymentController = {
           payment_status: '已付款',
           updatedAt: new Date()
         });
-        return res.redirect('http://localhost:8080/order');
+        return res.redirect(`http://localhost:8080/users/${order.UserId}`);
       } else if (data.Status === 'MPG03009') {
         await payment.update({
           payment_status: '付款失敗'
         });
-        return res.redirect('http://localhost:8080/order');
+        return res.redirect(`http://localhost:8080/users/${order.UserId}`);
       }
     } catch (error) {
       return res
