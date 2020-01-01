@@ -298,7 +298,7 @@ describe('# Product request', () => {
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal("required fields didn't exist");
+            expect(res.body.message).to.equal('Cannot find products');
             done();
           });
       });

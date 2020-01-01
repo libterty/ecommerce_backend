@@ -103,13 +103,7 @@ const productController = {
   },
 
   searchProducts: (req, res) => {
-    const search = req.query.items;
-
-    if (!search) {
-      return res
-        .status(400)
-        .json({ status: 'error', message: "required fields didn't exist" });
-    }
+    const search = decodeURI(req.query.items);
 
     return Product.findAll({
       include: [Category, Image],
