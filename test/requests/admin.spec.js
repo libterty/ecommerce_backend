@@ -1005,7 +1005,6 @@ describe('# Admin Request', () => {
     describe('When admin request to get all Shippings', () => {
       before(async () => {
         let test1token, test2token;
-        await db.Shipping.destroy({ where: {}, truncate: true });
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -1077,6 +1076,8 @@ describe('# Admin Request', () => {
           .put('/api/orders/1/users/2')
           .set('Authorization', 'bearer ' + test2token)
           .send({
+            address: '測試路',
+            phone: '03-8888-8888',
             shippingMethod: '黑貓宅急便',
             shippingStatus: '未出貨',
             shippingFee: 350

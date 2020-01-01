@@ -50,9 +50,9 @@ const orderController = {
         shipping_status: '未出貨',
         payment_status: '未付款',
         name: UserInfo.name,
-        address: UserInfo.address,
+        address: UserInfo.address ? UserInfo.address : '',
         email: UserInfo.email,
-        phone: UserInfo.tel,
+        phone: UserInfo.tel ? UserInfo.tel : '',
         UserId: UserInfo.id
       }).then(order => {
         for (let i = 0; i < tempCartItems.length; i++) {
@@ -171,6 +171,19 @@ const orderController = {
         .status(400)
         .json({ status: 'error', message: "shippingFee didn't exist" });
     }
+
+    if (!address) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "Contact address didn't exist" });
+    }
+
+    if (!phone) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: "Contact phone didn't exist" });
+    }
+
     return Order.findByPk(req.params.OrderId).then(async order => {
       if (order) {
         try {
