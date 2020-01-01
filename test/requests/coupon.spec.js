@@ -185,7 +185,7 @@ describe('# Admin Coupon Request', () => {
           })
           .set('Authorization', 'bearer ' + token)
           .set('Accept', 'application/json')
-          .expect(200)
+          .expect(400)
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.equal('error');
@@ -204,7 +204,7 @@ describe('# Admin Coupon Request', () => {
           })
           .set('Authorization', 'bearer ' + token)
           .set('Accept', 'application/json')
-          .expect(200)
+          .expect(400)
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.equal('error');
