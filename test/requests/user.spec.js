@@ -346,7 +346,6 @@ describe('# User Request', () => {
           .field('tel', '02-8888-8888')
           .expect(400)
           .end((err, res) => {
-            console.log('res', res);
             expect(res.body.status).to.equal('error');
             expect(res.body.message).to.equal('Image Upload Fail');
             done();

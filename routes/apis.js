@@ -105,12 +105,12 @@ router.get(
   authenticatedAdmin,
   adminController.getOrders
 );
-// test email function
+// Notify email function
 router.get(
-  '/admin/orders/test',
+  '/admin/orders/notify/:OrderId',
   authenticated,
   authenticatedAdmin,
-  adminController.testOrders
+  adminController.notifyOrders
 );
 router.get(
   '/admin/shippings',
@@ -123,6 +123,12 @@ router.put(
   authenticated,
   authenticatedAdmin,
   adminController.putShippings
+);
+router.get(
+  '/admin/payments',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getPayments
 );
 
 router.post('/signin', userController.signIn);

@@ -462,6 +462,17 @@ describe('# Order Request', () => {
           phone: '02-8888-8888',
           UserId: 1
         });
+        await db.Order.create({
+          order_status: '訂單處理中',
+          shipping_status: '未出貨',
+          payment_status: '未付款',
+          total_amount: 3001,
+          name: 'test1',
+          address: '測試路',
+          email: 'test1@example.com',
+          phone: '02-8888-8888',
+          UserId: 1
+        });
       });
 
       it('should return 200 and test1 token', done => {
@@ -511,6 +522,8 @@ describe('# Order Request', () => {
           .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
+            address: '測試路',
+            phone: '03-8888-8888',
             shippingMethod: '郵局',
             shippingStatus: '未出貨',
             shippingFee: 350
@@ -529,6 +542,8 @@ describe('# Order Request', () => {
           .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
+            address: '測試路',
+            phone: '03-8888-8888',
             shippingMethod: '黑貓宅急便',
             shippingStatus: '已出貨',
             shippingFee: 350
@@ -542,11 +557,13 @@ describe('# Order Request', () => {
           });
       });
 
-      it('should return 400 when malware shippingStatus data is send', done => {
+      it('should return 400 when malware shippingFee data is send', done => {
         request(app)
           .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
+            address: '測試路',
+            phone: '03-8888-8888',
             shippingMethod: '黑貓宅急便',
             shippingStatus: '未出貨',
             shippingFee: 351
@@ -560,11 +577,51 @@ describe('# Order Request', () => {
           });
       });
 
-      it('should return 400 when no Order data is found', done => {
+      it('should return 400 when no address data is send', done => {
         request(app)
-          .put('/api/orders/2/users/1')
+          .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
+            phone: '03-8888-8888',
+            shippingMethod: '黑貓宅急便',
+            shippingStatus: '未出貨',
+            shippingFee: 350
+          })
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("Contact address didn't exist");
+            done();
+          });
+      });
+
+      it('should return 400 when no contact phone data is send', done => {
+        request(app)
+          .put('/api/orders/1/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .send({
+            address: '測試路',
+            shippingMethod: '黑貓宅急便',
+            shippingStatus: '未出貨',
+            shippingFee: 350
+          })
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("Contact phone didn't exist");
+            done();
+          });
+      });
+
+      it('should return 400 when no Order data is found', done => {
+        request(app)
+          .put('/api/orders/3/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .send({
+            address: '測試路',
+            phone: '03-8888-8888',
             shippingMethod: '黑貓宅急便',
             shippingStatus: '未出貨',
             shippingFee: 350
@@ -578,11 +635,13 @@ describe('# Order Request', () => {
           });
       });
 
-      it('should return 200 when Order data is found', done => {
+      it('should return 200 when Order data is found and need to add shipping fee', done => {
         request(app)
           .put('/api/orders/1/users/1')
           .set('Authorization', 'bearer ' + test1token)
           .send({
+            address: '測試路',
+            phone: '03-8888-8888',
             shippingMethod: '黑貓宅急便',
             shippingStatus: '未出貨',
             shippingFee: 350
@@ -599,10 +658,34 @@ describe('# Order Request', () => {
           });
       });
 
+      it('should return 200 when Order data is found but no need to add shipping fee', done => {
+        request(app)
+          .put('/api/orders/2/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .send({
+            address: '測試路',
+            phone: '03-8888-8888',
+            shippingMethod: '黑貓宅急便',
+            shippingStatus: '未出貨',
+            shippingFee: 350
+          })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            db.Order.findByPk(2).then(order => {
+              expect(res.body.status).to.equal('success');
+              expect(res.body.message).to.equal('Update order success');
+              expect(order.total_amount).to.equal(3001);
+              return done();
+            });
+          });
+      });
+
       after(async () => {
         this.getUser.restore();
         await db.User.destroy({ where: {}, truncate: true });
         await db.Order.destroy({ where: {}, truncate: true });
+        await db.Shipping.destroy({ where: {}, truncate: true });
       });
     });
   });
