@@ -148,7 +148,7 @@ const orderController = {
    * /orders/:UserId:
    *    get:
    *      description: Find Order by ID
-   *      operationId: getUserId
+   *      operationId: getOrderId
    *      parameters:
    *      - name: Bearer_Token
    *        type: string

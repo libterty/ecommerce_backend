@@ -5,7 +5,42 @@ const Coupon = db.Coupon;
 const CouponItem = db.CouponItem;
 
 const adminCouponController = {
-  // admin coupon CRUD
+  /**
+   * @swagger
+   * /admin/coupons:
+   *    post:
+   *      description: Create Coupons
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: couponCode
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: limitedUsage
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: expireDate
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: percent
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         500:
+   *           description: error
+   */
   addCoupon: async (req, res) => {
     try {
       const { couponCode, limitedUsage, expireDate, percent } = req.body;
@@ -18,7 +53,7 @@ const adminCouponController = {
         where: { coupon_code: couponCode }
       });
       if (findCoupon) {
-        return res.json({
+        return res.status(400).json({
           status: 'error',
           message: 'Coupon code already existed'
         });
@@ -27,7 +62,7 @@ const adminCouponController = {
       if (!couponCode || couponCode.length === 0) {
         const generateCode = shortid.generate();
 
-        return res.json({
+        return res.status(400).json({
           status: 'error',
           message: 'generate a coupon code',
           generateCode
@@ -78,6 +113,25 @@ const adminCouponController = {
       });
     }
   },
+
+  /**
+   * @swagger
+   * /admin/coupons:
+   *    get:
+   *      description: Find All coupons
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         500:
+   *           description: error
+   */
   getCoupons: async (req, res) => {
     try {
       const coupons = await Coupon.findAll().then(d => d);
@@ -92,7 +146,32 @@ const adminCouponController = {
         .json({ status: 'error', message: 'Fail to get coupons' });
     }
   },
-  // TODO: get specific coupon
+
+  /**
+   * @swagger
+   * /admin/coupons/:id:
+   *    get:
+   *      description: Find coupons by ID
+   *      operationId: getCouponId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: CouponsId
+   *        in: path
+   *        description: ID of coupons to return
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         500:
+   *           description: error
+   */
   getCoupon: async (req, res) => {
     try {
       const coupon = await Coupon.findByPk(req.params.id);
@@ -108,6 +187,48 @@ const adminCouponController = {
         .json({ status: 'error', message: 'Fail to get coupon' });
     }
   },
+
+  /**
+   * @swagger
+   * /admin/coupons/:id:
+   *    post:
+   *      description: Edit Coupons By Id
+   *      operationId: getCouponId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: CouponsId
+   *        in: path
+   *        description: ID of coupons to return
+   *        required: true
+   *      - name: couponCode
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: limitedUsage
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: expireDate
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: percent
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         500:
+   *           description: error
+   */
   editCoupon: async (req, res) => {
     try {
       const coupon = await Coupon.findByPk(req.params.id);
@@ -163,6 +284,30 @@ const adminCouponController = {
         .json({ status: 'error', message: 'Not able to update coupon' });
     }
   },
+
+  /**
+   * @swagger
+   * /admin/coupons/:id:
+   *    delete:
+   *      description: Delete coupons by ID
+   *      operationId: getCouponId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: CouponsId
+   *        in: path
+   *        description: ID of coupons to return
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         500:
+   *           description: error
+   */
   deleteCoupon: async (req, res) => {
     try {
       const coupon = await Coupon.findByPk(req.params.id);
