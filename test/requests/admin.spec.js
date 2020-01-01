@@ -480,7 +480,7 @@ describe('# Admin Request', () => {
       it('should return 400 when Color is already exist', done => {
         request(app)
           .post(`/api/admin/products/colors`)
-          .send({ name: 'white', ProductId: 1 })
+          .send({ name: 'white', ProductId: 1, quantity: 20 })
           .set('Authorization', 'bearer ' + token)
           .set('Accept', 'application/json')
           .expect(400)
@@ -494,7 +494,7 @@ describe('# Admin Request', () => {
       it('should return 200 with json data', done => {
         request(app)
           .post(`/api/admin/products/colors`)
-          .send({ name: 'Black', ProductId: 1 })
+          .send({ name: 'Black', ProductId: 1, quantity: 20 })
           .set('Authorization', 'bearer ' + token)
           .set('Accept', 'application/json')
           .expect(200)
@@ -565,7 +565,7 @@ describe('# Admin Request', () => {
       it('should return 400 when no ProductId is set', done => {
         request(app)
           .put(`/api/admin/products/colors/3`)
-          .send({})
+          .send({ name: 'white', ColorId: 2 })
           .set('Authorization', 'bearer ' + token)
           .set('Accept', 'application/json')
           .expect(400)
@@ -576,10 +576,24 @@ describe('# Admin Request', () => {
           });
       });
 
-      it('should return 400 when no body is set', done => {
+      it('should return 400 when no name is set', done => {
         request(app)
           .put(`/api/admin/products/colors/${id}`)
-          .send({})
+          .send({ ColorId: 2 })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal("required fields didn't exist");
+            return done();
+          });
+      });
+
+      it('should return 400 when no ColorId is set', done => {
+        request(app)
+          .put(`/api/admin/products/colors/${id}`)
+          .send({ name: 'white' })
           .set('Authorization', 'bearer ' + token)
           .set('Accept', 'application/json')
           .expect(400)

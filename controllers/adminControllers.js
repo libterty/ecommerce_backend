@@ -17,10 +17,41 @@ const email = require('../util/email');
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 
 const adminController = {
+  /**
+   * @swagger
+   * /admin:
+   *    get:
+   *      description: This should return message with 'Hello Admin!'
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   */
   hiAdmin: (req, res) => {
     res.status(200).json({ status: 'success', message: 'Hello Admin!' });
   },
-
+  /**
+   * @swagger
+   * /admin/products:
+   *    get:
+   *      description: This should return all products
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   */
   getProducts: (req, res) => {
     return Product.findAll({
       include: [{ model: Color, as: 'inventories' }]
@@ -31,7 +62,32 @@ const adminController = {
       return res.status(200).json({ status: 'success', products });
     });
   },
-
+  /**
+   * @swagger
+   * /admin/products/:id:
+   *    get:
+   *      description: Find Product by ID
+   *      operationId: getProductById
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: productId
+   *        in: path
+   *        description: ID of product to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   getProduct: (req, res) => {
     return Product.findByPk(req.params.id, {
       include: [Category, Image, { model: Color, as: 'inventories' }]
@@ -42,11 +98,77 @@ const adminController = {
       })
       .catch(() => {
         return res
-          .status(200)
+          .status(400)
           .json({ status: 'error', message: 'Cannot find what you want' });
       });
   },
-
+  /**
+   * @swagger
+   * /admin/products:
+   *    post:
+   *      description: Create New Prodcuts
+   *      operationId: placeProduct
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: name
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: description
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: cost
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: price
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: height
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: width
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: length
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: weight
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: material
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: CategoryId
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: quantity
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: colorName
+   *        type: string
+   *        in: body
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   postProducts: (req, res) => {
     const {
       name,
@@ -136,7 +258,72 @@ const adminController = {
       }
     });
   },
-
+  /**
+   * @swagger
+   * /admin/products/:id:
+   *    put:
+   *      description: Revise Existing Prodcuts
+   *      operationId: replaceProduct
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: productId
+   *        in: path
+   *        description: ID of product to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: name
+   *        type: string
+   *        in: body
+   *        required: false
+   *      - name: description
+   *        type: string
+   *        in: body
+   *        required: false
+   *      - name: cost
+   *        type: integer
+   *        in: body
+   *        required: false
+   *      - name: price
+   *        type: integer
+   *        in: body
+   *        required: false
+   *      - name: height
+   *        type: integer
+   *        in: body
+   *        required: false
+   *      - name: width
+   *        type: integer
+   *        in: body
+   *        required: false
+   *      - name: length
+   *        type: integer
+   *        in: body
+   *        required: false
+   *      - name: weight
+   *        type: integer
+   *        in: body
+   *        required: false
+   *      - name: material
+   *        type: string
+   *        in: body
+   *        required: false
+   *      - name: CategoryId
+   *        type: integer
+   *        in: body
+   *        required: false
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   putProducts: (req, res) => {
     const {
       name,
@@ -183,10 +370,40 @@ const adminController = {
       }
     });
   },
-
+  /**
+   * @swagger
+   * /admin/products/colors:
+   *    post:
+   *      description: Create Color for Existing Product
+   *      operationId: placeColorId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: ProductId
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      - name: name
+   *        type: string
+   *        in: body
+   *        required: true
+   *      - name: quantity
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   postNewColorForProduct: (req, res) => {
     const { ProductId, name, quantity } = req.body;
-    if (!name || !ProductId)
+    if (!name || !ProductId || !quantity)
       return res
         .status(400)
         .json({ status: 'error', message: "required fields didn't exist" });
@@ -212,11 +429,44 @@ const adminController = {
       }
     });
   },
-
+  /**
+   * @swagger
+   * /admin/products/colors/:id:
+   *    put:
+   *      description: Revise Color for Existing Product
+   *      operationId: replaceColorId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: productId
+   *        in: path
+   *        description: ID of product to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: name
+   *        type: string
+   *        in: body
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   putColorForProduct: async (req, res) => {
     const { ColorId, name } = req.body;
     const ProductId = req.params.id;
     let temp;
+    if (!name)
+      return res
+        .status(400)
+        .json({ status: 'error', message: "required fields didn't exist" });
     try {
       await Inventory.findOne({
         where: { ProductId, ColorId }
@@ -268,7 +518,36 @@ const adminController = {
       }
     });
   },
-
+  /**
+   * @swagger
+   * /admin/products/inventories/:id:
+   *    put:
+   *      description: Revise Inventory for Existing Product
+   *      operationId: replaceInventoryId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: InventoryId
+   *        in: path
+   *        description: ID of inventory to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: quantity
+   *        type: integer
+   *        in: body
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   putInventoryForProduct: (req, res) => {
     const { quantity } = req.body;
     if (quantity < 0) {
@@ -290,7 +569,36 @@ const adminController = {
         });
     });
   },
-
+  /**
+   * @swagger
+   * /admin/products/images/:id:
+   *    post:
+   *      description: Create Image for Existing Product
+   *      operationId: placeProductId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: ProductId
+   *        in: path
+   *        description: ID of product to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: url
+   *        type: string
+   *        in: file
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   posttImageForProduct: (req, res) => {
     const { file } = req;
     if (file) {
@@ -311,7 +619,32 @@ const adminController = {
         .json({ status: 'error', message: 'nothing to upload' });
     }
   },
-
+  /**
+   * @swagger
+   * /admin/products/:id:
+   *    delete:
+   *      description: Delete Existing Product
+   *      operationId: placeProductId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: ProductId
+   *        in: path
+   *        description: ID of product to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   deleteProduct: (req, res) => {
     return Product.findByPk(req.params.id).then(async product => {
       if (product) {
@@ -336,7 +669,24 @@ const adminController = {
       }
     });
   },
-
+  /**
+   * @swagger
+   * /admin/orders:
+   *    get:
+   *      description: Find all Orders
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   getOrders: (req, res) => {
     return Order.findAll({
       where: {
@@ -362,7 +712,32 @@ const adminController = {
       }
     });
   },
-
+  /**
+   * @swagger
+   * /admin/orders/notify/:OrderId:
+   *    get:
+   *      description: Send Email Notification to users
+   *      operationId: placeOrderId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: OrderId
+   *        in: path
+   *        description: ID of order to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   notifyOrders: async (req, res) => {
     try {
       const order = await Order.findByPk(req.params.OrderId, {});
@@ -382,7 +757,24 @@ const adminController = {
         .json({ status: 'error', message: 'Something went wrong' });
     }
   },
-
+  /**
+   * @swagger
+   * /admin/shippings:
+   *    get:
+   *      description: Find all Shippings
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   getShippings: (req, res) => {
     return Shipping.findAll().then(shippings => {
       if (shippings.length > 0) {
@@ -394,7 +786,36 @@ const adminController = {
         .json({ status: 'error', message: 'Cannot find shippings' });
     });
   },
-
+  /**
+   * @swagger
+   * /admin/shippings/:id:
+   *    put:
+   *      description: Revise Shipping for Existing Product
+   *      operationId: replaceShippingId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      - name: ShippingId
+   *        in: path
+   *        description: ID of shipping to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: shippingStatus
+   *        type: string
+   *        in: body
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   putShippings: (req, res) => {
     const { shippingStatus } = req.body;
 
@@ -432,7 +853,24 @@ const adminController = {
       }
     });
   },
-
+  /**
+   * @swagger
+   * /admin/payments:
+   *    get:
+   *      description: Find all Payments
+   *      parameters:
+   *      - name: Bearer_Token
+   *        type: string
+   *        in: header
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   getPayments: (req, res) => {
     return Order.findAll().then(payments => {
       return res.status(200).json({ status: 'success', payments });

@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('./config/passport');
 const cors = require('cors');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 const helpers = require('./_helpers');
 
 const app = express();
@@ -13,6 +15,18 @@ const port = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+
+const options = {
+  swaggerDefinition: {
+    info: {
+      title: 'ec_web_demo API',
+      version: '1.0.0',
+      description: 'Generate ec_web_demo API document with swagger'
+    }
+  },
+  apis: ['./controllers/*.js']
+};
+const specs = swaggerJsdoc(options);
 
 app.use(cors({ credentials: true, origin: true }));
 app.use('/upload', express.static(__dirname + '/upload'));
@@ -38,6 +52,7 @@ app.use((req, res, next) => {
   res.locals.user = helpers.getUser(req);
   next();
 });
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.listen(port, () =>
   console.log(`Example app listening on port http://localhost:${port}!`)
