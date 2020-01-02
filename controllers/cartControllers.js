@@ -21,8 +21,6 @@ const cartController = {
    *        schema:
    *          type: integer
    *          format: int64
-   *      security:
-   *        - bearerAuth: []
    *      responses:
    *         200:
    *           description: success
@@ -105,8 +103,6 @@ const cartController = {
    *          type: integer
    *        in: body
    *        required: false
-   *      security:
-   *        - bearerAuth: []
    *      responses:
    *         200:
    *           description: success
@@ -188,8 +184,6 @@ const cartController = {
    *        schema:
    *          type: integer
    *          format: int64
-   *      security:
-   *        - bearerAuth: []
    *      responses:
    *         200:
    *           description: success
@@ -238,8 +232,6 @@ const cartController = {
    *        schema:
    *          type: integer
    *          format: int64
-   *      security:
-   *        - bearerAuth: []
    *      responses:
    *         200:
    *           description: success
@@ -287,8 +279,6 @@ const cartController = {
    *        schema:
    *          type: integer
    *          format: int64
-   *      security:
-   *        - bearerAuth: []
    *      responses:
    *         200:
    *           description: success
