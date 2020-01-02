@@ -332,6 +332,41 @@ const userController = {
           });
       }
     });
+  },
+
+  /**
+   * @swagger
+   * /api/get_current_user:
+   *    get:
+   *      description: get current user by sesson
+   *      parameters:
+   *      - name: Bearer_Token
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: user
+   *        in: session
+   *        description: Session of user to return
+   *        required: true
+   *        schema:
+   *          type: Object
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         401:
+   *           description: error
+   */
+  getCurrentUser: (req, res) => {
+    return res.status(200).json({
+      status: 'success',
+      id: helpers.getUser(req).id,
+      name: helpers.getUser(req).name,
+      email: helpers.getUser(req).email,
+      isAdmin: helpers.getUser(req).admin
+    });
   }
 };
 

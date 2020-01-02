@@ -181,7 +181,7 @@ router.get('/furnitures/search', productController.searchProducts);
 router.get('/furnitures/:id', productController.getProduct);
 // user coupons
 router.get('/users/coupons', authenticated, userCouponController.getCoupons);
-
+router.get('/get_current_user', authenticated, userController.getCurrentUser);
 router.get('/users/:id', authenticated, userController.getUserInfo);
 router.put(
   '/users/:id',
