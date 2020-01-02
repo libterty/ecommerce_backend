@@ -182,6 +182,11 @@ const adminController = {
    *          type: string
    *        in: body
    *        required: true
+   *      - name: url
+   *        schema:
+   *          type: string
+   *        in: file
+   *        required: true
    *      security:
    *        - bearerAuth: []
    *      responses:

@@ -250,6 +250,11 @@ const userController = {
    *          type: string
    *        in: body
    *        required: false
+   *      - name: url
+   *        schema:
+   *          type: string
+   *        in: file
+   *        required: true
    *      security:
    *        - Authorization: []
    *      responses:
