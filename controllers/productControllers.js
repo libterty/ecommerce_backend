@@ -100,7 +100,7 @@ const productController = {
 
   /**
    * @swagger
-   * /api/furnitures/:id:
+   * /api/furnitures/{ProductId}:
    *    get:
    *      description: Find product by Id
    *      operationId: getProductId

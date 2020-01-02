@@ -14,11 +14,6 @@ const cartController = {
    *      description: Find Cart by sesssion CartID
    *      operationId: getCartId
    *      parameters:
-   *      - name: Bearer_Token
-   *        schema:
-   *          type: string
-   *        in: header
-   *        required: true
    *      - name: CartId
    *        in: cookie
    *        description: ID of cart to return
@@ -88,11 +83,6 @@ const cartController = {
    *    post:
    *      description: Create Cart and CartItem
    *      parameters:
-   *      - name: Bearer_Token
-   *        schema:
-   *          type: string
-   *        in: header
-   *        required: true
    *      - name: CartId
    *        in: cookie
    *        description: ID of cart to return
@@ -186,16 +176,11 @@ const cartController = {
 
   /**
    * @swagger
-   * /api/cart/:id/add:
+   * /api/cart/{CartId}/add:
    *    post:
    *      description: Add quantity for CartItem
    *      operationId: getCartId
    *      parameters:
-   *      - name: Bearer_Token
-   *        schema:
-   *          type: string
-   *        in: header
-   *        required: true
    *      - name: CartId
    *        in: cookie
    *        description: ID of cart to return
@@ -241,16 +226,11 @@ const cartController = {
 
   /**
    * @swagger
-   * /api/cart/:id/sub:
+   * /api/cart/{CartId}/sub:
    *    post:
    *      description: Sub quantity for CartItem
    *      operationId: getCartId
    *      parameters:
-   *      - name: Bearer_Token
-   *        schema:
-   *          type: string
-   *        in: header
-   *        required: true
    *      - name: CartId
    *        in: cookie
    *        description: ID of cart to return
@@ -295,16 +275,11 @@ const cartController = {
 
   /**
    * @swagger
-   * /api/cart/:id:
+   * /api/cart/{CartId}:
    *    delete:
    *      description: Delete CartItem
    *      operationId: getCartId
    *      parameters:
-   *      - name: Bearer_Token
-   *        schema:
-   *          type: string
-   *        in: header
-   *        required: true
    *      - name: CartId
    *        in: cookie
    *        description: ID of cart to return

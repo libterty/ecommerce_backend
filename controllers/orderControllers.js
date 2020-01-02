@@ -18,7 +18,7 @@ const orderController = {
    *    post:
    *      description: Create Orders for Existing Product
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -44,14 +44,14 @@ const orderController = {
    *        in: body
    *        required: false
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
    *         401:
-   *           description: error
+   *           description: Unauthorized
    */
   createOrder: async (req, res) => {
     const { CartId, UserId, address, tel } = req.body;
@@ -150,12 +150,12 @@ const orderController = {
   },
   /**
    * @swagger
-   * /api/orders/:UserId:
+   * /api/orders/{UserId}:
    *    get:
    *      description: Find Order by ID
    *      operationId: getOrderId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -168,14 +168,14 @@ const orderController = {
    *          type: integer
    *          format: int64
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
    *         401:
-   *           description: error
+   *           description: Unauthorized
    */
   getOrder: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
@@ -201,12 +201,12 @@ const orderController = {
   },
   /**
    * @swagger
-   * /api/orders/:OrderId/users/:UserId:
+   * /api/orders/{OrderId}/users/{UserId}:
    *    put:
    *      description: Revise order by it's own user
    *      operationId: replaceOrderById
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -261,14 +261,14 @@ const orderController = {
    *        in: body
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
    *         401:
-   *           description: error
+   *           description: Unauthorized
    */
   putOrder: (req, res) => {
     const {
@@ -371,12 +371,12 @@ const orderController = {
   },
   /**
    * @swagger
-   * /api/orders/:OrderId/users/:UserId:
+   * /api/orders/{OrderId}/users/{UserId}:
    *    delete:
    *      description: Delete Existing Order
    *      operationId: deleteOrderById
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -396,14 +396,14 @@ const orderController = {
    *          type: integer
    *          format: int64
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
    *         401:
-   *           description: error
+   *           description: Unauthorized
    */
   deleteOrder: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
@@ -450,12 +450,12 @@ const orderController = {
   },
   /**
    * @swagger
-   * /api/orders/users/:UserId:
+   * /api/orders/users/{UserId}:
    *    get:
    *      description: Find all user's order by ID
    *      operationId: getUserId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -468,14 +468,14 @@ const orderController = {
    *          type: integer
    *          format: int64
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
    *         401:
-   *           description: error
+   *           description: Unauthorized
    */
   getOrders: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {

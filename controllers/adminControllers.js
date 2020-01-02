@@ -23,15 +23,17 @@ const adminController = {
    *    get:
    *      description: This should return message with 'Hello Admin!'
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization  
    *        type: string
    *        in: header
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
+   *         401:
+   *           description: Unauthorized
    */
   hiAdmin: (req, res) => {
     res.status(200).json({ status: 'success', message: 'Hello Admin!' });
@@ -42,15 +44,18 @@ const adminController = {
    *    get:
    *      description: This should return all products
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization 
    *        type: string
    *        in: header
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
+   *         401:
+   *           description: Unauthorized
+   * 
    */
   getProducts: (req, res) => {
     return Product.findAll({
@@ -64,17 +69,17 @@ const adminController = {
   },
   /**
    * @swagger
-   * /api/admin/products/:id:
+   * /api/admin/products/{ProductId}:
    *    get:
    *      description: Find Product by ID
    *      operationId: getProductById
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization 
    *        schema:
    *          type: string
    *        in: header
    *        required: true
-   *      - name: productId
+   *      - name: ProductId
    *        in: path
    *        description: ID of product to return
    *        required: true
@@ -88,6 +93,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   getProduct: (req, res) => {
     return Product.findByPk(req.params.id, {
@@ -110,7 +117,7 @@ const adminController = {
    *      description: Create New Prodcuts
    *      operationId: placeProduct
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -182,6 +189,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   postProducts: (req, res) => {
     const {
@@ -274,17 +283,17 @@ const adminController = {
   },
   /**
    * @swagger
-   * /api/admin/products/:id:
+   * /api/admin/products/{ProductId}:
    *    put:
    *      description: Revise Existing Prodcuts
    *      operationId: replaceProduct
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
    *        required: true
-   *      - name: productId
+   *      - name: ProductId
    *        in: path
    *        description: ID of product to return
    *        required: true
@@ -348,6 +357,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   putProducts: (req, res) => {
     const {
@@ -402,7 +413,7 @@ const adminController = {
    *      description: Create Color for Existing Product
    *      operationId: placeColorId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -429,6 +440,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   postNewColorForProduct: (req, res) => {
     const { ProductId, name, quantity } = req.body;
@@ -460,17 +473,17 @@ const adminController = {
   },
   /**
    * @swagger
-   * /api/admin/products/colors/:id:
+   * /api/admin/products/colors/{ProductId}:
    *    put:
    *      description: Revise Color for Existing Product
    *      operationId: replaceColorId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
    *        required: true
-   *      - name: productId
+   *      - name: ProductId
    *        in: path
    *        description: ID of product to return
    *        required: true
@@ -489,6 +502,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   putColorForProduct: async (req, res) => {
     const { ColorId, name } = req.body;
@@ -551,12 +566,12 @@ const adminController = {
   },
   /**
    * @swagger
-   * /api/admin/products/inventories/:id:
+   * /api/admin/products/inventories/{InventoryId}:
    *    put:
    *      description: Revise Inventory for Existing Product
    *      operationId: replaceInventoryId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -580,6 +595,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   putInventoryForProduct: (req, res) => {
     const { quantity } = req.body;
@@ -604,12 +621,12 @@ const adminController = {
   },
   /**
    * @swagger
-   * /api/admin/products/images/:id:
+   * /api/admin/products/images/{ProductId}:
    *    post:
    *      description: Create Image for Existing Product
    *      operationId: placeProductId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -632,6 +649,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   posttImageForProduct: (req, res) => {
     const { file } = req;
@@ -655,12 +674,12 @@ const adminController = {
   },
   /**
    * @swagger
-   * /api/admin/products/:id:
+   * /api/admin/products/{ProductId}:
    *    delete:
    *      description: Delete Existing Product
    *      operationId: deleteProductById
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -679,6 +698,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   deleteProduct: (req, res) => {
     return Product.findByPk(req.params.id).then(async product => {
@@ -710,7 +731,7 @@ const adminController = {
    *    get:
    *      description: Find all Orders
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -722,6 +743,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   getOrders: (req, res) => {
     return Order.findAll({
@@ -755,7 +778,7 @@ const adminController = {
    *      description: Send Email Notification to users
    *      operationId: placeOrderId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -774,6 +797,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   notifyOrders: async (req, res) => {
     try {
@@ -800,7 +825,7 @@ const adminController = {
    *    get:
    *      description: Find all Shippings
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -812,6 +837,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   getShippings: (req, res) => {
     return Shipping.findAll().then(shippings => {
@@ -826,12 +853,12 @@ const adminController = {
   },
   /**
    * @swagger
-   * /api/admin/shippings/:id:
+   * /api/admin/shippings/{ShippingId}:
    *    put:
    *      description: Revise Shipping for Existing Product
    *      operationId: replaceShippingId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -855,6 +882,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   putShippings: (req, res) => {
     const { shippingStatus } = req.body;
@@ -899,7 +928,7 @@ const adminController = {
    *    get:
    *      description: Find all Payments
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -911,6 +940,8 @@ const adminController = {
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    */
   getPayments: (req, res) => {
     return Order.findAll().then(payments => {

@@ -13,7 +13,7 @@ const userCouponController = {
    *      description: Find coupons belongs to user
    *      operationId: getUserId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -25,11 +25,15 @@ const userCouponController = {
    *        schema:
    *          type: integer
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   *         500:
    *           description: error
    */
   getCoupons: async (req, res) => {
@@ -66,16 +70,18 @@ const userCouponController = {
    *    get:
    *      description: Find all coupons withIn Range
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
+   *         401:
+   *           description: Unauthorized
    *         404:
    *           description: error
    */
@@ -102,12 +108,12 @@ const userCouponController = {
 
   /**
    * @swagger
-   * /api/orders/coupons/:id:
+   * /api/orders/coupons/{CouponId}:
    *    get:
    *      description: Find coupon by Id
    *      operationId: getCouponId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -120,10 +126,12 @@ const userCouponController = {
    *          type: integer
    *          format: int64
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
+   *         401:
+   *           description: Unauthorized
    */
   useValidCoupon: (req, res) => {
     return Coupon.findByPk(req.params.id).then(coupon => {

@@ -163,7 +163,7 @@ const userController = {
    *      description: Find User by ID
    *      operationId: getUserId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -176,14 +176,14 @@ const userController = {
    *          type: integer
    *          format: int64
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
    *         401:
-   *           description: error
+   *           description: Unauthorized
    */
   getUserInfo: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.id)) {
@@ -203,12 +203,12 @@ const userController = {
 
   /**
    * @swagger
-   * /api/users/:id:
+   * /api/users/{UserId}:
    *    put:
    *      description: Find User by ID
    *      operationId: getUserId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -251,14 +251,14 @@ const userController = {
    *        in: body
    *        required: false
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
    *         401:
-   *           description: error
+   *           description: Unauthorized
    */
   putUserInfo: async (req, res) => {
     const { name, email, password, birthday, address, tel } = req.body;
@@ -340,7 +340,7 @@ const userController = {
    *    get:
    *      description: get current user by sesson
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -352,12 +352,12 @@ const userController = {
    *        schema:
    *          type: Object
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         401:
-   *           description: error
+   *           description: Unauthorized
    */
   getCurrentUser: (req, res) => {
     return res.status(200).json({

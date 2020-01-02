@@ -11,11 +11,11 @@ const trade = new Trade();
 const paymentController = {
   /**
    * @swagger
-   * /api/payments/:OrderId/users/:UserId:
+   * /api/payments/{OrderId/users/{UserId}:
    *    get:
    *      description: Create Payments by OrderId and UserId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -31,13 +31,13 @@ const paymentController = {
    *        in: path
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
-   *         500:
-   *           description: error
    *         401:
+   *           description: Unauthorized
+   *         500:
    *           description: error
    */
   createPayment: async (req, res) => {
@@ -132,7 +132,7 @@ const paymentController = {
    *         302:
    *           description: Third Party Response Data
    *         401:
-   *           description: error
+   *           description: Unauthorized
    */
   spgatewayCallback: async (req, res) => {
     const { TradeInfo } = req.body;

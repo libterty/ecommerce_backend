@@ -11,7 +11,7 @@ const adminCouponController = {
    *    post:
    *      description: Create Coupons
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -37,12 +37,14 @@ const adminCouponController = {
    *        in: body
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    *         500:
    *           description: error
    */
@@ -125,16 +127,18 @@ const adminCouponController = {
    *    get:
    *      description: Find All coupons
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
+   *         401:
+   *           description: Unauthorized
    *         500:
    *           description: error
    */
@@ -160,7 +164,7 @@ const adminCouponController = {
    *      description: Find coupons by ID
    *      operationId: getCouponId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -170,12 +174,14 @@ const adminCouponController = {
    *        description: ID of coupons to return
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    *         500:
    *           description: error
    */
@@ -197,12 +203,12 @@ const adminCouponController = {
 
   /**
    * @swagger
-   * /api/admin/coupons/:id:
+   * /api/admin/coupons/{CouponsId}:
    *    post:
    *      description: Edit Coupons By Id
    *      operationId: getCouponId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -232,12 +238,14 @@ const adminCouponController = {
    *        in: body
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
    *         400:
    *           description: error
+   *         401:
+   *           description: Unauthorized
    *         500:
    *           description: error
    */
@@ -299,12 +307,12 @@ const adminCouponController = {
 
   /**
    * @swagger
-   * /api/admin/coupons/:id:
+   * /api/admin/coupons/{CouponsId}:
    *    delete:
    *      description: Delete coupons by ID
    *      operationId: getCouponId
    *      parameters:
-   *      - name: Bearer_Token
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
@@ -314,10 +322,12 @@ const adminCouponController = {
    *        description: ID of coupons to return
    *        required: true
    *      security:
-   *        - bearerAuth: []
+   *        - Authorization: []
    *      responses:
    *         200:
    *           description: success
+   *         401:
+   *           description: Unauthorized
    *         500:
    *           description: error
    */
