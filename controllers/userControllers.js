@@ -8,9 +8,42 @@ const helpers = require('../_helpers');
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 
 const userController = {
+
+  /**
+   * @swagger
+   * /signUp:
+   *    get:
+   *      description: Register user
+   *      parameters:
+   *      - name: name
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: email
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: password
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: passwordCheck
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   signUp: (req, res) => {
     const { passwordCheck, password, email, name } = req.body;
-    if (!password || !passwordCheck || !email) {
+    if (!name || !password || !passwordCheck || !email) {
       return res.status(400).json({
         status: 'error',
         message: 'All fields are required'
@@ -49,6 +82,31 @@ const userController = {
       });
     }
   },
+
+  /**
+   * @swagger
+   * /signin:
+   *    get:
+   *      description: Signin user
+   *      parameters:
+   *      - name: email
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: password
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: error
+   */
   signIn: (req, res) => {
     if (!req.body.email || !req.body.password) {
       return res.status(400).json({
@@ -98,6 +156,36 @@ const userController = {
       });
     });
   },
+
+  /**
+   * @swagger
+   * /users/:id:
+   *    get:
+   *      description: Find User by ID
+   *      operationId: getUserId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: error
+   */
   getUserInfo: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.id)) {
       return res
@@ -113,6 +201,66 @@ const userController = {
         .json({ status: 'error', message: 'Can not find any user data' });
     });
   },
+
+  /**
+   * @swagger
+   * /users/:id:
+   *    put:
+   *      description: Find User by ID
+   *      operationId: getUserId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: name
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: email
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: password
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: birthday
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: address
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: tel
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: error
+   */
   putUserInfo: async (req, res) => {
     const { name, email, password, birthday, address, tel } = req.body;
     if (helpers.getUser(req).id !== Number(req.params.id)) {

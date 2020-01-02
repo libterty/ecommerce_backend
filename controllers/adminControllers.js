@@ -70,7 +70,8 @@ const adminController = {
    *      operationId: getProductById
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: productId
@@ -110,55 +111,68 @@ const adminController = {
    *      operationId: placeProduct
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: name
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: description
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: cost
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: price
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: height
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: width
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: length
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: weight
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: material
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: CategoryId
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: quantity
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: colorName
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      security:
@@ -266,7 +280,8 @@ const adminController = {
    *      operationId: replaceProduct
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: productId
@@ -277,43 +292,53 @@ const adminController = {
    *          type: integer
    *          format: int64
    *      - name: name
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: false
    *      - name: description
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: false
    *      - name: cost
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: false
    *      - name: price
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: false
    *      - name: height
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: false
    *      - name: width
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: false
    *      - name: length
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: false
    *      - name: weight
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: false
    *      - name: material
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: false
    *      - name: CategoryId
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: false
    *      security:
@@ -378,19 +403,23 @@ const adminController = {
    *      operationId: placeColorId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: ProductId
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: name
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: quantity
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      security:
@@ -437,7 +466,8 @@ const adminController = {
    *      operationId: replaceColorId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: productId
@@ -448,7 +478,8 @@ const adminController = {
    *          type: integer
    *          format: int64
    *      - name: name
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      security:
@@ -526,7 +557,8 @@ const adminController = {
    *      operationId: replaceInventoryId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: InventoryId
@@ -537,7 +569,8 @@ const adminController = {
    *          type: integer
    *          format: int64
    *      - name: quantity
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      security:
@@ -577,7 +610,8 @@ const adminController = {
    *      operationId: placeProductId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: ProductId
@@ -627,7 +661,8 @@ const adminController = {
    *      operationId: deleteProductById
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: ProductId
@@ -676,7 +711,8 @@ const adminController = {
    *      description: Find all Orders
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      security:
@@ -720,7 +756,8 @@ const adminController = {
    *      operationId: placeOrderId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: OrderId
@@ -764,7 +801,8 @@ const adminController = {
    *      description: Find all Shippings
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      security:
@@ -794,7 +832,8 @@ const adminController = {
    *      operationId: replaceShippingId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: ShippingId
@@ -805,7 +844,8 @@ const adminController = {
    *          type: integer
    *          format: int64
    *      - name: shippingStatus
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      security:
@@ -860,7 +900,8 @@ const adminController = {
    *      description: Find all Payments
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      security:

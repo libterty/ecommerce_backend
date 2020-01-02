@@ -19,23 +19,28 @@ const orderController = {
    *      description: Create Orders for Existing Product
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: CartId
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: UserId
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: address
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: false
    *      - name: tel
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: false
    *      security:
@@ -151,7 +156,8 @@ const orderController = {
    *      operationId: getOrderId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: UserId
@@ -201,7 +207,8 @@ const orderController = {
    *      operationId: replaceOrderById
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: OrderId
@@ -219,31 +226,38 @@ const orderController = {
    *          type: integer
    *          format: int64
    *      - name: name
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: false
    *      - name: address
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: email
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: false
    *      - name: phone
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: shippingMethod
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: shippingStatus
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: shippingFee
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      security:
@@ -363,7 +377,8 @@ const orderController = {
    *      operationId: deleteOrderById
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: OrderId
@@ -441,7 +456,8 @@ const orderController = {
    *      operationId: getUserId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: UserId

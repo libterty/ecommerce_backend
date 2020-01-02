@@ -27,6 +27,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user1',
             email: 'user1@example.com',
             password: '123456',
             passwordCheck: '12345678'
@@ -44,6 +45,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user1',
             email: 'user1@example.com',
             password: '12345',
             passwordCheck: '12345'
@@ -63,6 +65,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user1',
             email: 'user1@example.com',
             password: '123456',
             passwordCheck: ''
@@ -80,6 +83,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user1',
             email: 'test1@example.com',
             password: '12345678',
             passwordCheck: '12345678'
@@ -99,6 +103,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user2',
             email: 'user2@example.com',
             password: '123456',
             passwordCheck: '123456'

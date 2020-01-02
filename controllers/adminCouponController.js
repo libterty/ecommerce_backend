@@ -12,23 +12,28 @@ const adminCouponController = {
    *      description: Create Coupons
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: couponCode
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: limitedUsage
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: expireDate
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: percent
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      security:
@@ -121,7 +126,8 @@ const adminCouponController = {
    *      description: Find All coupons
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      security:
@@ -155,7 +161,8 @@ const adminCouponController = {
    *      operationId: getCouponId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: CouponsId
@@ -196,7 +203,8 @@ const adminCouponController = {
    *      operationId: getCouponId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: CouponsId
@@ -204,19 +212,23 @@ const adminCouponController = {
    *        description: ID of coupons to return
    *        required: true
    *      - name: couponCode
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: limitedUsage
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: expireDate
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: percent
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      security:
@@ -293,7 +305,8 @@ const adminCouponController = {
    *      operationId: getCouponId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: CouponsId

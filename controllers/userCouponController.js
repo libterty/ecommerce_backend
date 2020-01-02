@@ -6,6 +6,32 @@ const CouponItem = db.CouponItem;
 const Op = Sequelize.Op;
 
 const userCouponController = {
+  /**
+   * @swagger
+   * /users/coupons:
+   *    get:
+   *      description: Find coupons belongs to user
+   *      operationId: getUserId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: session
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   getCoupons: async (req, res) => {
     try {
       let userCoupons = await User.findByPk(req.user.id, {
@@ -34,6 +60,25 @@ const userCouponController = {
     }
   },
 
+  /**
+   * @swagger
+   * /orders/coupons:
+   *    get:
+   *      description: Find all coupons withIn Range
+   *      parameters:
+   *      - name: Bearer_Token
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         404:
+   *           description: error
+   */
   getValidCoupons: (req, res) => {
     return Coupon.findAll({
       where: {
@@ -55,6 +100,31 @@ const userCouponController = {
     });
   },
 
+  /**
+   * @swagger
+   * /orders/coupons/:id:
+   *    get:
+   *      description: Find coupon by Id
+   *      operationId: getCouponId
+   *      parameters:
+   *      - name: Bearer_Token
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: CouponId
+   *        in: path
+   *        description: ID of coupon to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   */
   useValidCoupon: (req, res) => {
     return Coupon.findByPk(req.params.id).then(coupon => {
       coupon.decrement('limited_usage').then(() => {

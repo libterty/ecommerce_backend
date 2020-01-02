@@ -16,15 +16,18 @@ const paymentController = {
    *      description: Create Payments by OrderId and UserId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: OrderId
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: path
    *        required: true
    *      - name: UserId
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: path
    *        required: true
    *      security:
@@ -101,23 +104,28 @@ const paymentController = {
    *      description: Sending Data to Third Party
    *      parameters:
    *      - name: PayGateWay
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: path
    *        required: true
    *      - name: MerchantID
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: TradeInfo
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: TradeSha
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      - name: Version
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: body
    *        required: true
    *      responses:

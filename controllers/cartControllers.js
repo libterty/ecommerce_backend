@@ -15,7 +15,8 @@ const cartController = {
    *      operationId: getCartId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: CartId
@@ -88,7 +89,8 @@ const cartController = {
    *      description: Create Cart and CartItem
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: CartId
@@ -99,15 +101,18 @@ const cartController = {
    *          type: integer
    *          format: int64
    *      - name: quantity
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: productId
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: true
    *      - name: colorId
-   *        type: integer
+   *        schema:
+   *          type: integer
    *        in: body
    *        required: false
    *      security:
@@ -187,7 +192,8 @@ const cartController = {
    *      operationId: getCartId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: CartId
@@ -241,7 +247,8 @@ const cartController = {
    *      operationId: getCartId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: CartId
@@ -294,7 +301,8 @@ const cartController = {
    *      operationId: getCartId
    *      parameters:
    *      - name: Bearer_Token
-   *        type: string
+   *        schema:
+   *          type: string
    *        in: header
    *        required: true
    *      - name: CartId
