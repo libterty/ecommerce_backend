@@ -6,6 +6,36 @@ const CouponItem = db.CouponItem;
 const Op = Sequelize.Op;
 
 const userCouponController = {
+  /**
+   * @swagger
+   * /api/users/coupons:
+   *    get:
+   *      description: Find coupons belongs to user
+   *      operationId: getUserId
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: session
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   *         500:
+   *           description: error
+   */
   getCoupons: async (req, res) => {
     try {
       let userCoupons = await User.findByPk(req.user.id, {
@@ -34,6 +64,27 @@ const userCouponController = {
     }
   },
 
+  /**
+   * @swagger
+   * /api/orders/coupons:
+   *    get:
+   *      description: Find all coupons withIn Range
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         401:
+   *           description: Unauthorized
+   *         404:
+   *           description: error
+   */
   getValidCoupons: (req, res) => {
     return Coupon.findAll({
       where: {
@@ -55,6 +106,33 @@ const userCouponController = {
     });
   },
 
+  /**
+   * @swagger
+   * /api/orders/coupons/{CouponId}:
+   *    get:
+   *      description: Find coupon by Id
+   *      operationId: getCouponId
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: CouponId
+   *        in: path
+   *        description: ID of coupon to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         401:
+   *           description: Unauthorized
+   */
   useValidCoupon: (req, res) => {
     return Coupon.findByPk(req.params.id).then(coupon => {
       coupon.decrement('limited_usage').then(() => {

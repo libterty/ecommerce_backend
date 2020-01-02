@@ -12,8 +12,49 @@ const Shipping = db.Shipping;
 const Op = Sequelize.Op;
 
 const orderController = {
+  /**
+   * @swagger
+   * /api/orders/create:
+   *    post:
+   *      description: Create Orders for Existing Product
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: CartId
+   *        schema:
+   *          type: integer
+   *        in: body
+   *        required: true
+   *      - name: UserId
+   *        schema:
+   *          type: integer
+   *        in: body
+   *        required: true
+   *      - name: address
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: tel
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   */
   createOrder: async (req, res) => {
-    const { CartId, UserId } = req.body;
+    const { CartId, UserId, address, tel } = req.body;
 
     if (helpers.getUser(req).id !== Number(UserId)) {
       return res
@@ -50,9 +91,9 @@ const orderController = {
         shipping_status: '未出貨',
         payment_status: '未付款',
         name: UserInfo.name,
-        address: UserInfo.address ? UserInfo.address : '',
+        address: UserInfo.address ? UserInfo.address : req.body.address,
         email: UserInfo.email,
-        phone: UserInfo.tel ? UserInfo.tel : '',
+        phone: UserInfo.tel ? UserInfo.tel : req.body.tel,
         UserId: UserInfo.id
       }).then(order => {
         for (let i = 0; i < tempCartItems.length; i++) {
@@ -107,7 +148,35 @@ const orderController = {
       });
     });
   },
-
+  /**
+   * @swagger
+   * /api/orders/{UserId}:
+   *    get:
+   *      description: Find Order by ID
+   *      operationId: getOrderId
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   */
   getOrder: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
@@ -130,7 +199,77 @@ const orderController = {
         .json({ status: 'error', message: 'Nothing in your order list' });
     });
   },
-
+  /**
+   * @swagger
+   * /api/orders/{OrderId}/users/{UserId}:
+   *    put:
+   *      description: Revise order by it's own user
+   *      operationId: replaceOrderById
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: OrderId
+   *        in: path
+   *        description: ID of order to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: name
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: address
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: email
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: phone
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: shippingMethod
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: shippingStatus
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: shippingFee
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   */
   putOrder: (req, res) => {
     const {
       name,
@@ -230,7 +369,42 @@ const orderController = {
         .json({ status: 'error', message: 'Cannot find this Order' });
     });
   },
-
+  /**
+   * @swagger
+   * /api/orders/{OrderId}/users/{UserId}:
+   *    delete:
+   *      description: Delete Existing Order
+   *      operationId: deleteOrderById
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: OrderId
+   *        in: path
+   *        description: ID of order to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   */
   deleteOrder: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
@@ -272,6 +446,55 @@ const orderController = {
       return res
         .status(400)
         .json({ status: 'error', message: 'Cannot find this order' });
+    });
+  },
+  /**
+   * @swagger
+   * /api/orders/users/{UserId}:
+   *    get:
+   *      description: Find all user's order by ID
+   *      operationId: getUserId
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   */
+  getOrders: (req, res) => {
+    if (helpers.getUser(req).id !== Number(req.params.UserId)) {
+      return res
+        .status(401)
+        .json({ status: 'error', message: 'Can not find any user data' });
+    }
+
+    return Order.findAll({
+      where: {
+        UserId: req.params.UserId
+      }
+    }).then(orders => {
+      if (orders.length > 0) {
+        return res.status(200).json({ status: 'success', orders });
+      }
+      return res
+        .status(400)
+        .json({ status: 'error', message: "You don't have any orders record" });
     });
   }
 };

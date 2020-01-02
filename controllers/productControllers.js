@@ -8,6 +8,15 @@ const Category = db.Category;
 const Op = Sequelize.Op;
 
 const productController = {
+  /**
+   * @swagger
+   * /api/furnitures:
+   *    get:
+   *      description: Find All orders
+   *      responses:
+   *         200:
+   *           description: success
+   */
   getHomePageProducts: (req, res) => {
     return Product.findAll().then(async products => {
       const Images = await Image.findAll().then(images => images);
@@ -21,11 +30,30 @@ const productController = {
             ).url
           : null
       }));
-      // console.log('products log', products);
       return res.status(200).json({ status: 'success', products });
     });
   },
 
+  /**
+   * @swagger
+   * /api/furnitures/pagination:
+   *    get:
+   *      description: Find All orders with Pagination
+   *      parameters:
+   *      - name: page
+   *        schema:
+   *          type: string
+   *        in: query
+   *        required: false
+   *      - name: categoryId
+   *        schema:
+   *          type: string
+   *        in: query
+   *        required: false
+   *      responses:
+   *         200:
+   *           description: success
+   */
   getProducts: (req, res) => {
     const pageLimit = 10;
     let offset = 0;
@@ -70,6 +98,24 @@ const productController = {
     });
   },
 
+  /**
+   * @swagger
+   * /api/furnitures/{ProductId}:
+   *    get:
+   *      description: Find product by Id
+   *      operationId: getProductId
+   *      parameters:
+   *      - name: ProductId
+   *        in: path
+   *        description: ID of product to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      responses:
+   *         200:
+   *           description: success
+   */
   getProduct: (req, res) => {
     return Product.findByPk(req.params.id).then(async product => {
       if (product) {
@@ -102,6 +148,21 @@ const productController = {
     });
   },
 
+  /**
+   * @swagger
+   * /api/furnitures/search:
+   *    get:
+   *      description: Find product by search
+   *      parameters:
+   *      - name: items
+   *        schema:
+   *          type: string
+   *        in: query
+   *        required: false
+   *      responses:
+   *         200:
+   *           description: success
+   */
   searchProducts: (req, res) => {
     const search = decodeURI(req.query.items);
 

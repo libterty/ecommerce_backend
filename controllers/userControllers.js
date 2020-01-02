@@ -8,9 +8,41 @@ const helpers = require('../_helpers');
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 
 const userController = {
+  /**
+   * @swagger
+   * /api/signUp:
+   *    get:
+   *      description: Register user
+   *      parameters:
+   *      - name: name
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: email
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: password
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: passwordCheck
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   signUp: (req, res) => {
     const { passwordCheck, password, email, name } = req.body;
-    if (!password || !passwordCheck || !email) {
+    if (!name || !password || !passwordCheck || !email) {
       return res.status(400).json({
         status: 'error',
         message: 'All fields are required'
@@ -49,6 +81,31 @@ const userController = {
       });
     }
   },
+
+  /**
+   * @swagger
+   * /api/signin:
+   *    get:
+   *      description: Signin user
+   *      parameters:
+   *      - name: email
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      - name: password
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: true
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: error
+   */
   signIn: (req, res) => {
     if (!req.body.email || !req.body.password) {
       return res.status(400).json({
@@ -98,6 +155,36 @@ const userController = {
       });
     });
   },
+
+  /**
+   * @swagger
+   * /api/users/:id:
+   *    get:
+   *      description: Find User by ID
+   *      operationId: getUserId
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   */
   getUserInfo: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.id)) {
       return res
@@ -113,6 +200,71 @@ const userController = {
         .json({ status: 'error', message: 'Can not find any user data' });
     });
   },
+
+  /**
+   * @swagger
+   * /api/users/{UserId}:
+   *    put:
+   *      description: Find User by ID
+   *      operationId: getUserId
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: UserId
+   *        in: path
+   *        description: ID of user to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: name
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: email
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: password
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: birthday
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: address
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: tel
+   *        schema:
+   *          type: string
+   *        in: body
+   *        required: false
+   *      - name: url
+   *        schema:
+   *          type: string
+   *        in: file
+   *        required: true
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   */
   putUserInfo: async (req, res) => {
     const { name, email, password, birthday, address, tel } = req.body;
     if (helpers.getUser(req).id !== Number(req.params.id)) {
@@ -184,6 +336,41 @@ const userController = {
               .json({ status: 'success', message: 'update info success 2' });
           });
       }
+    });
+  },
+
+  /**
+   * @swagger
+   * /api/get_current_user:
+   *    get:
+   *      description: get current user by sesson
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      - name: user
+   *        in: session
+   *        description: Session of user to return
+   *        required: true
+   *        schema:
+   *          type: Object
+   *      security:
+   *        - Authorization: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         401:
+   *           description: Unauthorized
+   */
+  getCurrentUser: (req, res) => {
+    return res.status(200).json({
+      status: 'success',
+      id: helpers.getUser(req).id,
+      name: helpers.getUser(req).name,
+      email: helpers.getUser(req).email,
+      isAdmin: helpers.getUser(req).admin
     });
   }
 };

@@ -152,6 +152,7 @@ router.get(
   userCouponController.useValidCoupon
 );
 router.post('/orders/create', authenticated, orderController.createOrder);
+router.get('/orders/users/:UserId', authenticated, orderController.getOrders);
 // orderController.getOrder params are default for UserId
 router.get('/orders/:UserId', authenticated, orderController.getOrder);
 // orderController.putOrders params are default for OrderId and UserId
@@ -180,7 +181,7 @@ router.get('/furnitures/search', productController.searchProducts);
 router.get('/furnitures/:id', productController.getProduct);
 // user coupons
 router.get('/users/coupons', authenticated, userCouponController.getCoupons);
-
+router.get('/get_current_user', authenticated, userController.getCurrentUser);
 router.get('/users/:id', authenticated, userController.getUserInfo);
 router.put(
   '/users/:id',

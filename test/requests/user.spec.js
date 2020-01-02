@@ -27,6 +27,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user1',
             email: 'user1@example.com',
             password: '123456',
             passwordCheck: '12345678'
@@ -44,6 +45,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user1',
             email: 'user1@example.com',
             password: '12345',
             passwordCheck: '12345'
@@ -63,6 +65,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user1',
             email: 'user1@example.com',
             password: '123456',
             passwordCheck: ''
@@ -80,6 +83,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user1',
             email: 'test1@example.com',
             password: '12345678',
             passwordCheck: '12345678'
@@ -99,6 +103,7 @@ describe('# User Request', () => {
         request(app)
           .post('/api/signup')
           .send({
+            name: 'user2',
             email: 'user2@example.com',
             password: '123456',
             passwordCheck: '123456'
@@ -388,6 +393,54 @@ describe('# User Request', () => {
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
             expect(res.body.message).to.equal('update info success 2');
+            done();
+          });
+      });
+
+      after(async () => {
+        this.getUser.restore();
+        await db.User.destroy({ where: {}, truncate: true });
+      });
+    });
+  });
+
+  context('# Get Current user', () => {
+    describe('When request to get user session data', () => {
+      before(async () => {
+        let test1Token;
+        this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 1, name: 'test1', email: 'test1@example.com', admin: false });
+        await db.User.create({
+          name: 'test1',
+          email: 'test1@example.com',
+          password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
+          admin: false
+        });
+      });
+
+      it('should return 200 and test1 token', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'test1@example.com', password: '12345678' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.token).not.to.equal(undefined);
+            test1Token = res.body.token;
+            done();
+          });
+      });
+
+      it('should return 200 when test1 is exist and get session data', done => {
+        request(app)
+          .get('/api/get_current_user')
+          .set('Authorization', 'bearer ' + test1Token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.name).to.equal('test1');
+            expect(res.body.email).to.equal('test1@example.com');
             done();
           });
       });

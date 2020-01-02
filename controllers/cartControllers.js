@@ -7,6 +7,26 @@ const Image = db.Image;
 const Color = db.Color;
 
 const cartController = {
+  /**
+   * @swagger
+   * /api/cart:
+   *    get:
+   *      description: Find Cart by sesssion CartID
+   *      operationId: getCartId
+   *      parameters:
+   *      - name: CartId
+   *        in: cookie
+   *        description: ID of cart to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      responses:
+   *         200:
+   *           description: success
+   *         500:
+   *           description: error
+   */
   getCart: async (req, res) => {
     try {
       if (!req.session.cartId) {
@@ -54,6 +74,41 @@ const cartController = {
         .json({ status: 'error', message: 'Fail to fetch cart data' });
     }
   },
+
+  /**
+   * @swagger
+   * /api/cart:
+   *    post:
+   *      description: Create Cart and CartItem
+   *      parameters:
+   *      - name: CartId
+   *        in: cookie
+   *        description: ID of cart to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      - name: quantity
+   *        schema:
+   *          type: integer
+   *        in: body
+   *        required: true
+   *      - name: productId
+   *        schema:
+   *          type: integer
+   *        in: body
+   *        required: true
+   *      - name: colorId
+   *        schema:
+   *          type: integer
+   *        in: body
+   *        required: false
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   postCart: async (req, res) => {
     try {
       return Cart.findOrCreate({
@@ -114,6 +169,27 @@ const cartController = {
         .json({ status: 'error', message: 'Fail to add to cart' });
     }
   },
+
+  /**
+   * @swagger
+   * /api/cart/{CartId}/add:
+   *    post:
+   *      description: Add quantity for CartItem
+   *      operationId: getCartId
+   *      parameters:
+   *      - name: CartId
+   *        in: cookie
+   *        description: ID of cart to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   addCartItem: async (req, res) => {
     try {
       const cart = await Cart.findByPk(req.session.cartId);
@@ -129,6 +205,7 @@ const cartController = {
         quantity: cartItem.quantity + 1,
         price: cartItem.price
       });
+      // await cartItem.increment('quantity');
 
       return res.json({
         status: 'success',
@@ -140,6 +217,27 @@ const cartController = {
         .json({ status: 'error', message: 'Fail to add up cart item' });
     }
   },
+
+  /**
+   * @swagger
+   * /api/cart/{CartId}/sub:
+   *    post:
+   *      description: Sub quantity for CartItem
+   *      operationId: getCartId
+   *      parameters:
+   *      - name: CartId
+   *        in: cookie
+   *        description: ID of cart to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   subCartItem: async (req, res) => {
     try {
       const cart = await Cart.findByPk(req.session.cartId);
@@ -154,6 +252,7 @@ const cartController = {
         quantity: cartItem.quantity - 1 >= 1 ? cartItem.quantity - 1 : 1,
         price: cartItem.price
       });
+      // await cartItem.decrement('quantity');
 
       return res.json({
         status: 'success',
@@ -165,6 +264,27 @@ const cartController = {
         .json({ status: 'error', message: 'Fail to subtract cart item' });
     }
   },
+
+  /**
+   * @swagger
+   * /api/cart/{CartId}:
+   *    delete:
+   *      description: Delete CartItem
+   *      operationId: getCartId
+   *      parameters:
+   *      - name: CartId
+   *        in: cookie
+   *        description: ID of cart to return
+   *        required: true
+   *        schema:
+   *          type: integer
+   *          format: int64
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   */
   deleteCartItem: async (req, res) => {
     try {
       const cart = await Cart.findByPk(req.session.cartId);
