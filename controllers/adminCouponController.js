@@ -7,7 +7,7 @@ const CouponItem = db.CouponItem;
 const adminCouponController = {
   /**
    * @swagger
-   * /admin/coupons:
+   * /api/admin/coupons:
    *    post:
    *      description: Create Coupons
    *      parameters:
@@ -121,7 +121,7 @@ const adminCouponController = {
 
   /**
    * @swagger
-   * /admin/coupons:
+   * /api/admin/coupons:
    *    get:
    *      description: Find All coupons
    *      parameters:
@@ -155,7 +155,7 @@ const adminCouponController = {
 
   /**
    * @swagger
-   * /admin/coupons/:id:
+   * /api/admin/coupons/:id:
    *    get:
    *      description: Find coupons by ID
    *      operationId: getCouponId
@@ -197,7 +197,7 @@ const adminCouponController = {
 
   /**
    * @swagger
-   * /admin/coupons/:id:
+   * /api/admin/coupons/:id:
    *    post:
    *      description: Edit Coupons By Id
    *      operationId: getCouponId
@@ -299,7 +299,7 @@ const adminCouponController = {
 
   /**
    * @swagger
-   * /admin/coupons/:id:
+   * /api/admin/coupons/:id:
    *    delete:
    *      description: Delete coupons by ID
    *      operationId: getCouponId

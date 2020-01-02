@@ -11,7 +11,7 @@ const trade = new Trade();
 const paymentController = {
   /**
    * @swagger
-   * /payments/:OrderId/users/:UserId:
+   * /api/payments/:OrderId/users/:UserId:
    *    get:
    *      description: Create Payments by OrderId and UserId
    *      parameters:
@@ -99,7 +99,7 @@ const paymentController = {
   },
   /**
    * @swagger
-   * /spgateway/callback:
+   * /api/spgateway/callback:
    *    post:
    *      description: Sending Data to Third Party
    *      parameters:

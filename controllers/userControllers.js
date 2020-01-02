@@ -8,10 +8,9 @@ const helpers = require('../_helpers');
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 
 const userController = {
-
   /**
    * @swagger
-   * /signUp:
+   * /api/signUp:
    *    get:
    *      description: Register user
    *      parameters:
@@ -85,7 +84,7 @@ const userController = {
 
   /**
    * @swagger
-   * /signin:
+   * /api/signin:
    *    get:
    *      description: Signin user
    *      parameters:
@@ -159,7 +158,7 @@ const userController = {
 
   /**
    * @swagger
-   * /users/:id:
+   * /api/users/:id:
    *    get:
    *      description: Find User by ID
    *      operationId: getUserId
@@ -204,7 +203,7 @@ const userController = {
 
   /**
    * @swagger
-   * /users/:id:
+   * /api/users/:id:
    *    put:
    *      description: Find User by ID
    *      operationId: getUserId

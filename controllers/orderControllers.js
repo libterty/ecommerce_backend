@@ -14,7 +14,7 @@ const Op = Sequelize.Op;
 const orderController = {
   /**
    * @swagger
-   * /orders/create:
+   * /api/orders/create:
    *    post:
    *      description: Create Orders for Existing Product
    *      parameters:
@@ -150,7 +150,7 @@ const orderController = {
   },
   /**
    * @swagger
-   * /orders/:UserId:
+   * /api/orders/:UserId:
    *    get:
    *      description: Find Order by ID
    *      operationId: getOrderId
@@ -201,7 +201,7 @@ const orderController = {
   },
   /**
    * @swagger
-   * /orders/:OrderId/users/:UserId:
+   * /api/orders/:OrderId/users/:UserId:
    *    put:
    *      description: Revise order by it's own user
    *      operationId: replaceOrderById
@@ -371,7 +371,7 @@ const orderController = {
   },
   /**
    * @swagger
-   * /orders/:OrderId/users/:UserId:
+   * /api/orders/:OrderId/users/:UserId:
    *    delete:
    *      description: Delete Existing Order
    *      operationId: deleteOrderById
@@ -450,7 +450,7 @@ const orderController = {
   },
   /**
    * @swagger
-   * /orders/users/:UserId:
+   * /api/orders/users/:UserId:
    *    get:
    *      description: Find all user's order by ID
    *      operationId: getUserId

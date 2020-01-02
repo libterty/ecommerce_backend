@@ -8,7 +8,7 @@ const Op = Sequelize.Op;
 const userCouponController = {
   /**
    * @swagger
-   * /users/coupons:
+   * /api/users/coupons:
    *    get:
    *      description: Find coupons belongs to user
    *      operationId: getUserId
@@ -62,7 +62,7 @@ const userCouponController = {
 
   /**
    * @swagger
-   * /orders/coupons:
+   * /api/orders/coupons:
    *    get:
    *      description: Find all coupons withIn Range
    *      parameters:
@@ -102,7 +102,7 @@ const userCouponController = {
 
   /**
    * @swagger
-   * /orders/coupons/:id:
+   * /api/orders/coupons/:id:
    *    get:
    *      description: Find coupon by Id
    *      operationId: getCouponId

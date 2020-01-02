@@ -10,7 +10,7 @@ const Op = Sequelize.Op;
 const productController = {
   /**
    * @swagger
-   * /furnitures:
+   * /api/furnitures:
    *    get:
    *      description: Find All orders
    *      responses:
@@ -36,7 +36,7 @@ const productController = {
 
   /**
    * @swagger
-   * /furnitures/pagination:
+   * /api/furnitures/pagination:
    *    get:
    *      description: Find All orders with Pagination
    *      parameters:
@@ -100,7 +100,7 @@ const productController = {
 
   /**
    * @swagger
-   * /furnitures/:id:
+   * /api/furnitures/:id:
    *    get:
    *      description: Find product by Id
    *      operationId: getProductId
@@ -150,7 +150,7 @@ const productController = {
 
   /**
    * @swagger
-   * /furnitures/search:
+   * /api/furnitures/search:
    *    get:
    *      description: Find product by search
    *      parameters:

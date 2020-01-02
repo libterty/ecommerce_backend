@@ -19,7 +19,7 @@ const IMGUR_CLIENT_ID = process.env.imgur_id;
 const adminController = {
   /**
    * @swagger
-   * /admin:
+   * /api/admin:
    *    get:
    *      description: This should return message with 'Hello Admin!'
    *      parameters:
@@ -38,7 +38,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/products:
+   * /api/admin/products:
    *    get:
    *      description: This should return all products
    *      parameters:
@@ -64,7 +64,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/products/:id:
+   * /api/admin/products/:id:
    *    get:
    *      description: Find Product by ID
    *      operationId: getProductById
@@ -105,7 +105,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/products:
+   * /api/admin/products:
    *    post:
    *      description: Create New Prodcuts
    *      operationId: placeProduct
@@ -274,7 +274,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/products/:id:
+   * /api/admin/products/:id:
    *    put:
    *      description: Revise Existing Prodcuts
    *      operationId: replaceProduct
@@ -397,7 +397,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/products/colors:
+   * /api/admin/products/colors:
    *    post:
    *      description: Create Color for Existing Product
    *      operationId: placeColorId
@@ -460,7 +460,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/products/colors/:id:
+   * /api/admin/products/colors/:id:
    *    put:
    *      description: Revise Color for Existing Product
    *      operationId: replaceColorId
@@ -551,7 +551,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/products/inventories/:id:
+   * /api/admin/products/inventories/:id:
    *    put:
    *      description: Revise Inventory for Existing Product
    *      operationId: replaceInventoryId
@@ -604,7 +604,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/products/images/:id:
+   * /api/admin/products/images/:id:
    *    post:
    *      description: Create Image for Existing Product
    *      operationId: placeProductId
@@ -655,7 +655,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/products/:id:
+   * /api/admin/products/:id:
    *    delete:
    *      description: Delete Existing Product
    *      operationId: deleteProductById
@@ -706,7 +706,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/orders:
+   * /api/admin/orders:
    *    get:
    *      description: Find all Orders
    *      parameters:
@@ -750,7 +750,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/orders/notify/:OrderId:
+   * /api/admin/orders/notify/:OrderId:
    *    get:
    *      description: Send Email Notification to users
    *      operationId: placeOrderId
@@ -826,7 +826,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/shippings/:id:
+   * /api/admin/shippings/:id:
    *    put:
    *      description: Revise Shipping for Existing Product
    *      operationId: replaceShippingId
@@ -895,7 +895,7 @@ const adminController = {
   },
   /**
    * @swagger
-   * /admin/payments:
+   * /api/admin/payments:
    *    get:
    *      description: Find all Payments
    *      parameters:

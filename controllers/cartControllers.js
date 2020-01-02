@@ -9,7 +9,7 @@ const Color = db.Color;
 const cartController = {
   /**
    * @swagger
-   * /cart:
+   * /api/cart:
    *    get:
    *      description: Find Cart by sesssion CartID
    *      operationId: getCartId
@@ -84,7 +84,7 @@ const cartController = {
 
   /**
    * @swagger
-   * /cart:
+   * /api/cart:
    *    post:
    *      description: Create Cart and CartItem
    *      parameters:
@@ -186,7 +186,7 @@ const cartController = {
 
   /**
    * @swagger
-   * /cart/:id/add:
+   * /api/cart/:id/add:
    *    post:
    *      description: Add quantity for CartItem
    *      operationId: getCartId
@@ -241,7 +241,7 @@ const cartController = {
 
   /**
    * @swagger
-   * /cart/:id/sub:
+   * /api/cart/:id/sub:
    *    post:
    *      description: Sub quantity for CartItem
    *      operationId: getCartId
@@ -295,7 +295,7 @@ const cartController = {
 
   /**
    * @swagger
-   * /cart/:id:
+   * /api/cart/:id:
    *    delete:
    *      description: Delete CartItem
    *      operationId: getCartId
