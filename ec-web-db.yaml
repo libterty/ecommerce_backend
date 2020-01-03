@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ec-web-db
+  labels:
+    run: ec-web-db
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+  selector:
+    app: ec-web-db
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ec-web-db
+spec:
+  selector:
+    matchLabels:
+      app: ec-web-db
+  template:
+    metadata:
+      labels:
+        app: ec-web-db
+    spec:
+      containers:
+      - name: ec-web-db
+        image: libterty8186/server_web
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3306

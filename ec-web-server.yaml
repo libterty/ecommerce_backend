@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ec-web-server
+spec:
+  selector:
+    app: ec-web-server
+  ports:
+  - port: 3000
+    targetPort: 3000
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ec-web-server
+spec:
+  selector:
+    matchLabels:
+      app: ec-web-server
+  template:
+    metadata:
+      labels:
+        app: ec-web-server
+    spec:
+      containers:
+      - name: ec-web-server
+        image: libterty8186/server_web
+        ports:
+        - containerPort: 3000
