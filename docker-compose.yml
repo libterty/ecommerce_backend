@@ -1,0 +1,20 @@
+version: '3.2'
+
+services: 
+    web:
+        image: node/myapp
+        container_name: web
+        volumes: 
+            - /usr/src/app
+        ports: 
+            - "3000:3000"
+        depends_on: 
+            - mysql
+        command: /bin/bash -c "npm install && npm run dev"
+    mysql:
+        image: mysql
+        container_name: mysqldatabase
+        ports:
+            - "3308:3308"
+        volumes:
+            - ./datadir:/var/lib/mysql
