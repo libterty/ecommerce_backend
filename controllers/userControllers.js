@@ -370,6 +370,8 @@ const userController = {
       id: helpers.getUser(req).id,
       name: helpers.getUser(req).name,
       email: helpers.getUser(req).email,
+      address: helpers.getUser(req).address ? helpers.getUser(req).address : '',
+      tel: helpers.getUser(req).tel ? helpers.getUser(req).tel : '',
       isAdmin: helpers.getUser(req).admin
     });
   }

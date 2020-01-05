@@ -1,1 +1,22 @@
-undefined
+# ignore
+*.env
+*.env.local
+*.env.*.local
+
+# Ingore code coverage
+coverage/
+.nyc_output/
+
+# Ingore file upload
+temp/
+# upload/
+
+# local file system
+.DS_Store
+*.DS_Store
+
+# Dependency directories
+node_modules/
+
+# Secure Key
+super_secret.txt

@@ -1,8 +1,8 @@
-FROM node:12
+FROM node:latest
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
-COPY package.json .
+COPY package.json ./
 RUN npm install
 COPY . .
+EXPOSE 3000
 CMD ["npm", "start"]

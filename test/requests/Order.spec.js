@@ -283,6 +283,14 @@ describe('# Order Request', () => {
           ProductId: 3,
           ColorId: 4
         });
+        await db.Image.create({
+          url: 'test1.jpg',
+          ProductId: 2
+        });
+        await db.Image.create({
+          url: 'test2.jpg',
+          ProductId: 3
+        })
       });
 
       it('should return 200 and test1 token', done => {
@@ -335,6 +343,7 @@ describe('# Order Request', () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Order.destroy({ where: {}, truncate: true });
         await db.OrderItem.destroy({ where: {}, truncate: true });
+        await db.Image.destroy({ where: {}, truncate: true });
       });
     });
 

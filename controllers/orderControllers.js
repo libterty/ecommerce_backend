@@ -9,6 +9,7 @@ const Inventory = db.Inventory;
 const Order = db.Order;
 const OrderItem = db.OrderItem;
 const Shipping = db.Shipping;
+const Image = db.Image;
 const Op = Sequelize.Op;
 
 const orderController = {
@@ -185,7 +186,7 @@ const orderController = {
     }
 
     return Order.findOne({
-      include: [{ model: Product, as: 'items' }],
+      include: [{ model: Product, include: [{ model: Image }], as: 'items' }],
       where: {
         UserId: req.params.UserId,
         payment_status: '未付款'

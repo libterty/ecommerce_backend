@@ -21,3 +21,6 @@ node_modules/
 # Secure Key
 super_secret.txt
 
+# docker data
+datadir/
+

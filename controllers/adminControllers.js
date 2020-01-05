@@ -23,7 +23,7 @@ const adminController = {
    *    get:
    *      description: This should return message with 'Hello Admin!'
    *      parameters:
-   *      - name: Authorization  
+   *      - name: Authorization
    *        type: string
    *        in: header
    *        required: true
@@ -44,7 +44,7 @@ const adminController = {
    *    get:
    *      description: This should return all products
    *      parameters:
-   *      - name: Authorization 
+   *      - name: Authorization
    *        type: string
    *        in: header
    *        required: true
@@ -55,7 +55,7 @@ const adminController = {
    *           description: success
    *         401:
    *           description: Unauthorized
-   * 
+   *
    */
   getProducts: (req, res) => {
     return Product.findAll({
@@ -74,7 +74,7 @@ const adminController = {
    *      description: Find Product by ID
    *      operationId: getProductById
    *      parameters:
-   *      - name: Authorization 
+   *      - name: Authorization
    *        schema:
    *          type: string
    *        in: header
