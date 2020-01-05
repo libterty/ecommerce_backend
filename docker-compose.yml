@@ -5,7 +5,7 @@ services:
         image: mysql/mysql-server:5.7.22
         container_name: ecwebserverdb
         ports:
-            - "3306:3308"
+            - "13306:3306"
         environment:
             MYSQL_ROOT_HOST: "%"
             MYSQL_HOST: "0.0.0.0"

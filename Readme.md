@@ -98,6 +98,8 @@ npm test
 npm start
 ```
 
+8. 在瀏覽器開啟 http://localhost:3000
+
 ## Installing - 使用Docker專案安裝流程 (目前還在修改中以符合Kubernetes設定)
 覺得上述流程很麻煩的話，可以使用我們的 Docker image
 
@@ -108,8 +110,10 @@ docker pull libterty8186/server_web
 
 2. 啟動專案
 ```bash
-docker-compose up
+docker-compose up --build
 ```
+
+3. 在瀏覽器開啟 http://localhost:3000
 
 # 貢獻者
 - [11](https://github.com/libterty)
