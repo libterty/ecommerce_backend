@@ -3,16 +3,17 @@ version: '3'
 services: 
     mysql:
         image: mysql/mysql-server:5.7.22
-        container_name: 758510c6b062
+        container_name: ecwebserverdb
         ports:
-            - "13306:3306"
+            - "3306:3308"
         environment:
-            MYSQL_ROOT_HOST: "0.0.0.0"
+            MYSQL_ROOT_HOST: "%"
             MYSQL_HOST: "0.0.0.0"
-            MYSQL_ROOT_USER: "root"
             MYSQL_ROOT_PASSWORD: "12345678"
-            MYSQL_USERNAME: "user1"
+            MYSQL_DATABASE: "ec_web_production"
+            MYSQL_USER: "root"
             MYSQL_PASSWORD: "12345678"
+            MYSQL_LOG_CONSOLE: "true"
         command: --character-set-server=utf8
         restart: always
         volumes:
@@ -24,15 +25,8 @@ services:
         container_name: ecwebserverprod
         entrypoint: ["/bin/bash", "./entrypoint.sh"]
         ports: 
-            - "3000:3000/tcp"
+            - "3000:3000"
         env_file: .env
-        environment: 
-            NODE_ENV: production
-            DB_DATABASE: "ec_web_production"
-            DB_DIALECT: "mysql"
-            DB_HOST: "mysql"
-            DB_USERNAME: "user1"
-            DB_PASSWORD: "12345678"
         links:
             - mysql
         depends_on: 
@@ -42,6 +36,9 @@ services:
             - /usr/src/app/node_modules
         networks: 
             - core
+
+volumes: 
+    mysql:
 
 networks: 
     core:

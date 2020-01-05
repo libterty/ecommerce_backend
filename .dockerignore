@@ -1,3 +1,8 @@
+# ignore
+*.env
+*.env.local
+*.env.*.local
+
 # Ingore code coverage
 coverage/
 .nyc_output/

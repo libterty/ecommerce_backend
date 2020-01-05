@@ -106,7 +106,7 @@ describe('# Payment Request', () => {
     describe('When user has submit payment in third party', () => {
       before(async () => {
         await db.Order.create({
-          sn: '',
+          sn: '1578239501095',
           order_status: '訂單處理中',
           shipping_status: '未出貨',
           payment_status: '未付款',
@@ -119,7 +119,7 @@ describe('# Payment Request', () => {
           UserId: 1
         });
         await db.Shipping.create({
-          sn: '',
+          sn: '1578239501095',
           shipping_method: '黑貓宅急便',
           shipping_status: '未出貨',
           shipping_fee: 350,
@@ -130,7 +130,7 @@ describe('# Payment Request', () => {
           OrderId: 1
         });
         await db.Payment.create({
-          sn: '',
+          sn: '1578239501095',
           shipping_method: '黑貓宅急便',
           shipping_status: '未出貨',
           shipping_fee: 350,
@@ -155,6 +155,23 @@ describe('# Payment Request', () => {
             expect(res.body.status).to.equal('error');
             expect(res.body.message).to.equal('Something went wrong');
             done();
+          });
+      });
+
+      it('Should return 302 when receiving data', done => {
+        request(app)
+          .post('/api/spgateway/callback')
+          .send({
+            TradeInfo:
+              '70bf72c741a9d11c3bb996cb4fcb52bff46308cf40c6eabd6df1ecadda278d614eea03fbb33551fd5c9838e37d041390673981cf5e566d2530acb9733bc1fac28f2fe02c81b969fd80472b1e42e468f7ee6fe255c6ba2845062e77e346fc2af39a29776e2faa562691bbf137a69a9ae3fedb40931f3bbd254cbe8372d80931f897fe3e446e8473ae4238578fc01f96cc59ab3bd7c1d99a0d495a4f9207c5d34bfec539b75dc5bb0dca7e2765a07a01edeba6292e7d81a2cdc3c0afc685df993ae73a714046182a2553dd1d0f6114a97a13cbbe629974b3e5b445c25fac558fc259b8bc98a5e1d260204041af41c4e64893cd46b8d34233457f50f203018b04636fb1f730006e0c047e385d0806c1b755007090278be1861515e19136bbeed9bc04891bb534e469623fe7521a9910d594cb0dc4a3770e521e885d5af150ac59696256d030030a2abf91006ddba7b14aa25fa1b17b44b0ecfa5646e3964511006846f6ef714a1b51c5de78b277ea7b9b370ef19132f77a2fdffeaf64acef520f32397a722d39937b268febd1decccc0d5940abd7efc89bcd4438ed9b4105ff83e7a175b6e921c59493ee9be320a39c468298a4f9d720f8d0bc1e3700eed2c2b650184fd3df1bcd4edf257c7470e8bf9c1d832a800f074fdf58d9abc02aa2b9d1e7'
+          })
+          .set('Accept', 'application/json')
+          .expect(302)
+          .end((err, res) => {
+            db.Payment.findByPk(1).then(payment => {
+              expect(payment.dataValues.payment_status).to.equal('已付款');
+              return done();
+            });
           });
       });
 
