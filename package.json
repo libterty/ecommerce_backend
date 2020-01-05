@@ -7,7 +7,7 @@
     "migration": "NODE_ENV=production sequelize db:migrate",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "NODE_ENV=test nyc mocha test --exit --recursive --timeout 10000 || true",
+    "test": "nyc mocha test --exit --recursive --timeout 10000 || true",
     "lint": "eslint --format table --fix .",
     "test-migrate": "set NODE_ENV=test& npx sequelize db:migrate",
     "dev-migrate": "set NODE_ENV=development& npx sequelize db:migrate",
