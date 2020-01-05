@@ -15,7 +15,7 @@ before_install:
   collate utf8mb4_unicode_ci;'
 - npm install sequelize-cli -g
 before_script:
-- sequelize db:migrate
+- sequelize db:migrate --env test
 script:
 - npm test
 deploy:
