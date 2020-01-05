@@ -170,12 +170,12 @@ const paymentController = {
           payment_status: '已付款',
           updatedAt: new Date()
         });
-        return res.redirect(`http://localhost:8080/users/${order.UserId}`);
+        return res.redirect(`http://localhost:8080/orders/success`);
       } else if (data.Status === 'MPG03009') {
         await payment.update({
           payment_status: '付款失敗'
         });
-        return res.redirect(`http://localhost:8080/users/${order.UserId}`);
+        return res.redirect(`http://localhost:8080/orders/fails`);
       }
     } catch (error) {
       return res

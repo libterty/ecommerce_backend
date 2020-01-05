@@ -1,20 +1,48 @@
-version: '3.2'
+version: '3'
 
 services: 
-    web:
-        build: ./
-        ports: 
-            - "3000:3000"
-        depends_on: 
-            - mysql
-        command: /bin/bash -c "npm install && npm run dev"
     mysql:
-        image: mysql
-        container_name: mysqldatabase
+        image: mysql/mysql-server:5.7.22
+        container_name: 758510c6b062
         ports:
-            - "3306:3306"
-        environment: 
-            MYSQL_DATABASE: ec_web
-            MYSQL_ROOT_PASSWORD: 12345678
+            - "13306:3306"
+        environment:
+            MYSQL_ROOT_HOST: "0.0.0.0"
+            MYSQL_HOST: "0.0.0.0"
+            MYSQL_ROOT_USER: "root"
+            MYSQL_ROOT_PASSWORD: "12345678"
+            MYSQL_USERNAME: "user1"
+            MYSQL_PASSWORD: "12345678"
+        command: --character-set-server=utf8
+        restart: always
         volumes:
             - ./datadir:/var/lib/mysql
+        networks:
+            - core
+    web:
+        build: .
+        container_name: ecwebserverprod
+        entrypoint: ["/bin/bash", "./entrypoint.sh"]
+        ports: 
+            - "3000:3000/tcp"
+        env_file: .env
+        environment: 
+            NODE_ENV: production
+            DB_DATABASE: "ec_web_production"
+            DB_DIALECT: "mysql"
+            DB_HOST: "mysql"
+            DB_USERNAME: "user1"
+            DB_PASSWORD: "12345678"
+        links:
+            - mysql
+        depends_on: 
+            - mysql
+        volumes: 
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        networks: 
+            - core
+
+networks: 
+    core:
+        driver: bridge

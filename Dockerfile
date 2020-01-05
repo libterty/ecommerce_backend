@@ -1,9 +1,7 @@
 FROM node:latest
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-RUN npm install -g nodemon
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-COPY package.json .
+COPY package.json ./
 RUN npm install
 COPY . .
 EXPOSE 3000

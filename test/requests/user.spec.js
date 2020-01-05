@@ -408,7 +408,12 @@ describe('# User Request', () => {
     describe('When request to get user session data', () => {
       before(async () => {
         let test1Token;
-        this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 1, name: 'test1', email: 'test1@example.com', admin: false });
+        this.getUser = sinon.stub(helpers, 'getUser').returns({
+          id: 1,
+          name: 'test1',
+          email: 'test1@example.com',
+          admin: false
+        });
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
