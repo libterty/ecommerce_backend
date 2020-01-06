@@ -10,6 +10,7 @@ const Order = db.Order;
 const OrderItem = db.OrderItem;
 const Shipping = db.Shipping;
 const Image = db.Image;
+const Color = db.Color;
 const Op = Sequelize.Op;
 
 const orderController = {
@@ -191,9 +192,37 @@ const orderController = {
         UserId: req.params.UserId,
         payment_status: '未付款'
       }
-    }).then(order => {
+    }).then(async order => {
       if (order) {
-        return res.status(200).json({ status: 'success', order });
+        const result = order.items.map(async item => ({
+          ...item.dataValues,
+          color: await Color.findByPk(item.dataValues.OrderItem.ColorId, {})
+        }));
+
+        const items = await Promise.all(result).then(complete => {
+          return complete
+        });
+
+        return res.status(200).json({ 
+          status: 'success', 
+          order: {
+            id: order.id,
+            sn: order.sn,
+            order_status: order.order_status,
+            shipping_status: order.shipping_status,
+            payment_status: order.payment_status,
+            total_amount: order.total_amount,
+            name: order.name,
+            address: order.address,
+            email: order.email,
+            phone: order.phone,
+            invoice: order.invoice,
+            UserId: order.UserId,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
+            items
+          }
+        });
       }
       return res
         .status(400)
