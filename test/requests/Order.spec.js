@@ -290,6 +290,14 @@ describe('# Order Request', () => {
         await db.Image.create({
           url: 'test2.jpg',
           ProductId: 3
+        });
+        await db.Color.create({
+          name: 'black',
+          ProductId: 2
+        });
+        await db.Color.create({
+          name: 'black',
+          ProductId: 3
         })
       });
 
@@ -344,6 +352,7 @@ describe('# Order Request', () => {
         await db.Order.destroy({ where: {}, truncate: true });
         await db.OrderItem.destroy({ where: {}, truncate: true });
         await db.Image.destroy({ where: {}, truncate: true });
+        await db.Color.destroy({ where: {}, truncate: true });
       });
     });
 
