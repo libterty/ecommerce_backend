@@ -8,9 +8,11 @@ const cors = require('cors');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const helpers = require('./_helpers');
+const morgan = require('morgan');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const logger = morgan('combined');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -53,6 +55,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use(logger);
 
 app.listen(port, () =>
   console.log(`Example app listening on port http://localhost:${port}!`)

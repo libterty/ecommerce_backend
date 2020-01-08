@@ -138,9 +138,7 @@ const paymentController = {
     const { TradeInfo } = req.body;
 
     try {
-      // console.log('tradeInfo', TradeInfo);
       const data = JSON.parse(trade.createMpgAesDecrypt(TradeInfo));
-      // console.log('data', data);
 
       const order = await Order.findOne({
         where: { sn: data.Result.MerchantOrderNo }
