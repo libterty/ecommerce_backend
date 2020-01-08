@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "ec_web_backend",
   "main": "index.js",
   "scripts": {
     "migration": "NODE_ENV=production sequelize db:migrate",
@@ -13,13 +13,14 @@
     "dev-migrate": "set NODE_ENV=development& npx sequelize db:migrate",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["e-commerce", "backend", "api"],
+  "author": "11, Mina, Ethan",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "config": "^3.2.4",
+    "connect-redis": "^4.0.3",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "coveralls": "^3.0.9",
@@ -39,6 +40,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pm2": "^4.2.1",
+    "redis": "^2.8.0",
     "sequelize": "^5.21.2",
     "sequelize-cli": "^5.5.1",
     "shortid": "^2.2.15",
