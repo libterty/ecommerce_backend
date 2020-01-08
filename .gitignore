@@ -24,3 +24,6 @@ super_secret.txt
 # docker data
 datadir/
 
+# ignore Redis file
+dump.rdb
+

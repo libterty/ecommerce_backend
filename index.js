@@ -9,6 +9,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const helpers = require('./_helpers');
 const morgan = require('morgan');
+const redis = require('redis');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,6 +31,10 @@ const options = {
 };
 const specs = swaggerJsdoc(options);
 
+const REDIS_URL = process.env.NODE_ENV === 'production' ? process.env.REDIS_URL : 'redis://127.0.0.1:6379';
+let RedisStore = require('connect-redis')(session);
+let redisClient = redis.createClient(REDIS_URL);
+
 app.use(cors({ credentials: true, origin: true }));
 app.use('/upload', express.static(__dirname + '/upload'));
 
@@ -38,6 +43,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(
   session({
+    store: new RedisStore({ client: redisClient }),
     secret: 'trueAndFalse',
     name: 'trueAndFalse',
     cookie: {
@@ -47,6 +53,10 @@ app.use(
     saveUninitialized: false
   })
 );
+app.use(function(req, res, next) {
+  if (!req.session) return next(new Error('lost Connections'));
+  next();
+});
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
