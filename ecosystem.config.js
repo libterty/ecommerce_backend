@@ -6,6 +6,7 @@ module.exports = {
     autorestart: true,
     watch: false,
     max_memory_restart: '1G',
+    node_args: ["--optimize_for_size", "--max_old_space_size=256"],
     env: {
       NODE_ENV: 'development'
     },
