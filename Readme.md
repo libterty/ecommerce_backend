@@ -33,11 +33,11 @@ E-commerce Website Back-end Server 使用 Express.js + MySQL 建立的電子商�
 
 - [Swagger API 文件](https://secret-brushlands-82653.herokuapp.com/api-docs/)
 
-![image]()
+![image](https://github.com/libterty/ecommerce_backend/blob/dev/assests/Swagger-example.png)
 
 ## 使用 pm2 做production版本的進程管理與監控
 
-![image]()
+![image](https://github.com/libterty/ecommerce_backend/blob/dev/assests/pm2-monitor.png)
 
 ## Environment SetUp - 環境建置
 
