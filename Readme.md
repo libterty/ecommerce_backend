@@ -14,7 +14,7 @@ E-commerce Website Back-end Server 使用 Express.js + MySQL 建立的電子商�
 - 使用 TravisCI 實踐自動化測試和自動化部署流程
 - 使用 Docker-compose 實踐 Artifacts Management，建立一致的環境
 - 使用 Swagger 自動化產出API文件
-- 使用 pm2 做production版本的進程管理與監控
+- 使用 pm2 的 cluster mode 做production版本的進程管理與監控，執行錯誤自動重啟，負載平衡與提升效能
 - 使用 Redis 儲存 session 到緩存
 - 串接第三方藍新金流，快速接入多種支付方式
 - 使用 cors 實作前後端分離跨域 session，訪客不需要登入即可加入購物車
