@@ -95,7 +95,6 @@ npx sequelize db:migrate --env test
 
 ```bash
 npx sequelize db:seed:all
-npx sequelize db:seed:all --env test
 ```
 
 6. 測試
