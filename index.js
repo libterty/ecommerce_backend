@@ -31,7 +31,7 @@ const options = {
 };
 const specs = swaggerJsdoc(options);
 
-const REDIS_URL = process.env.NODE_ENV === 'production' ? process.env.REDIS_URL : 'redis://127.0.0.1:6379';
+const REDIS_URL = process.env.NODE_ENV !== 'development' ? 'redis://h:pa97ed018fb96518fcced9c4959db34c64777eab9d17583c4af2baf1c00e2aa3b@ec2-52-7-9-220.compute-1.amazonaws.com:25929' : 'redis://127.0.0.1:6379';
 let RedisStore = require('connect-redis')(session);
 let redisClient = redis.createClient(REDIS_URL);
 
