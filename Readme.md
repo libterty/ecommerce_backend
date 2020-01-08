@@ -14,6 +14,8 @@ E-commerce Website Back-end Server 使用 Express.js + MySQL 建立的電子商�
 - 使用 TravisCI 實踐自動化測試和自動化部署流程
 - 使用 Docker-compose 實踐 Artifacts Management，建立一致的環境
 - 使用 Swagger 自動化產出API文件
+- 使用 pm2 做production版本的進程管理與監控
+- 使用 Redis 儲存 session 到緩存
 - 串接第三方藍新金流，快速接入多種支付方式
 - 使用 cors 實作前後端分離跨域 session，訪客不需要登入即可加入購物車
 - 使用 JSON Web Tokens 實作跨域認證
@@ -31,11 +33,19 @@ E-commerce Website Back-end Server 使用 Express.js + MySQL 建立的電子商�
 
 - [Swagger API 文件](https://secret-brushlands-82653.herokuapp.com/api-docs/)
 
+![image]()
+
+## 使用 pm2 做production版本的進程管理與監控
+
+![image]()
+
 ## Environment SetUp - 環境建置
 
 - [Node.js](https://nodejs.org/en/)
 - [MySQL](https://www.mysql.com/)
+- [Redis](https://redis.io)
 - [Docker](https://www.docker.com)
+- [pm2](https://pm2.io)
 
 ## Installing - 使用Node專案安裝流程
 
@@ -65,6 +75,8 @@ clientId= GCP clientId
 clientSecret= GCP clientSecret
 refreshToken= GCP GMAIL API refreshToken
 testEmail=
+PM2_SECRET_KEY= 如果你有要使用pm2 plus請在此放入
+PM2_PUBLIC_KEY= 如果你有要使用pm2 plus請在此放入
 ```
 
 4. 資料庫設定
@@ -76,12 +88,14 @@ create DATABASE ec_web_test;
 
 ```bash
 npx sequelize db:migrate
+npx sequelize db:migrate --env test
 ```
 
 5. 建立種子檔案
 
 ```bash
 npx sequelize db:seed:all
+npx sequelize db:seed:all --env test
 ```
 
 6. 測試
