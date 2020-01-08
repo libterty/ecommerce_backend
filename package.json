@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "migration": "NODE_ENV=production sequelize db:migrate",
-    "start": "pm2 start index.js",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "dev": "nodemon index.js",
     "test": "nyc mocha test --exit --recursive --timeout 10000 || true",
     "lint": "eslint --format table --fix .",
