@@ -1,6 +1,8 @@
 const Sequelize = require('sequelize');
 const imgur = require('imgur-node-api');
+const redis = require('redis');
 const db = require('../models');
+const email = require('../util/email');
 const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
@@ -13,8 +15,9 @@ const OrderItem = db.OrderItem;
 const Shipping = db.Shipping;
 const Payment = db.Payment;
 const Op = Sequelize.Op;
-const email = require('../util/email');
+const REDIS_CACHE_URL = process.env.NODE_ENV !== 'development' ? 'redis://h:p66a0fd9f2276df8f3a52b7f269a60e34ac42a3508ab3742d544ddbca1ec86311@ec2-54-152-118-90.compute-1.amazonaws.com:8919' : 'redis://127.0.0.1:6379';
 const IMGUR_CLIENT_ID = process.env.imgur_id;
+let client = redis.createClient(REDIS_CACHE_URL);
 
 const adminController = {
   /**
@@ -64,6 +67,7 @@ const adminController = {
       products = products.map(p => ({
         ...p.dataValues
       }));
+      client.setex('adminProducts', 3600, JSON.stringify({ status: 'success', products }));
       return res.status(200).json({ status: 'success', products });
     });
   },
@@ -102,9 +106,11 @@ const adminController = {
     })
       .then(product => {
         product = product.dataValues;
+        client.setex(`adminProduct:${req.params.id}`, 3600, JSON.stringify({ status: 'success', product }));
         return res.status(200).json({ status: 'success', product });
       })
       .catch(() => {
+        client.setex(`adminProduct:${req.params.id}`, 3600, JSON.stringify({ status: 'error', message: 'Cannot find what you want' }));
         return res
           .status(400)
           .json({ status: 'error', message: 'Cannot find what you want' });

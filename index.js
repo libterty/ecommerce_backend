@@ -67,9 +67,10 @@ app.use((req, res, next) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(logger);
 
-app.listen(port, () =>
+app.listen(port, () => {
+  console.log(`Example Redis Port Listening on port: ${REDIS_URL}`)
   console.log(`Example app listening on port http://localhost:${port}!`)
-);
+});
 
 require('./routes')(app);
 
