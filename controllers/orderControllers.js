@@ -200,11 +200,11 @@ const orderController = {
         }));
 
         const items = await Promise.all(result).then(complete => {
-          return complete
+          return complete;
         });
 
-        return res.status(200).json({ 
-          status: 'success', 
+        return res.status(200).json({
+          status: 'success',
           order: {
             id: order.id,
             sn: order.sn,

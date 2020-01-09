@@ -15,7 +15,10 @@ const OrderItem = db.OrderItem;
 const Shipping = db.Shipping;
 const Payment = db.Payment;
 const Op = Sequelize.Op;
-const REDIS_CACHE_URL = process.env.NODE_ENV !== 'development' ? 'redis://h:p66a0fd9f2276df8f3a52b7f269a60e34ac42a3508ab3742d544ddbca1ec86311@ec2-54-152-118-90.compute-1.amazonaws.com:8919' : 'redis://127.0.0.1:6379';
+const REDIS_CACHE_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'redis://h:p66a0fd9f2276df8f3a52b7f269a60e34ac42a3508ab3742d544ddbca1ec86311@ec2-54-152-118-90.compute-1.amazonaws.com:8919'
+    : 'redis://127.0.0.1:6379';
 const IMGUR_CLIENT_ID = process.env.imgur_id;
 let client = redis.createClient(REDIS_CACHE_URL);
 
@@ -67,8 +70,17 @@ const adminController = {
       products = products.map(p => ({
         ...p.dataValues
       }));
-      client.setex('adminProducts', 3600, JSON.stringify({ status: 'success', products }));
-      return res.status(200).json({ status: 'success', products });
+      client.MSET(
+        'adminProducts',
+        JSON.stringify({ status: 'success', products })
+      );
+      client.get('adminProducts', (err, data) => {
+        if (err) throw err;
+        if (data !== null) {
+          return res.status(200).json(JSON.parse(data));
+        }
+        return res.status(200).json({ status: 'success', products });
+      });
     });
   },
   /**
@@ -106,11 +118,19 @@ const adminController = {
     })
       .then(product => {
         product = product.dataValues;
-        client.setex(`adminProduct:${req.params.id}`, 3600, JSON.stringify({ status: 'success', product }));
-        return res.status(200).json({ status: 'success', product });
+        client.MSET(
+          `adminProduct:${req.params.id}`,
+          JSON.stringify({ status: 'success', product })
+        );
+        client.get(`adminProduct:${req.params.id}`, (err, data) => {
+          if (err) throw err;
+          if (data !== null) {
+            return res.status(200).json(JSON.parse(data));
+          }
+          return res.status(200).json({ status: 'success', product });
+        });
       })
       .catch(() => {
-        client.setex(`adminProduct:${req.params.id}`, 3600, JSON.stringify({ status: 'error', message: 'Cannot find what you want' }));
         return res
           .status(400)
           .json({ status: 'error', message: 'Cannot find what you want' });
