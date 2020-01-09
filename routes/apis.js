@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const router = express.Router();
+const redis = require('redis');
 
 const cartController = require('../controllers/cartControllers');
 const productController = require('../controllers/productControllers');
@@ -10,10 +11,14 @@ const adminCouponController = require('../controllers/adminCouponController');
 const userCouponController = require('../controllers/userCouponController');
 const orderController = require('../controllers/orderControllers');
 const paymentController = require('../controllers/paymentControllers');
+const cacheController = require('../middlewares/cache');
 const passport = require('../config/passport');
 const helpers = require('../_helpers');
 const authenticated = passport.authenticate('jwt', { session: false });
 const upload = multer({ dest: 'temp/' });
+const REDIS_CACHE_URL = process.env.NODE_ENV !== 'development' ? 'redis://h:p66a0fd9f2276df8f3a52b7f269a60e34ac42a3508ab3742d544ddbca1ec86311@ec2-54-152-118-90.compute-1.amazonaws.com:8919' : 'redis://127.0.0.1:6379';
+let client = redis.createClient(REDIS_CACHE_URL);
+
 
 const authenticatedAdmin = (req, res, next) => {
   if (helpers.getUser(req)) {
@@ -29,9 +34,12 @@ const authenticatedAdmin = (req, res, next) => {
     .json({ status: 'error', message: 'permission denied' });
 };
 
-router.get('/', (req, res) =>
-  res.status(200).json({ status: 'success', message: 'Hello World!' })
-);
+router.get('/', cacheController.cacheTest, (req, res) => {
+  const data = { status: 'success', message: 'Hello World!' };
+  const result = JSON.stringify(data);
+  client.setex('cachetest', 3600, result);
+  res.status(200).json({ status: 'success', message: 'Hello World!' });
+});
 
 router.get('/test', authenticated, (req, res) =>
   res.status(200).json({ status: 'success', message: 'Auth Test!' })
@@ -47,12 +55,14 @@ router.get(
   '/admin/products',
   authenticated,
   authenticatedAdmin,
+  cacheController.cacheAdminProducts,
   adminController.getProducts
 );
 router.get(
   '/admin/products/:id',
   authenticated,
   authenticatedAdmin,
+  cacheController.cacheAdminProduct,
   adminController.getProduct
 );
 router.post(
