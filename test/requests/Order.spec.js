@@ -298,7 +298,7 @@ describe('# Order Request', () => {
         await db.Color.create({
           name: 'black',
           ProductId: 3
-        })
+        });
       });
 
       it('should return 200 and test1 token', done => {
