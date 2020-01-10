@@ -16,6 +16,8 @@ E-commerce Website Back-end Server 使用 Express.js + MySQL 建立的電子商�
 - 使用 Swagger 自動化產出API文件
 - 使用 pm2 的 cluster mode 做production版本的進程管理與監控，執行錯誤自動重啟，負載平衡與提升效能
 - 使用 Redis 儲存 session 到緩存
+- 使用 Redis 製作 Global Cache 快取機制
+- 使用 loadtest 做 Performance Testing / Load Testing
 - 串接第三方藍新金流，快速接入多種支付方式
 - 使用 cors 實作前後端分離跨域 session，訪客不需要登入即可加入購物車
 - 使用 JSON Web Tokens 實作跨域認證
@@ -80,6 +82,7 @@ PM2_PUBLIC_KEY= 如果你有要使用pm2 plus請在此放入
 ```
 
 4. 資料庫設定
+MySQL
 
 ```bash
 create DATABASE ec_web;
@@ -89,6 +92,18 @@ create DATABASE ec_web_test;
 ```bash
 npx sequelize db:migrate
 npx sequelize db:migrate --env test
+```
+
+Redis
+
+```bash
+// 確認有連線到local server
+redis-server
+```
+
+```bash
+// 操作redis資料庫cli指令
+redis-cli
 ```
 
 5. 建立種子檔案
@@ -111,7 +126,24 @@ npm test
 npm start
 ```
 
-8. 在瀏覽器開啟 http://localhost:3000
+8. 在瀏覽器開啟 http://localhost:3000/api
+
+9. Performance Testing/Load Testing
+
+```bash
+npm i loadtest -g
+```
+
+```bash
+// 兩者指令二擇一，依你的需求
+npm run dev
+
+pm2 start -i 4 index.js --watch
+```
+
+```bash
+loadtest -n 1000 -c 10 -H "authorization: bear <- token ->" http://localhost:3000/api/<-endpoint->
+```
 
 ## Installing - 使用Docker專案安裝流程 (目前還在修改中以符合Kubernetes設定)
 覺得上述流程很麻煩的話，可以使用我們的 Docker image
