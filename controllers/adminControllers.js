@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 const imgur = require('imgur-node-api');
-const redis = require('redis');
 const db = require('../models');
 const email = require('../util/email');
+const Cache = require('../util/cache');
 const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
@@ -15,12 +15,8 @@ const OrderItem = db.OrderItem;
 const Shipping = db.Shipping;
 const Payment = db.Payment;
 const Op = Sequelize.Op;
-const REDIS_CACHE_URL =
-  process.env.NODE_ENV === 'production'
-    ? 'redis://h:p66a0fd9f2276df8f3a52b7f269a60e34ac42a3508ab3742d544ddbca1ec86311@ec2-54-152-118-90.compute-1.amazonaws.com:8919'
-    : 'redis://127.0.0.1:6379';
 const IMGUR_CLIENT_ID = process.env.imgur_id;
-let client = redis.createClient(REDIS_CACHE_URL);
+const cache = new Cache();
 
 const adminController = {
   /**
@@ -63,25 +59,29 @@ const adminController = {
    *           description: Unauthorized
    *
    */
-  getProducts: (req, res) => {
-    return Product.findAll({
-      include: [{ model: Color, as: 'inventories' }]
-    }).then(products => {
-      products = products.map(p => ({
-        ...p.dataValues
-      }));
-      client.MSET(
-        'adminProducts',
-        JSON.stringify({ status: 'success', products })
-      );
-      client.get('adminProducts', (err, data) => {
-        if (err) throw err;
-        if (data !== null) {
-          return res.status(200).json(JSON.parse(data));
-        }
+  getProducts: async (req, res) => {
+    const result = await cache.get('adminProducts');
+    if (result !== null) {
+      res.status(200).json(JSON.parse(result));
+      return Product.findAll({
+        include: [{ model: Color, as: 'inventories' }]
+      }).then(async products => {
+        products = products.map(p => ({
+          ...p.dataValues
+        }));
+        await cache.set('adminProducts', { status: 'success', products });
+      });
+    } else {
+      return Product.findAll({
+        include: [{ model: Color, as: 'inventories' }]
+      }).then(async products => {
+        products = products.map(p => ({
+          ...p.dataValues
+        }));
+        await cache.set('adminProducts', { status: 'success', products });
         return res.status(200).json({ status: 'success', products });
       });
-    });
+    }
   },
   /**
    * @swagger
@@ -112,29 +112,37 @@ const adminController = {
    *         401:
    *           description: Unauthorized
    */
-  getProduct: (req, res) => {
-    return Product.findByPk(req.params.id, {
-      include: [Category, Image, { model: Color, as: 'inventories' }]
-    })
-      .then(product => {
+  getProduct: async (req, res) => {
+    const result = await cache.get(`adminProduct:${req.params.id}`);
+    if (result !== null) {
+      res.status(200).json(JSON.parse(result));
+      return Product.findByPk(req.params.id, {
+        include: [Category, Image, { model: Color, as: 'inventories' }]
+      }).then(async product => {
         product = product.dataValues;
-        client.MSET(
-          `adminProduct:${req.params.id}`,
-          JSON.stringify({ status: 'success', product })
-        );
-        client.get(`adminProduct:${req.params.id}`, (err, data) => {
-          if (err) throw err;
-          if (data !== null) {
-            return res.status(200).json(JSON.parse(data));
-          }
-          return res.status(200).json({ status: 'success', product });
+        await cache.set(`adminProduct:${req.params.id}`, {
+          status: 'success',
+          product
         });
-      })
-      .catch(() => {
-        return res
-          .status(400)
-          .json({ status: 'error', message: 'Cannot find what you want' });
       });
+    } else {
+      return Product.findByPk(req.params.id, {
+        include: [Category, Image, { model: Color, as: 'inventories' }]
+      })
+        .then(async product => {
+          product = product.dataValues;
+          await cache.set(`adminProduct:${req.params.id}`, {
+            status: 'success',
+            product
+          });
+          return res.status(200).json({ status: 'success', product });
+        })
+        .catch(() => {
+          return res
+            .status(400)
+            .json({ status: 'error', message: 'Cannot find what you want' });
+        });
+    }
   },
   /**
    * @swagger
@@ -777,30 +785,63 @@ const adminController = {
    *         401:
    *           description: Unauthorized
    */
-  getOrders: (req, res) => {
-    return Order.findAll({
-      where: {
-        payment_status: '未付款'
-      }
-    }).then(async orders => {
-      try {
-        let orderItems = await OrderItem.findAll({
-          include: [Product, Color]
-        }).then(items => items);
-        orderItems = orderItems.map(orderItem => ({ ...orderItem.dataValues }));
-        orders = orders.map(order => ({
-          ...order.dataValues,
-          orderItems: orderItems.filter(
-            item => item.OrderId === order.dataValues.id
-          )
-        }));
-        return res.status(200).json({ status: 'success', orders });
-      } catch (error) {
-        return res
-          .status(500)
-          .json({ status: 'error', message: 'Something went wrong' });
-      }
-    });
+  getOrders: async (req, res) => {
+    const result = await cache.get('adminOrders');
+    if (result !== null) {
+      res.status(200).json(JSON.parse(result));
+      return Order.findAll({
+        where: {
+          payment_status: '未付款'
+        }
+      }).then(async orders => {
+        try {
+          let orderItems = await OrderItem.findAll({
+            include: [Product, Color]
+          }).then(items => items);
+          orderItems = orderItems.map(orderItem => ({
+            ...orderItem.dataValues
+          }));
+          orders = orders.map(order => ({
+            ...order.dataValues,
+            orderItems: orderItems.filter(
+              item => item.OrderId === order.dataValues.id
+            )
+          }));
+          await cache.set('adminOrders', { status: 'success', orders });
+        } catch (error) {
+          return res
+            .status(500)
+            .json({ status: 'error', message: 'Something went wrong' });
+        }
+      });
+    } else {
+      return Order.findAll({
+        where: {
+          payment_status: '未付款'
+        }
+      }).then(async orders => {
+        try {
+          let orderItems = await OrderItem.findAll({
+            include: [Product, Color]
+          }).then(items => items);
+          orderItems = orderItems.map(orderItem => ({
+            ...orderItem.dataValues
+          }));
+          orders = orders.map(order => ({
+            ...order.dataValues,
+            orderItems: orderItems.filter(
+              item => item.OrderId === order.dataValues.id
+            )
+          }));
+          await cache.set('adminOrders', { status: 'success', orders });
+          return res.status(200).json({ status: 'success', orders });
+        } catch (error) {
+          return res
+            .status(500)
+            .json({ status: 'error', message: 'Something went wrong' });
+        }
+      });
+    }
   },
   /**
    * @swagger
@@ -871,16 +912,37 @@ const adminController = {
    *         401:
    *           description: Unauthorized
    */
-  getShippings: (req, res) => {
-    return Shipping.findAll().then(shippings => {
-      if (shippings.length > 0) {
-        shippings = shippings.map(item => ({ ...item.dataValues }));
-        return res.status(200).json({ status: 'success', shippings });
-      }
-      return res
-        .status(404)
-        .json({ status: 'error', message: 'Cannot find shippings' });
-    });
+  getShippings: async (req, res) => {
+    const result = await cache.get('adminShippings');
+    if (result !== null) {
+      res.status(200).json(JSON.parse(result));
+      return Shipping.findAll().then(async shippings => {
+        if (shippings.length > 0) {
+          shippings = shippings.map(item => ({ ...item.dataValues }));
+          await cache.set('adminShippings', { status: 'success', shippings });
+        } else {
+          await cache.set('adminShippings', {
+            status: 'error',
+            message: 'Cannot find shippings'
+          });
+        }
+      });
+    } else {
+      return Shipping.findAll().then(async shippings => {
+        if (shippings.length > 0) {
+          shippings = shippings.map(item => ({ ...item.dataValues }));
+          await cache.set('adminShippings', { status: 'success', shippings });
+          return res.status(200).json({ status: 'success', shippings });
+        }
+        await cache.set('adminShippings', {
+          status: 'error',
+          message: 'Cannot find shippings'
+        });
+        return res
+          .status(404)
+          .json({ status: 'error', message: 'Cannot find shippings' });
+      });
+    }
   },
   /**
    * @swagger
@@ -974,10 +1036,19 @@ const adminController = {
    *         401:
    *           description: Unauthorized
    */
-  getPayments: (req, res) => {
-    return Order.findAll().then(payments => {
-      return res.status(200).json({ status: 'success', payments });
-    });
+  getPayments: async (req, res) => {
+    const result = await cache.get('adminPayments');
+    if (result !== null) {
+      res.status(200).json(JSON.parse(result));
+      return Order.findAll().then(async payments => {
+        await cache.set('adminShippings', { status: 'success', payments });
+      });
+    } else {
+      return Order.findAll().then(async payments => {
+        await cache.set('adminShippings', { status: 'success', payments });
+        return res.status(200).json({ status: 'success', payments });
+      });
+    }
   }
 };
 
