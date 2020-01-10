@@ -1178,19 +1178,6 @@ describe('# Admin Request', () => {
           });
       });
 
-      it('should return 404 when shipping data is not yet update by MYSQL DB', done => {
-        request(app)
-          .get('/api/admin/shippings')
-          .set('Authorization', 'bearer ' + test1token)
-          .set('Accept', 'application/json')
-          .expect(404)
-          .end((err, res) => {
-            expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal('Cannot find shippings');
-            done();
-          });
-      });
-
       it('should return 200 when shipping data is find by MYSQL DB', done => {
         request(app)
           .get('/api/admin/shippings')
