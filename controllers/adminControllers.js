@@ -62,7 +62,6 @@ const adminController = {
   getProducts: async (req, res) => {
     const result = await cache.get('adminProducts');
     if (result !== null) {
-      res.status(200).json(JSON.parse(result));
       return Product.findAll({
         include: [{ model: Color, as: 'inventories' }]
       }).then(async products => {
@@ -70,6 +69,8 @@ const adminController = {
           ...p.dataValues
         }));
         await cache.set('adminProducts', { status: 'success', products });
+        const newResult = await cache.get('adminProducts');
+        return res.status(200).json(JSON.parse(newResult));
       });
     } else {
       return Product.findAll({
@@ -79,7 +80,9 @@ const adminController = {
           ...p.dataValues
         }));
         await cache.set('adminProducts', { status: 'success', products });
-        return res.status(200).json({ status: 'success', products });
+        return res
+          .status(200)
+          .json({ status: 'success', queue: 'First Request', products });
       });
     }
   },
@@ -115,16 +118,23 @@ const adminController = {
   getProduct: async (req, res) => {
     const result = await cache.get(`adminProduct:${req.params.id}`);
     if (result !== null) {
-      res.status(200).json(JSON.parse(result));
       return Product.findByPk(req.params.id, {
         include: [Category, Image, { model: Color, as: 'inventories' }]
-      }).then(async product => {
-        product = product.dataValues;
-        await cache.set(`adminProduct:${req.params.id}`, {
-          status: 'success',
-          product
+      })
+        .then(async product => {
+          product = product.dataValues;
+          await cache.set(`adminProduct:${req.params.id}`, {
+            status: 'success',
+            product
+          });
+          const newResult = await cache.get(`adminProduct:${req.params.id}`);
+          return res.status(200).json(JSON.parse(newResult));
+        })
+        .catch(() => {
+          return res
+            .status(400)
+            .json({ status: 'error', message: 'Cannot find what you want' });
         });
-      });
     } else {
       return Product.findByPk(req.params.id, {
         include: [Category, Image, { model: Color, as: 'inventories' }]
@@ -135,7 +145,9 @@ const adminController = {
             status: 'success',
             product
           });
-          return res.status(200).json({ status: 'success', product });
+          return res
+            .status(200)
+            .json({ status: 'success', queue: 'First Request', product });
         })
         .catch(() => {
           return res
@@ -788,7 +800,6 @@ const adminController = {
   getOrders: async (req, res) => {
     const result = await cache.get('adminOrders');
     if (result !== null) {
-      res.status(200).json(JSON.parse(result));
       return Order.findAll({
         where: {
           payment_status: '未付款'
@@ -808,6 +819,8 @@ const adminController = {
             )
           }));
           await cache.set('adminOrders', { status: 'success', orders });
+          const newResult = await cache.get('adminOrders');
+          return res.status(200).json(JSON.parse(newResult));
         } catch (error) {
           return res
             .status(500)
@@ -834,7 +847,9 @@ const adminController = {
             )
           }));
           await cache.set('adminOrders', { status: 'success', orders });
-          return res.status(200).json({ status: 'success', orders });
+          return res
+            .status(200)
+            .json({ status: 'success', queue: 'First Request', orders });
         } catch (error) {
           return res
             .status(500)
@@ -915,16 +930,16 @@ const adminController = {
   getShippings: async (req, res) => {
     const result = await cache.get('adminShippings');
     if (result !== null) {
-      res.status(200).json(JSON.parse(result));
       return Shipping.findAll().then(async shippings => {
         if (shippings.length > 0) {
           shippings = shippings.map(item => ({ ...item.dataValues }));
           await cache.set('adminShippings', { status: 'success', shippings });
+          const newResult = await cache.get('adminShippings');
+          return res.status(200).json(JSON.parse(newResult));
         } else {
-          await cache.set('adminShippings', {
-            status: 'error',
-            message: 'Cannot find shippings'
-          });
+          return res
+            .status(404)
+            .json({ status: 'error', message: 'Cannot find shippings' });
         }
       });
     } else {
@@ -932,12 +947,10 @@ const adminController = {
         if (shippings.length > 0) {
           shippings = shippings.map(item => ({ ...item.dataValues }));
           await cache.set('adminShippings', { status: 'success', shippings });
-          return res.status(200).json({ status: 'success', shippings });
+          return res
+            .status(200)
+            .json({ status: 'success', queue: 'First Request', shippings });
         }
-        await cache.set('adminShippings', {
-          status: 'error',
-          message: 'Cannot find shippings'
-        });
         return res
           .status(404)
           .json({ status: 'error', message: 'Cannot find shippings' });
@@ -1039,14 +1052,17 @@ const adminController = {
   getPayments: async (req, res) => {
     const result = await cache.get('adminPayments');
     if (result !== null) {
-      res.status(200).json(JSON.parse(result));
       return Order.findAll().then(async payments => {
         await cache.set('adminShippings', { status: 'success', payments });
+        const newResult = await cache.get('adminPayments');
+        return res.status(200).json(JSON.parse(newResult));
       });
     } else {
       return Order.findAll().then(async payments => {
         await cache.set('adminShippings', { status: 'success', payments });
-        return res.status(200).json({ status: 'success', payments });
+        return res
+          .status(200)
+          .json({ status: 'success', queue: 'First Request', payments });
       });
     }
   }

@@ -69,6 +69,7 @@ describe('# Admin Request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
+            expect(res.body.queue).to.equal('First Request');
             expect(res.body.products[0].name).to.equal('Product1 Test');
             expect(res.body.products[0].inventories[0].name).to.equal('Yellow');
             expect(
@@ -107,12 +108,50 @@ describe('# Admin Request', () => {
           });
       });
 
+      it('should return 200 with json data after update Product', done => {
+        request(app)
+          .put(`/api/admin/products/1`)
+          .send({ name: 'newTest' })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal('Update Prodcut Success');
+            done();
+          });
+      });
+
+      it('should return 200 with update Json Data from cache server', done => {
+        request(app)
+          .get('/api/admin/products')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.products[0].name).to.equal('newTest');
+            expect(res.body.products[0].inventories[0].name).to.equal('Yellow');
+            expect(
+              res.body.products[0].inventories[0].Inventory.ProductId
+            ).to.equal(res.body.products[0].inventories[0].ProductId);
+            expect(
+              res.body.products[0].inventories[0].Inventory.ColorId
+            ).to.equal(res.body.products[0].inventories[0].id);
+            expect(
+              res.body.products[0].inventories[0].Inventory.quantity
+            ).to.equal(20);
+            done();
+          });
+      });
+
       after(async () => {
         await db.User.destroy({ where: {}, truncate: true });
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Image.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.Inventory.destroy({ where: {}, truncate: true });
+        await cache.del('adminProducts');
       });
     });
   });
@@ -122,6 +161,7 @@ describe('# Admin Request', () => {
       let token;
       before(async () => {
         await db.Category.destroy({ where: {}, truncate: true });
+        await cache.del('adminProduct:1');
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -169,6 +209,7 @@ describe('# Admin Request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
+            expect(res.body.queue).to.equal('First Request');
             expect(res.body.product.name).to.equal('Product1 Test');
             expect(res.body.product.cost).to.equal(1500);
             expect(res.body.product.price).to.equal(3000);
@@ -212,6 +253,41 @@ describe('# Admin Request', () => {
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
             expect(res.body.message).to.equal('Cannot find what you want');
+            done();
+          });
+      });
+
+      it('should return 200 with json data after update Product', done => {
+        request(app)
+          .put(`/api/admin/products/1`)
+          .send({ name: 'newTest' })
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal('Update Prodcut Success');
+            done();
+          });
+      });
+
+      it('should return 200 with update Json Data from cache Server', done => {
+        request(app)
+          .get('/api/admin/products/1')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.product.name).to.equal('newTest');
+            expect(res.body.product.cost).to.equal(1500);
+            expect(res.body.product.price).to.equal(3000);
+            expect(res.body.product.Category.name).to.equal('測試種類');
+            expect(res.body.product.Images[0].url).to.equal('test1.jpg');
+            expect(res.body.product.inventories[0].name).to.equal('Yellow');
+            expect(res.body.product.inventories[0].Inventory.quantity).to.equal(
+              20
+            );
             done();
           });
       });
@@ -1043,6 +1119,7 @@ describe('# Admin Request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
+            expect(res.body.queue).to.equal('First Request');
             expect(res.body.orders[0].orderItems.length).to.equal(2);
             expect(res.body.orders[0].orderItems[0].Color.name).to.equal(
               'black'
@@ -1178,19 +1255,6 @@ describe('# Admin Request', () => {
           });
       });
 
-      it('should return 404 when shipping data is not yet update by MYSQL DB', done => {
-        request(app)
-          .get('/api/admin/shippings')
-          .set('Authorization', 'bearer ' + test1token)
-          .set('Accept', 'application/json')
-          .expect(404)
-          .end((err, res) => {
-            expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal('Cannot find shippings');
-            done();
-          });
-      });
-
       it('should return 200 when shipping data is find by MYSQL DB', done => {
         request(app)
           .get('/api/admin/shippings')
@@ -1199,6 +1263,7 @@ describe('# Admin Request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
+            expect(res.body.queue).to.equal('First Request');
             expect(res.body.shippings).not.to.equal(undefined);
             done();
           });
@@ -1373,6 +1438,7 @@ describe('# Admin Request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
+            expect(res.body.queue).to.equal('First Request');
             expect(res.body.payments.length).to.equal(1);
             expect(res.body.payments[0].total_amount).to.equal(19000);
             done();
