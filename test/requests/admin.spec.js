@@ -1088,6 +1088,7 @@ describe('# Admin Request', () => {
     describe('When admin request to get all Shippings', () => {
       before(async () => {
         let test1token, test2token;
+        await cache.del('adminShippings');
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -1177,7 +1178,33 @@ describe('# Admin Request', () => {
           });
       });
 
-      it('should return 200 when shipping data is find', done => {
+      it('should return 404 when shipping data is not yet update by MYSQL DB', done => {
+        request(app)
+          .get('/api/admin/shippings')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(404)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Cannot find shippings');
+            done();
+          });
+      });
+
+      it('should return 200 when shipping data is find by MYSQL DB', done => {
+        request(app)
+          .get('/api/admin/shippings')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.shippings).not.to.equal(undefined);
+            done();
+          });
+      });
+
+      it('should return 200 when shipping data is find by Redis Cache', done => {
         request(app)
           .get('/api/admin/shippings')
           .set('Authorization', 'bearer ' + test1token)
@@ -1194,6 +1221,7 @@ describe('# Admin Request', () => {
         await db.User.destroy({ where: {}, truncate: true });
         await db.Order.destroy({ where: {}, truncate: true });
         await db.Shipping.destroy({ where: {}, truncate: true });
+        await cache.del('adminShippings');
       });
     });
   });
@@ -1292,6 +1320,7 @@ describe('# Admin Request', () => {
     describe('When Admin request to get all payments', () => {
       before(async () => {
         let test1token;
+        await cache.del('adminPayments');
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -1336,7 +1365,21 @@ describe('# Admin Request', () => {
           });
       });
 
-      it('should return 200 and get payments data', done => {
+      it('should return 200 and get payments data from MySQL DB', done => {
+        request(app)
+          .get('/api/admin/payments')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.payments.length).to.equal(1);
+            expect(res.body.payments[0].total_amount).to.equal(19000);
+            done();
+          });
+      });
+
+      it('should return 200 and get payments data from Redis Cache', done => {
         request(app)
           .get('/api/admin/payments')
           .set('Authorization', 'bearer ' + test1token)
@@ -1354,6 +1397,7 @@ describe('# Admin Request', () => {
         await db.User.destroy({ where: {}, truncate: true });
         await db.Order.destroy({ where: {}, truncate: true });
         await db.Payment.destroy({ where: {}, truncate: true });
+        await cache.del('adminPayments');
       });
     });
   });

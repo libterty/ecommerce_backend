@@ -45,6 +45,18 @@ describe('# Global Cache', () => {
         })
       );
 
+      it(
+        'should be able to flush all Value',
+        mochaAsync(async () => {
+          await cache.set('unitTest2', {
+            status: 'success',
+            message: 'unit testing'
+          });
+          let result = await cache.flushAll();
+          expect(result).to.equal(true);
+        })
+      );
+
       after(async () => {
         await cache.del('unitTest');
       });
