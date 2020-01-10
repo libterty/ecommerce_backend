@@ -234,7 +234,7 @@ describe('# User Request', () => {
           });
       });
 
-      it('should return 200 when test1 is exist', done => {
+      it('should return 200 when test1 is exist and get data from DB', done => {
         request(app)
           .get('/api/users/1')
           .set('Authorization', 'bearer ' + test1Token)
@@ -243,6 +243,54 @@ describe('# User Request', () => {
           .end((err, res) => {
             expect(res.body.status).to.equal('success');
             expect(res.body.user.name).to.equal('test1');
+            done();
+          });
+      });
+
+      it('should return 200 when test1 is exist and get data cache', done => {
+        request(app)
+          .get('/api/users/1')
+          .set('Authorization', 'bearer ' + test1Token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.user.name).to.equal('test1');
+            done();
+          });
+      });
+
+      it('should return 200 when upadte without image', done => {
+        request(app)
+          .put('/api/users/1')
+          .set('Authorization', 'bearer ' + test1Token)
+          .send({
+            name: 'testSuccess2',
+            email: 'testSuccess2@example.com',
+            password: '12345678',
+            address: 'test road test street',
+            tel: '02-8888-8888'
+          })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal('update info success 2');
+            done();
+          });
+      });
+
+      it('should return 200 when test1 is exist and get revise data cache', done => {
+        request(app)
+          .get('/api/users/1')
+          .set('Authorization', 'bearer ' + test1Token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.user.name).to.equal('testSuccess2');
+            expect(res.body.user.email).to.equal('testSuccess2@example.com');
+            expect(res.body.user.address).to.equal('test road test street');
             done();
           });
       });
@@ -337,26 +385,6 @@ describe('# User Request', () => {
           });
       });
 
-      it.skip('should return 400 when image upload fail', done => {
-        request(app)
-          .put('/api/users/1')
-          .set('Authorization', 'bearer ' + token)
-          .field('Content-Type', 'multipart/form-data')
-          .field('name', 'testFail')
-          .field('email', 'testFail@example.com')
-          .field('password', '12345678')
-          .field('birthday', '')
-          .attach('avatar', 'upload/test2.jpg')
-          .field('address', 'test road test street')
-          .field('tel', '02-8888-8888')
-          .expect(400)
-          .end((err, res) => {
-            expect(res.body.status).to.equal('error');
-            expect(res.body.message).to.equal('Image Upload Fail');
-            done();
-          });
-      });
-
       it('should return 200 when image upload success', done => {
         request(app)
           .put('/api/users/1')
@@ -446,6 +474,45 @@ describe('# User Request', () => {
             expect(res.body.status).to.equal('success');
             expect(res.body.name).to.equal('test1');
             expect(res.body.email).to.equal('test1@example.com');
+            done();
+          });
+      });
+
+      it('should return 200 when test1 is exist and get session data from cache', done => {
+        request(app)
+          .get('/api/get_current_user')
+          .set('Authorization', 'bearer ' + test1Token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.name).to.equal('test1');
+            expect(res.body.email).to.equal('test1@example.com');
+            done();
+          });
+      });
+
+      it('should update session data', done => {
+        this.getUser.restore();
+        this.getUser = sinon.stub(helpers, 'getUser').returns({
+          id: 1,
+          name: 'testSuccess2',
+          email: 'testSuccess2@example.com',
+          admin: false
+        });
+        done();
+      });
+
+      it('should return 200 when test1 is exist and get session data from cache', done => {
+        request(app)
+          .get('/api/get_current_user')
+          .set('Authorization', 'bearer ' + test1Token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.name).to.equal('testSuccess2');
+            expect(res.body.email).to.equal('testSuccess2@example.com');
             done();
           });
       });

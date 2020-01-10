@@ -11,6 +11,7 @@ const OrderItem = db.OrderItem;
 const Shipping = db.Shipping;
 const Image = db.Image;
 const Color = db.Color;
+const Coupon = db.Coupon;
 const Op = Sequelize.Op;
 
 const orderController = {
@@ -300,7 +301,7 @@ const orderController = {
    *         401:
    *           description: Unauthorized
    */
-  putOrder: (req, res) => {
+  putOrder: async (req, res) => {
     const {
       name,
       address,
@@ -308,8 +309,10 @@ const orderController = {
       phone,
       shippingMethod,
       shippingStatus,
-      shippingFee
+      shippingFee,
+      couponId
     } = req.body;
+    let coupon;
 
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
@@ -353,12 +356,18 @@ const orderController = {
         .json({ status: 'error', message: "Contact phone didn't exist" });
     }
 
+    if (couponId) {
+      coupon = await Coupon.findByPk(couponId, {});
+    }
+
     return Order.findByPk(req.params.OrderId).then(async order => {
       if (order) {
         try {
           if (order.total_amount > 3000) {
             await order.update({
-              total_amount: order.total_amount,
+              total_amount: couponId
+                ? Math.floor((order.total_amount * coupon.percent) / 100)
+                : order.total_amount,
               name: name ? name : order.name,
               address: address ? address : order.address,
               email: email ? email : order.email,
@@ -367,7 +376,11 @@ const orderController = {
             });
           } else {
             await order.update({
-              total_amount: order.total_amount + shippingFee,
+              total_amount: couponId
+                ? Math.floor(
+                    ((order.total_amount + shippingFee) * coupon.percent) / 100
+                  )
+                : order.total_amount + shippingFee,
               name: name ? name : order.name,
               address: address ? address : order.address,
               email: email ? email : order.email,

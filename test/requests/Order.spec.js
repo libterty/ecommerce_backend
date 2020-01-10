@@ -457,6 +457,10 @@ describe('# Order Request', () => {
       before(async () => {
         let test1token;
         this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 1 });
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Order.destroy({ where: {}, truncate: true });
+        await db.Shipping.destroy({ where: {}, truncate: true });
+        await db.Coupon.destroy({ where: {}, truncate: true });
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -490,6 +494,12 @@ describe('# Order Request', () => {
           email: 'test1@example.com',
           phone: '02-8888-8888',
           UserId: 1
+        });
+        await db.Coupon.create({
+          coupon_code: 'testing',
+          limited_usage: '1',
+          expire_date: new Date('2050/07/12'),
+          percent: 90
         });
       });
 
@@ -685,7 +695,8 @@ describe('# Order Request', () => {
             phone: '03-8888-8888',
             shippingMethod: '黑貓宅急便',
             shippingStatus: '未出貨',
-            shippingFee: 350
+            shippingFee: 350,
+            couponId: 1
           })
           .set('Accept', 'application/json')
           .expect(200)
@@ -693,7 +704,7 @@ describe('# Order Request', () => {
             db.Order.findByPk(2).then(order => {
               expect(res.body.status).to.equal('success');
               expect(res.body.message).to.equal('Update order success');
-              expect(order.total_amount).to.equal(3001);
+              expect(order.total_amount).to.equal(2700);
               return done();
             });
           });
@@ -704,6 +715,7 @@ describe('# Order Request', () => {
         await db.User.destroy({ where: {}, truncate: true });
         await db.Order.destroy({ where: {}, truncate: true });
         await db.Shipping.destroy({ where: {}, truncate: true });
+        await db.Coupon.destroy({ where: {}, truncate: true });
       });
     });
   });
