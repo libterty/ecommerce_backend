@@ -118,18 +118,23 @@ const adminController = {
       res.status(200).json(JSON.parse(result));
       return Product.findByPk(req.params.id, {
         include: [Category, Image, { model: Color, as: 'inventories' }]
-      })
-        .then(async product => {
-          product = product.dataValues;
-          await cache.set(`adminProduct:${req.params.id}`, { status: 'success', product });
-        })
+      }).then(async product => {
+        product = product.dataValues;
+        await cache.set(`adminProduct:${req.params.id}`, {
+          status: 'success',
+          product
+        });
+      });
     } else {
       return Product.findByPk(req.params.id, {
         include: [Category, Image, { model: Color, as: 'inventories' }]
       })
         .then(async product => {
           product = product.dataValues;
-          await cache.set(`adminProduct:${req.params.id}`, { status: 'success', product });
+          await cache.set(`adminProduct:${req.params.id}`, {
+            status: 'success',
+            product
+          });
           return res.status(200).json({ status: 'success1', product });
         })
         .catch(() => {

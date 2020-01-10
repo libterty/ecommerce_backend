@@ -6,56 +6,48 @@ const REDIS_CACHE_URL =
 let client = redis.createClient(REDIS_CACHE_URL);
 
 class Cache {
-    get(key) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await client.get(key, (err, data) => {
-                    if (err) throw err;
-                    resolve (
-                        data
-                    );
-                });
-            } catch (error) {
-                reject(error);
-            }
+  get(key) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await client.get(key, (err, data) => {
+          if (err) throw err;
+          resolve(data);
         });
-    }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 
-    set(key, value) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                resolve(
-                    await client.MSET(key, JSON.stringify(value))
-                );
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
+  set(key, value) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        resolve(await client.MSET(key, JSON.stringify(value)));
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 
-    del(key) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                resolve(
-                    await client.del(key)
-                );
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
+  del(key) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        resolve(await client.del(key));
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 
-    flushAll(key) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                resolve(
-                    await client.flushall()
-                );
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
+  flushAll(key) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        resolve(await client.flushall());
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 }
 
 module.exports = Cache;
