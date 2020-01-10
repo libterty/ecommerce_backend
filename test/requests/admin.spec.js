@@ -9,6 +9,8 @@ const shortId = require('shortid');
 const should = chai.should();
 const expect = chai.expect;
 const db = require('../../models');
+const Cache = require('../../util/cache');
+const cache = new Cache();
 
 describe('# Admin Request', () => {
   context('# Get All Products', () => {
@@ -20,6 +22,7 @@ describe('# Admin Request', () => {
         await db.Image.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.Inventory.destroy({ where: {}, truncate: true });
+        await cache.del('adminProducts');
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -58,7 +61,30 @@ describe('# Admin Request', () => {
           });
       });
 
-      it('should return 200 with Json Data', done => {
+      it('should return 200 with Json Data from db Server', done => {
+        request(app)
+          .get('/api/admin/products')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success1');
+            expect(res.body.products[0].name).to.equal('Product1 Test');
+            expect(res.body.products[0].inventories[0].name).to.equal('Yellow');
+            expect(
+              res.body.products[0].inventories[0].Inventory.ProductId
+            ).to.equal(res.body.products[0].inventories[0].ProductId);
+            expect(
+              res.body.products[0].inventories[0].Inventory.ColorId
+            ).to.equal(res.body.products[0].inventories[0].id);
+            expect(
+              res.body.products[0].inventories[0].Inventory.quantity
+            ).to.equal(20);
+            done();
+          });
+      });
+
+      it('should return 200 with Json Data from cache server', done => {
         request(app)
           .get('/api/admin/products')
           .set('Authorization', 'bearer ' + token)
@@ -95,6 +121,7 @@ describe('# Admin Request', () => {
     describe('When Visit Admin Product page', () => {
       let token;
       before(async () => {
+        await db.Category.destroy({ where: {}, truncate: true });
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -105,7 +132,7 @@ describe('# Admin Request', () => {
           name: 'Product1 Test',
           cost: 1500,
           price: 3000,
-          CategoryId: 2
+          CategoryId: 1
         });
         await db.Category.create({ name: '測試種類' });
         await db.Image.create({ url: 'test1.jpg', ProductId: 1 });
@@ -134,7 +161,28 @@ describe('# Admin Request', () => {
           });
       });
 
-      it('should return 200 with Json Data', done => {
+      it('should return 200 with Json Data from db Server', done => {
+        request(app)
+          .get('/api/admin/products/1')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success1');
+            expect(res.body.product.name).to.equal('Product1 Test');
+            expect(res.body.product.cost).to.equal(1500);
+            expect(res.body.product.price).to.equal(3000);
+            expect(res.body.product.Category.name).to.equal('測試種類');
+            expect(res.body.product.Images[0].url).to.equal('test1.jpg');
+            expect(res.body.product.inventories[0].name).to.equal('Yellow');
+            expect(res.body.product.inventories[0].Inventory.quantity).to.equal(
+              20
+            );
+            done();
+          });
+      });
+
+      it('should return 200 with Json Data from cache Server', done => {
         request(app)
           .get('/api/admin/products/1')
           .set('Authorization', 'bearer ' + token)
@@ -175,6 +223,7 @@ describe('# Admin Request', () => {
         await db.Color.destroy({ where: {}, truncate: true });
         await db.Inventory.destroy({ where: {}, truncate: true });
         await db.Category.destroy({ where: {}, truncate: true });
+        await cache.del('adminProduct:1');
       });
     });
   });

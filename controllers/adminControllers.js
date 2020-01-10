@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 const imgur = require('imgur-node-api');
-const redis = require('redis');
 const db = require('../models');
 const email = require('../util/email');
+const Cache = require('../util/cache');
 const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
@@ -15,12 +15,8 @@ const OrderItem = db.OrderItem;
 const Shipping = db.Shipping;
 const Payment = db.Payment;
 const Op = Sequelize.Op;
-const REDIS_CACHE_URL =
-  process.env.NODE_ENV === 'production'
-    ? 'redis://h:p66a0fd9f2276df8f3a52b7f269a60e34ac42a3508ab3742d544ddbca1ec86311@ec2-54-152-118-90.compute-1.amazonaws.com:8919'
-    : 'redis://127.0.0.1:6379';
 const IMGUR_CLIENT_ID = process.env.imgur_id;
-let client = redis.createClient(REDIS_CACHE_URL);
+const cache = new Cache();
 
 const adminController = {
   /**
@@ -63,25 +59,29 @@ const adminController = {
    *           description: Unauthorized
    *
    */
-  getProducts: (req, res) => {
-    return Product.findAll({
-      include: [{ model: Color, as: 'inventories' }]
-    }).then(products => {
-      products = products.map(p => ({
-        ...p.dataValues
-      }));
-      client.MSET(
-        'adminProducts',
-        JSON.stringify({ status: 'success', products })
-      );
-      client.get('adminProducts', (err, data) => {
-        if (err) throw err;
-        if (data !== null) {
-          return res.status(200).json(JSON.parse(data));
-        }
-        return res.status(200).json({ status: 'success', products });
+  getProducts: async (req, res) => {
+    const result = await cache.get('adminProducts');
+    if (result !== null) {
+      res.status(200).json(JSON.parse(result));
+      return Product.findAll({
+        include: [{ model: Color, as: 'inventories' }]
+      }).then(async products => {
+        products = products.map(p => ({
+          ...p.dataValues
+        }));
+        await cache.set('adminProducts', { status: 'success', products });
       });
-    });
+    } else {
+      return Product.findAll({
+        include: [{ model: Color, as: 'inventories' }]
+      }).then(async products => {
+        products = products.map(p => ({
+          ...p.dataValues
+        }));
+        await cache.set('adminProducts', { status: 'success', products });
+        return res.status(200).json({ status: 'success1', products });
+      });
+    }
   },
   /**
    * @swagger
@@ -112,29 +112,32 @@ const adminController = {
    *         401:
    *           description: Unauthorized
    */
-  getProduct: (req, res) => {
-    return Product.findByPk(req.params.id, {
-      include: [Category, Image, { model: Color, as: 'inventories' }]
-    })
-      .then(product => {
-        product = product.dataValues;
-        client.MSET(
-          `adminProduct:${req.params.id}`,
-          JSON.stringify({ status: 'success', product })
-        );
-        client.get(`adminProduct:${req.params.id}`, (err, data) => {
-          if (err) throw err;
-          if (data !== null) {
-            return res.status(200).json(JSON.parse(data));
-          }
-          return res.status(200).json({ status: 'success', product });
-        });
+  getProduct: async (req, res) => {
+    const result = await cache.get(`adminProduct:${req.params.id}`);
+    if (result !== null) {
+      res.status(200).json(JSON.parse(result));
+      return Product.findByPk(req.params.id, {
+        include: [Category, Image, { model: Color, as: 'inventories' }]
       })
-      .catch(() => {
-        return res
-          .status(400)
-          .json({ status: 'error', message: 'Cannot find what you want' });
-      });
+        .then(async product => {
+          product = product.dataValues;
+          await cache.set(`adminProduct:${req.params.id}`, { status: 'success', product });
+        })
+    } else {
+      return Product.findByPk(req.params.id, {
+        include: [Category, Image, { model: Color, as: 'inventories' }]
+      })
+        .then(async product => {
+          product = product.dataValues;
+          await cache.set(`adminProduct:${req.params.id}`, { status: 'success', product });
+          return res.status(200).json({ status: 'success1', product });
+        })
+        .catch(() => {
+          return res
+            .status(400)
+            .json({ status: 'error', message: 'Cannot find what you want' });
+        });
+    }
   },
   /**
    * @swagger
