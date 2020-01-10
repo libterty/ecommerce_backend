@@ -68,7 +68,7 @@ describe('# Admin Request', () => {
           .set('Accept', 'application/json')
           .expect(200)
           .end((err, res) => {
-            expect(res.body.status).to.equal('success1');
+            expect(res.body.status).to.equal('success');
             expect(res.body.products[0].name).to.equal('Product1 Test');
             expect(res.body.products[0].inventories[0].name).to.equal('Yellow');
             expect(
@@ -168,7 +168,7 @@ describe('# Admin Request', () => {
           .set('Accept', 'application/json')
           .expect(200)
           .end((err, res) => {
-            expect(res.body.status).to.equal('success1');
+            expect(res.body.status).to.equal('success');
             expect(res.body.product.name).to.equal('Product1 Test');
             expect(res.body.product.cost).to.equal(1500);
             expect(res.body.product.price).to.equal(3000);
@@ -1035,7 +1035,26 @@ describe('# Admin Request', () => {
         });
       });
 
-      it('should return 200 with orders data', done => {
+      it('should return 200 with orders data from MySQL DB', done => {
+        request(app)
+          .get('/api/admin/orders')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('success');
+            expect(res.body.orders[0].orderItems.length).to.equal(2);
+            expect(res.body.orders[0].orderItems[0].Color.name).to.equal(
+              'black'
+            );
+            expect(res.body.orders[0].orderItems[1].Color.name).to.equal(
+              'white'
+            );
+            done();
+          });
+      });
+
+      it('should return 200 with orders data from Redis Cache', done => {
         request(app)
           .get('/api/admin/orders')
           .set('Authorization', 'bearer ' + token)
@@ -1060,6 +1079,7 @@ describe('# Admin Request', () => {
         await db.Color.destroy({ where: {}, truncate: true });
         await db.Order.destroy({ where: {}, truncate: true });
         await db.OrderItem.destroy({ where: {}, truncate: true });
+        await cache.del('adminOrders');
       });
     });
   });

@@ -79,7 +79,7 @@ const adminController = {
           ...p.dataValues
         }));
         await cache.set('adminProducts', { status: 'success', products });
-        return res.status(200).json({ status: 'success1', products });
+        return res.status(200).json({ status: 'success', products });
       });
     }
   },
@@ -135,7 +135,7 @@ const adminController = {
             status: 'success',
             product
           });
-          return res.status(200).json({ status: 'success1', product });
+          return res.status(200).json({ status: 'success', product });
         })
         .catch(() => {
           return res
@@ -785,30 +785,59 @@ const adminController = {
    *         401:
    *           description: Unauthorized
    */
-  getOrders: (req, res) => {
-    return Order.findAll({
-      where: {
-        payment_status: '未付款'
-      }
-    }).then(async orders => {
-      try {
-        let orderItems = await OrderItem.findAll({
-          include: [Product, Color]
-        }).then(items => items);
-        orderItems = orderItems.map(orderItem => ({ ...orderItem.dataValues }));
-        orders = orders.map(order => ({
-          ...order.dataValues,
-          orderItems: orderItems.filter(
-            item => item.OrderId === order.dataValues.id
-          )
-        }));
-        return res.status(200).json({ status: 'success', orders });
-      } catch (error) {
-        return res
-          .status(500)
-          .json({ status: 'error', message: 'Something went wrong' });
-      }
-    });
+  getOrders: async (req, res) => {
+    const result = await cache.get('adminOrders');
+    if (result !== null) {
+      res.status(200).json(JSON.parse(result));
+      return Order.findAll({
+        where: {
+          payment_status: '未付款'
+        }
+      }).then(async orders => {
+        try {
+          let orderItems = await OrderItem.findAll({
+            include: [Product, Color]
+          }).then(items => items);
+          orderItems = orderItems.map(orderItem => ({ ...orderItem.dataValues }));
+          orders = orders.map(order => ({
+            ...order.dataValues,
+            orderItems: orderItems.filter(
+              item => item.OrderId === order.dataValues.id
+            )
+          }));
+          await cache.set('adminOrders', { status: 'success', orders });
+        } catch (error) {
+          return res
+            .status(500)
+            .json({ status: 'error', message: 'Something went wrong' });
+        }
+      });
+    } else {
+      return Order.findAll({
+        where: {
+          payment_status: '未付款'
+        }
+      }).then(async orders => {
+        try {
+          let orderItems = await OrderItem.findAll({
+            include: [Product, Color]
+          }).then(items => items);
+          orderItems = orderItems.map(orderItem => ({ ...orderItem.dataValues }));
+          orders = orders.map(order => ({
+            ...order.dataValues,
+            orderItems: orderItems.filter(
+              item => item.OrderId === order.dataValues.id
+            )
+          }));
+          await cache.set('adminOrders', { status: 'success', orders });
+          return res.status(200).json({ status: 'success', orders });
+        } catch (error) {
+          return res
+            .status(500)
+            .json({ status: 'error', message: 'Something went wrong' });
+        }
+      });
+    }
   },
   /**
    * @swagger
