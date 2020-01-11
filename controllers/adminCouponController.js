@@ -1,8 +1,10 @@
-const db = require('../models');
 const moment = require('moment');
 const shortid = require('shortid');
+const db = require('../models');
+const Cache = require('../util/cache');
 const Coupon = db.Coupon;
 const CouponItem = db.CouponItem;
+const cache = new Cache();
 
 const adminCouponController = {
   /**
@@ -144,12 +146,34 @@ const adminCouponController = {
    */
   getCoupons: async (req, res) => {
     try {
+      const result = await cache.get(
+        `getCoupons${req.connection.remoteAddress}`
+      );
       const coupons = await Coupon.findAll().then(d => d);
-      return res.json({
-        status: 'success',
-        message: 'Got all coupons',
-        coupons
-      });
+      if (result !== null) {
+        await cache.set(`getCoupons${req.connection.remoteAddress}`, {
+          status: 'success',
+          message: 'Got all coupons',
+          coupons
+        });
+        const newResult = await cache.get(
+          `getCoupons${req.connection.remoteAddress}`
+        );
+        return res.status(200).json(JSON.parse(newResult));
+      } else {
+        await cache.set(`getCoupons${req.connection.remoteAddress}`, {
+          status: 'success',
+          message: 'Got all coupons',
+          coupons
+        });
+        console.log('result');
+        return res.status(200).json({
+          status: 'success',
+          queue: 'First Request',
+          message: 'Got all coupons',
+          coupons
+        });
+      }
     } catch (error) {
       return res
         .status(500)

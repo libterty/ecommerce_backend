@@ -119,7 +119,9 @@ const productController = {
    *           description: success
    */
   getProduct: async (req, res) => {
-    const result = await cache.get(`getProduct${req.connection.remoteAddress}:${req.params.id}`);
+    const result = await cache.get(
+      `getProduct${req.connection.remoteAddress}:${req.params.id}`
+    );
     if (result !== null) {
       return Product.findByPk(req.params.id).then(async product => {
         if (product) {
@@ -140,18 +142,24 @@ const productController = {
             )
           }));
           product.increment('viewCounts').then(async product => {
-            await cache.set(`getProduct${req.connection.remoteAddress}:${req.params.id}`, { status: 'success', product, Images, Colors });
-            const newResult = await cache.get(`getProduct${req.connection.remoteAddress}:${req.params.id}`);
-            return res
-              .status(200)
-              .json(JSON.parse(newResult));
+            await cache.set(
+              `getProduct${req.connection.remoteAddress}:${req.params.id}`,
+              { status: 'success', product, Images, Colors }
+            );
+            const newResult = await cache.get(
+              `getProduct${req.connection.remoteAddress}:${req.params.id}`
+            );
+            return res.status(200).json(JSON.parse(newResult));
           });
         } else {
-          await cache.set(`getProduct${req.connection.remoteAddress}:${req.params.id}`, { status: 'error', message: 'Fail to find product' });
-          const newResult = await cache.get(`getProduct${req.connection.remoteAddress}:${req.params.id}`);
-          return res
-            .status(400)
-            .json(JSON.parse(newResult));
+          await cache.set(
+            `getProduct${req.connection.remoteAddress}:${req.params.id}`,
+            { status: 'error', message: 'Fail to find product' }
+          );
+          const newResult = await cache.get(
+            `getProduct${req.connection.remoteAddress}:${req.params.id}`
+          );
+          return res.status(400).json(JSON.parse(newResult));
         }
       });
     } else {
@@ -174,13 +182,23 @@ const productController = {
             )
           }));
           product.increment('viewCounts').then(async product => {
-            await cache.set(`getProduct${req.connection.remoteAddress}:${req.params.id}`, { status: 'success', product, Images, Colors });
-            return res
-              .status(200)
-              .json({ status: 'success', queue: 'First Request', product, Images, Colors });
+            await cache.set(
+              `getProduct${req.connection.remoteAddress}:${req.params.id}`,
+              { status: 'success', product, Images, Colors }
+            );
+            return res.status(200).json({
+              status: 'success',
+              queue: 'First Request',
+              product,
+              Images,
+              Colors
+            });
           });
         } else {
-          await cache.set(`getProduct${req.connection.remoteAddress}:${req.params.id}`, { status: 'error', message: 'Fail to find product' });
+          await cache.set(
+            `getProduct${req.connection.remoteAddress}:${req.params.id}`,
+            { status: 'error', message: 'Fail to find product' }
+          );
           return res
             .status(400)
             .json({ status: 'error', message: 'Fail to find product' });
@@ -206,7 +224,9 @@ const productController = {
    */
   searchProducts: async (req, res) => {
     const search = decodeURI(req.query.items);
-    const result = await cache.get(`searchProducts${req.connection.remoteAddress}:${search}`);
+    const result = await cache.get(
+      `searchProducts${req.connection.remoteAddress}:${search}`
+    );
     if (result !== null) {
       return Product.findAll({
         include: [Category, Image],
@@ -219,11 +239,19 @@ const productController = {
       }).then(async products => {
         if (products.length > 0) {
           products = products.sort((a, b) => b.viewCounts - a.viewCounts);
-          await cache.set(`searchProducts${req.connection.remoteAddress}:${search}`, { status: 'success', products });
-          const newResult = await cache.get(`searchProducts${req.connection.remoteAddress}:${search}`);
+          await cache.set(
+            `searchProducts${req.connection.remoteAddress}:${search}`,
+            { status: 'success', products }
+          );
+          const newResult = await cache.get(
+            `searchProducts${req.connection.remoteAddress}:${search}`
+          );
           return res.status(200).json(JSON.parse(newResult));
         }
-        await cache.set(`searchProducts${req.connection.remoteAddress}:${search}`, { status: 'error', message: 'Cannot find products' });
+        await cache.set(
+          `searchProducts${req.connection.remoteAddress}:${search}`,
+          { status: 'error', message: 'Cannot find products' }
+        );
         return res
           .status(400)
           .json({ status: 'error', message: 'Cannot find products' });
@@ -240,13 +268,23 @@ const productController = {
       }).then(async products => {
         if (products.length > 0) {
           products = products.sort((a, b) => b.viewCounts - a.viewCounts);
-          await cache.set(`searchProducts${req.connection.remoteAddress}:${search}`, { status: 'success', products });
-          return res.status(200).json({ status: 'success', queue: 'First Request', products });
+          await cache.set(
+            `searchProducts${req.connection.remoteAddress}:${search}`,
+            { status: 'success', products }
+          );
+          return res
+            .status(200)
+            .json({ status: 'success', queue: 'First Request', products });
         }
-        await cache.set(`searchProducts${req.connection.remoteAddress}:${search}`, { status: 'error', message: 'Cannot find products' });
-        return res
-          .status(400)
-          .json({ status: 'error', queue: 'First Request', message: 'Cannot find products' });
+        await cache.set(
+          `searchProducts${req.connection.remoteAddress}:${search}`,
+          { status: 'error', message: 'Cannot find products' }
+        );
+        return res.status(400).json({
+          status: 'error',
+          queue: 'First Request',
+          message: 'Cannot find products'
+        });
       });
     }
   }
