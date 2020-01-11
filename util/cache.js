@@ -1,3 +1,4 @@
+/* eslint-disable */
 const redis = require('redis');
 const REDIS_CACHE_URL =
   process.env.NODE_ENV === 'production'

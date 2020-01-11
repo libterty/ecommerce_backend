@@ -7,6 +7,8 @@ const app = require('../../index');
 const should = chai.should();
 const expect = chai.expect;
 const db = require('../../models');
+const Cache = require('../../util/cache');
+const cache = new Cache();
 
 describe('# Product request', () => {
   context('# Home Request', () => {
@@ -196,6 +198,7 @@ describe('# Product request', () => {
 
     describe('When Visit Specific Product Page', () => {
       before(async () => {
+        await cache.flushAll();
         await db.Product.create({
           name: 'Product1 Test',
           cost: 1111,
@@ -214,7 +217,42 @@ describe('# Product request', () => {
         await db.Inventory.create({ quantity: 12, ProductId: 2 });
       });
 
-      it('should return 200 and get json data', done => {
+      it('should return 200 and get json data from DB', done => {
+        request(app)
+          .get('/api/furnitures/1')
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            db.Product.findByPk(1).then(product => {
+              expect(res.body.status).to.equal('success');
+              expect(res.body.queue).to.equal('First Request');
+              expect(res.body.product.name).to.equal('Product1 Test');
+              expect(res.body.Images[0].url).to.equal('test1.jpg');
+              expect(res.body.Colors[0].name).to.equal('Yellow');
+              expect(res.body.product.viewCounts + 1).to.equal(
+                product.dataValues.viewCounts
+              );
+              expect(res.body.Colors[0].Inventory.quantity).to.equal(23);
+              return done();
+            });
+          });
+      });
+
+      it('should return 400 and get error message from cache', done => {
+        request(app)
+          .get('/api/furnitures/33')
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Fail to find product');
+            done();
+          });
+      });
+
+      it('should return 200 and get json data from cache', done => {
         request(app)
           .get('/api/furnitures/1')
           .set('Accept', 'application/json')
@@ -235,7 +273,7 @@ describe('# Product request', () => {
           });
       });
 
-      it('should return 400 and get error message', done => {
+      it('should return 400 and get error message from cache', done => {
         request(app)
           .get('/api/furnitures/3')
           .set('Accept', 'application/json')
@@ -253,11 +291,13 @@ describe('# Product request', () => {
         await db.Image.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.Inventory.destroy({ where: {}, truncate: true });
+        await cache.flushAll();
       });
     });
 
     describe('When user search products', () => {
       before(async () => {
+        await cache.flushAll();
         await db.Product.create({
           name: 'Async 衣櫃',
           cost: 1111,
@@ -298,6 +338,20 @@ describe('# Product request', () => {
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.equal('error');
+            expect(res.body.queue).to.equal('First Request');
+            expect(res.body.message).to.equal('Cannot find products');
+            done();
+          });
+      });
+
+      it('should return 400 when no query is defined and cache response', done => {
+        request(app)
+          .get('/api/furnitures/search')
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('error');
             expect(res.body.message).to.equal('Cannot find products');
             done();
           });
@@ -312,12 +366,44 @@ describe('# Product request', () => {
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.equal('error');
+            expect(res.body.queue).to.equal('First Request');
             expect(res.body.message).to.equal('Cannot find products');
             done();
           });
       });
 
-      it('should return 200 when products can be found', done => {
+      it('should return 400 when no products can be found and cache response', done => {
+        request(app)
+          .get('/api/furnitures/search')
+          .query({ items: '床' })
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal('Cannot find products');
+            done();
+          });
+      });
+
+      it('should return 200 when products can be found from DB', done => {
+        request(app)
+          .get('/api/furnitures/search')
+          .query({ items: '椅' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('success');
+            expect(res.body.queue).to.equal('First Request');
+            expect(res.body.products.length).to.equal(3);
+            expect(res.body.products[0].name).to.equal('四腳椅');
+            expect(res.body.products[0].viewCounts).to.equal(10);
+            done();
+          });
+      });
+
+      it('should return 200 when products can be found from cache', done => {
         request(app)
           .get('/api/furnitures/search')
           .query({ items: '椅' })
@@ -335,6 +421,7 @@ describe('# Product request', () => {
 
       after(async () => {
         await db.Product.destroy({ where: {}, truncate: true });
+        await cache.flushAll();
       });
     });
   });

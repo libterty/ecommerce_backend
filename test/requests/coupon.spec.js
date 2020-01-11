@@ -7,12 +7,15 @@ const bcrypt = require('bcryptjs');
 const should = chai.should();
 const expect = chai.expect;
 const db = require('../../models');
+const Cache = require('../../util/cache');
+const cache = new Cache();
 
 describe('# Admin Coupon Request', () => {
   context('# Get All Coupons', () => {
     describe('When Visit Admin Coupon Page', () => {
       let token;
       before(async () => {
+        await cache.flushAll();
         await db.User.destroy({ where: {}, truncate: true });
         await db.Coupon.destroy({ where: {}, truncate: true });
         await db.User.create({
@@ -37,7 +40,36 @@ describe('# Admin Coupon Request', () => {
           percent: 20
         });
       });
-      it('should get all coupons and return with 200 status', done => {
+
+      it('should get all coupons and return with 200 status from DB', done => {
+        request(app)
+          .post('/api/signin')
+          .send({ email: 'adminTest@example.com', password: '123456' })
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            token = res.body.token;
+            request(app)
+              .get('/api/admin/coupons')
+              .set('Authorization', 'bearer ' + token)
+              .set('Accept', 'application/json')
+              .expect(200)
+              .end((err, res) => {
+                if (err) return done(err);
+                expect(res.body.status).to.equal('success');
+                expect(res.body.queue).to.equal('First Request');
+                expect(res.body.message).to.equal('Got all coupons');
+                expect(res.body.coupons[0].coupon_code).to.equal(
+                  'HUGEDISCOUNT'
+                );
+                expect(res.body.coupons[1].coupon_code).to.equal('BIGSELL');
+                done();
+              });
+          });
+      });
+
+      it('should get all coupons and return with 200 status from cache', done => {
         request(app)
           .post('/api/signin')
           .send({ email: 'adminTest@example.com', password: '123456' })
@@ -63,12 +95,15 @@ describe('# Admin Coupon Request', () => {
               });
           });
       });
+
       after(async () => {
         await db.User.destroy({ where: {}, truncate: true });
         await db.Coupon.destroy({ where: {}, truncate: true });
+        await cache.flushAll();
       });
     });
   });
+
   context('# Get Specific Coupon', () => {
     describe('When visit specific coupon page', () => {
       let token;
@@ -301,6 +336,7 @@ describe('# Admin Coupon Request', () => {
       });
     });
   });
+
   context('# Update Specific Coupon', () => {
     describe('When update specific coupon', () => {
       let token;

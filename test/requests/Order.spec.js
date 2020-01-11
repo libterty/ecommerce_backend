@@ -10,6 +10,8 @@ const helpers = require('../../_helpers');
 const should = chai.should();
 const expect = chai.expect;
 const db = require('../../models');
+const Cache = require('../../util/cache');
+const cache = new Cache();
 
 describe('# Order Request', () => {
   context('# Create Order', () => {
@@ -236,6 +238,7 @@ describe('# Order Request', () => {
       before(async () => {
         let test1token;
         this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 1 });
+        await cache.flushAll();
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -328,7 +331,25 @@ describe('# Order Request', () => {
           });
       });
 
-      it('should return 200 when Order is exist', done => {
+      it('should return 200 when Order is exist and get data from DB', done => {
+        request(app)
+          .get('/api/orders/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            db.OrderItem.findAll({
+              where: { OrderId: 1 }
+            }).then(orders => {
+              expect(res.body.status).to.equal('success');
+              expect(res.body.queue).to.equal('First Request');
+              expect(res.body.order.total_amount).to.equal(20000);
+              return done();
+            });
+          });
+      });
+
+      it('should return 200 when Order is exist and get data from cache', done => {
         request(app)
           .get('/api/orders/1')
           .set('Authorization', 'bearer ' + test1token)
@@ -353,6 +374,7 @@ describe('# Order Request', () => {
         await db.OrderItem.destroy({ where: {}, truncate: true });
         await db.Image.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
+        await cache.flushAll();
       });
     });
 
@@ -360,6 +382,7 @@ describe('# Order Request', () => {
       before(async () => {
         let test2token;
         this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 2 });
+        await cache.flushAll();
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -429,7 +452,21 @@ describe('# Order Request', () => {
           });
       });
 
-      it('should return 200 when Order is exist', done => {
+      it('should return 400 when Order is not exist', done => {
+        request(app)
+          .get('/api/orders/2')
+          .set('Authorization', 'bearer ' + test2token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.queue).to.equal('First Request');
+            expect(res.body.message).to.equal('Nothing in your order list');
+            done();
+          });
+      });
+
+      it('should return 400 when Order is not exist from cache', done => {
         request(app)
           .get('/api/orders/2')
           .set('Authorization', 'bearer ' + test2token)
@@ -448,6 +485,7 @@ describe('# Order Request', () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Order.destroy({ where: {}, truncate: true });
         await db.OrderItem.destroy({ where: {}, truncate: true });
+        await cache.flushAll();
       });
     });
   });
@@ -870,6 +908,7 @@ describe('# Order Request', () => {
       before(async () => {
         let test1token;
         this.getUser = sinon.stub(helpers, 'getUser').returns({ id: 1 });
+        await cache.flushAll();
         await db.User.create({
           name: 'test1',
           email: 'test1@example.com',
@@ -919,6 +958,22 @@ describe('# Order Request', () => {
           .expect(400)
           .end((err, res) => {
             expect(res.body.status).to.equal('error');
+            expect(res.body.queue).to.equal('First Request');
+            expect(res.body.message).to.equal(
+              "You don't have any orders record"
+            );
+            done();
+          });
+      });
+
+      it("should return 400 when user don't have existed order from cache response", done => {
+        request(app)
+          .get('/api/orders/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            expect(res.body.status).to.equal('error');
             expect(res.body.message).to.equal(
               "You don't have any orders record"
             );
@@ -929,6 +984,7 @@ describe('# Order Request', () => {
       after(async () => {
         this.getUser.restore();
         await db.User.destroy({ where: {}, truncate: true });
+        await cache.flushAll();
       });
     });
 
@@ -1008,6 +1064,22 @@ describe('# Order Request', () => {
           .end((err, res) => {
             db.Inventory.findAll().then(inventories => {
               expect(res.body.status).to.equal('success');
+              expect(res.body.queue).to.equal('First Request');
+              expect(res.body.orders.length).to.equal(2);
+              return done();
+            });
+          });
+      });
+
+      it('should return 200 when user has existed orders from cache response', done => {
+        request(app)
+          .get('/api/orders/users/1')
+          .set('Authorization', 'bearer ' + test1token)
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end((err, res) => {
+            db.Inventory.findAll().then(inventories => {
+              expect(res.body.status).to.equal('success');
               expect(res.body.orders.length).to.equal(2);
               return done();
             });
@@ -1017,6 +1089,8 @@ describe('# Order Request', () => {
       after(async () => {
         this.getUser.restore();
         await db.User.destroy({ where: {}, truncate: true });
+        await db.Order.destroy({ where: {}, truncate: true });
+        await cache.flushAll();
       });
     });
   });
