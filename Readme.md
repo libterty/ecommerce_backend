@@ -2,8 +2,10 @@
 
 [![Build Status](https://travis-ci.org/libterty/ecommerce_backend.svg?branch=dev)](https://travis-ci.org/libterty/ecommerce_backend)
 [![Coverage Status](https://coveralls.io/repos/github/libterty/ecommerce_backend/badge.svg?branch=master)](https://coveralls.io/github/libterty/ecommerce_backend?branch=master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/libterty/ecommerce_backend/blob/master/LICENCE)
 
-E-commerce Website Back-end Server 使用 Express.js + MySQL 建立的電子商務後端API SERVER，開發階段會部署在Heroku，量產階段會Migrate到Kubernetes/AWS上。專案以TDD方式開發API確保每一個Feature的功能性都是正常，Integration會等後續要盡量產前大致Function確認後才會執行。
+E-commerce Website Back-end Server 使用 Express.js + MySQL + Redis + pm2 建立的高擴展性後端API SERVER，搭配 [E-commerce Website Front-end](https://github.com/libterty/ecommerce_frontend) 後端專案，打造一個全方位的電商網站。
+開發階段會部署在Heroku，量產階段會Migrate到Kubernetes/AWS上。專案以TDD方式開發API確保每一個Feature的功能性都是正常，Integration會等後續要盡量產前大致Function確認後才會執行。
 
 ## Features - 專案功能
 
@@ -17,6 +19,7 @@ E-commerce Website Back-end Server 使用 Express.js + MySQL 建立的電子商�
 - 使用 pm2 的 cluster mode 做production版本的進程管理與監控，執行錯誤自動重啟，負載平衡與提升效能
 - 使用 Redis 儲存 session 到緩存
 - 使用 Redis 製作 Global Cache 快取機制
+- 使用 jump consistent hash 一致性哈希演算法運用在db sharding
 - 使用 loadtest 做 Performance Testing / Load Testing
 - 串接第三方藍新金流，快速接入多種支付方式
 - 使用 cors 實作前後端分離跨域 session，訪客不需要登入即可加入購物車
@@ -82,6 +85,7 @@ PM2_PUBLIC_KEY= 如果你有要使用pm2 plus請在此放入
 ```
 
 4. 資料庫設定
+
 MySQL
 
 ```bash
@@ -158,9 +162,12 @@ docker pull libterty8186/server_web
 docker-compose up --build
 ```
 
-3. 在瀏覽器開啟 http://localhost:3000
+3. 在瀏覽器開啟 http://localhost:3000/api
 
-# 貢獻者
+# Contribution
 - [11](https://github.com/libterty)
 - [Mina](https://github.com/mpragnarok)
 - [Ethan](https://github.com/HuangMinShi)
+
+# CopyRight
+Copyright © 2020, MAYNOOTH. Released under the MIT License.
