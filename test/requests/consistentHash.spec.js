@@ -2,29 +2,44 @@ const chai = require('chai');
 const sinon = require('sinon');
 const should = chai.should();
 const expect = chai.expect;
-const { unicodeToBinary, bytesToBigInt, jumpConsistentHash } = require('../../util/consistentHash');
+const {
+  toUTF8Array,
+  bytesToBigInt,
+  jumpConsistentHash
+} = require('../../util/consistentHash');
 
 describe('# Jump Consistent Hashing', () => {
-    context('# Hashing System', () => {
-        describe('When request coming in', () => {
-            const user1Request = '127:0.0.1:1:user1';
-            const tBuckets = 4;
-            let user1Bytes;
+  context('# Hashing System', () => {
+    describe('When request coming in', () => {
+      const user1Request = '127.0.0.1:Roger1231';
+      const user2Request = '192.168.0.3:Roger1231';
+      const tBuckets = 4;
+      let user1Bytes, user2Bytes;
 
-            it('should return bytes when we call the function for Key', () => {
-                user1Bytes = unicodeToBinary(user1Request);
-                expect(user1Bytes).to.equal('0011000100110010001101110011101000110000001011100011000000101110001100010011101000110001001110100111010101110011011001010111001000110001');
-            });
+      it('should return key bytes when we call the function', () => {
+        user1Bytes = toUTF8Array(user1Request);
+        expect(new Uint8Array(user1Bytes).toString()).to.equal('49,50,55,46,48,46,48,46,49,58,82,111,103,101,114,49,50,51,49');
+      });
 
-            it('should return BigInt for mapping', () => {
-                const user1BigInt = bytesToBigInt(user1Bytes);
-                expect(typeof user1BigInt).to.equal('bigint');
-            });
+      it('should return key bytes when we call the function', () => {
+        user2Bytes = toUTF8Array(user2Request);
+        expect(new Uint8Array(user2Bytes).toString()).to.equal('49,57,50,46,49,54,56,46,48,46,51,58,82,111,103,101,114,49,50,51,49');
+      });
 
-            it('should return mapping result which will indicate to which bucket', () => {
-                const targetBucket = jumpConsistentHash(user1Bytes, tBuckets);
-                expect(targetBucket).to.equal(1);
-            });
-        });
+      it('should return BigInt for mapping', () => {
+        const user1BigInt = bytesToBigInt(user1Bytes);
+        expect(typeof user1BigInt).to.equal('bigint');
+      });
+
+      it('should return mapping result which will indicate to bucket3', () => {
+        const targetBucket = jumpConsistentHash(user1Request, tBuckets);
+        expect(targetBucket).to.equal(3);
+      });
+
+      it('should return mapping result which will indicate to which bucket', () => {
+        const targetBucket = jumpConsistentHash(user2Request, tBuckets);
+        expect(targetBucket).to.equal(0);
+      });
     });
+  });
 });
