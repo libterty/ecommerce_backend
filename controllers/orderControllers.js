@@ -189,7 +189,9 @@ const orderController = {
         .json({ status: 'error', message: 'Can not find any user data' });
     }
 
-    const result = await cache.get(`getOrder${req.connection.remoteAddress}:${req.params.UserId}`);
+    const result = await cache.get(
+      `getOrder${req.connection.remoteAddress}:${req.params.UserId}`
+    );
 
     if (result !== null) {
       return Order.findOne({
@@ -204,7 +206,7 @@ const orderController = {
             ...item.dataValues,
             color: await Color.findByPk(item.dataValues.OrderItem.ColorId, {})
           }));
-  
+
           const items = await Promise.all(result).then(complete => {
             return complete;
           });
@@ -228,14 +230,24 @@ const orderController = {
               updatedAt: order.updatedAt,
               items
             }
-          }
+          };
 
-          await cache.set(`getOrder${req.connection.remoteAddress}:${req.params.UserId}`, data);
-          const newResult = await cache.get(`getOrder${req.connection.remoteAddress}:${req.params.UserId}`);
+          await cache.set(
+            `getOrder${req.connection.remoteAddress}:${req.params.UserId}`,
+            data
+          );
+          const newResult = await cache.get(
+            `getOrder${req.connection.remoteAddress}:${req.params.UserId}`
+          );
           return res.status(200).json(JSON.parse(newResult));
         }
-        await cache.set(`getOrder${req.connection.remoteAddress}:${req.params.UserId}`, { status: 'error', message: 'Nothing in your order list' });
-        const newResult = await cache.get(`getOrder${req.connection.remoteAddress}:${req.params.UserId}`);
+        await cache.set(
+          `getOrder${req.connection.remoteAddress}:${req.params.UserId}`,
+          { status: 'error', message: 'Nothing in your order list' }
+        );
+        const newResult = await cache.get(
+          `getOrder${req.connection.remoteAddress}:${req.params.UserId}`
+        );
         return res.status(400).json(JSON.parse(newResult));
       });
     } else {
@@ -251,7 +263,7 @@ const orderController = {
             ...item.dataValues,
             color: await Color.findByPk(item.dataValues.OrderItem.ColorId, {})
           }));
-  
+
           const items = await Promise.all(result).then(complete => {
             return complete;
           });
@@ -275,10 +287,13 @@ const orderController = {
               updatedAt: order.updatedAt,
               items
             }
-          }
+          };
 
-          await cache.set(`getOrder${req.connection.remoteAddress}:${req.params.UserId}`, data);
-  
+          await cache.set(
+            `getOrder${req.connection.remoteAddress}:${req.params.UserId}`,
+            data
+          );
+
           return res.status(200).json({
             status: 'success',
             queue: 'First Request',
@@ -301,10 +316,15 @@ const orderController = {
             }
           });
         }
-        await cache.set(`getOrder${req.connection.remoteAddress}:${req.params.UserId}`, { status: 'error', message: 'Nothing in your order list' });
-        return res
-          .status(400)
-          .json({ status: 'error', queue: 'First Request', message: 'Nothing in your order list' });
+        await cache.set(
+          `getOrder${req.connection.remoteAddress}:${req.params.UserId}`,
+          { status: 'error', message: 'Nothing in your order list' }
+        );
+        return res.status(400).json({
+          status: 'error',
+          queue: 'First Request',
+          message: 'Nothing in your order list'
+        });
       });
     }
   },
@@ -605,7 +625,9 @@ const orderController = {
         .json({ status: 'error', message: 'Can not find any user data' });
     }
 
-    const result = await cache.get(`getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`);
+    const result = await cache.get(
+      `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`
+    );
 
     if (result !== null) {
       return Order.findAll({
@@ -617,15 +639,19 @@ const orderController = {
           await cache.set(
             `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`,
             { status: 'success', orders }
-          )
-          const newResult = await cache.get(`getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`);
+          );
+          const newResult = await cache.get(
+            `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`
+          );
           return res.status(200).json(JSON.parse(newResult));
         }
         await cache.set(
           `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`,
           { status: 'error', message: "You don't have any orders record" }
-        )
-        const newResult = await cache.get(`getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`);
+        );
+        const newResult = await cache.get(
+          `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`
+        );
         return res.status(400).json(JSON.parse(newResult));
       });
     } else {
@@ -638,16 +664,20 @@ const orderController = {
           await cache.set(
             `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`,
             { status: 'success', orders }
-          )
-          return res.status(200).json({ status: 'success', queue: 'First Request', orders });
+          );
+          return res
+            .status(200)
+            .json({ status: 'success', queue: 'First Request', orders });
         }
         await cache.set(
           `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`,
           { status: 'error', message: "You don't have any orders record" }
-        )
-        return res
-          .status(400)
-          .json({ status: 'error', queue: 'First Request', message: "You don't have any orders record" });
+        );
+        return res.status(400).json({
+          status: 'error',
+          queue: 'First Request',
+          message: "You don't have any orders record"
+        });
       });
     }
   }
