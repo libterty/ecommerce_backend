@@ -166,7 +166,6 @@ const adminCouponController = {
           message: 'Got all coupons',
           coupons
         });
-        console.log('result');
         return res.status(200).json({
           status: 'success',
           queue: 'First Request',
