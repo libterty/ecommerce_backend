@@ -130,6 +130,12 @@ router.get(
   authenticatedAdmin,
   adminController.getPayments
 );
+router.get(
+  '/admin/logs',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getLogs
+);
 
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);

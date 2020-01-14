@@ -10,14 +10,18 @@ const swaggerUi = require('swagger-ui-express');
 const helpers = require('./_helpers');
 const morgan = require('morgan');
 const redis = require('redis');
+const nosqlConnect = require('./nosql/index');
+const storeLogs = require('./middlewares/index');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const logger = morgan('combined');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+
+nosqlConnect();
+const logger = morgan('combined');
 
 const options = {
   swaggerDefinition: {
@@ -69,6 +73,7 @@ app.use((req, res, next) => {
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(logger);
+app.use(storeLogs);
 
 app.listen(port, () => {
   console.log(`Example Redis Port Listening on port: ${REDIS_URL}`);

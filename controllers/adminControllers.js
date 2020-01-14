@@ -3,6 +3,7 @@ const imgur = require('imgur-node-api');
 const db = require('../models');
 const email = require('../util/email');
 const Cache = require('../util/cache');
+const Logs = require('../nosql/models/log');
 const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
@@ -1063,6 +1064,39 @@ const adminController = {
         return res
           .status(200)
           .json({ status: 'success', queue: 'First Request', payments });
+      });
+    }
+  },
+
+  /**
+   * @swagger
+   * /api/admin/logs:
+   *    get:
+   *      description: Find all logs from Server
+   *      parameters:
+   *      - name: Authorization
+   *        schema:
+   *          type: string
+   *        in: header
+   *        required: true
+   *      security:
+   *        - bearerAuth: []
+   *      responses:
+   *         200:
+   *           description: success
+   *         400:
+   *           description: error
+   *         401:
+   *           description: Unauthorized
+   */
+  getLogs: async (req, res) => {
+    try {
+      const logs = await Logs.find().limit(100);
+      return res.status(200).json({ status: 'success', logs });
+    } catch (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Something went wrong in finding logs'
       });
     }
   }
