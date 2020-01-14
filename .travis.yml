@@ -4,6 +4,7 @@ node_js:
 services:
 - mysql
 - redis-server
+- mongodb
 env:
   global:
   - secure: m58kJC5n+KHwsWI1702lt/yAaX57VeKVRfLe1+hfypuJ7AUF+/0NExac0cRTNvyl46E2hEU3phW+97kOcQ+u258omZswLtqT0ywiDKvXH7u9QoSD77eOqFGPE2KC9/74PsrV5SH9QQ3/rUlTpfXoKvsKH+BBDwR2mQnPGbHFBc0KTfi4PrA/Ig2MvtbQRK/6xtvBP/DyrWTshkZznIOaR7QFfKoc8RktA1LkqfOo8TLlm5ZuaAIoXcVh+pKpHmz4dNJVONCmO4da/byQFVbrf1blU2jeltDc+/GoR08AMjH1PieUs7PB84waUHjtrHGDqLGHWa+NtHNdJ9eXDhJ2rUvPW7L/BMdYdW31wOu5sA6u3RS7ak7vNeAS7Ltgpqceq8SdjHx+uT+esNCR+Y7OSkb+aR2gdtngn6CV7ROenC+IDldVk2oqW3mj6oHZCAF0y9cYhzfewIToLw6HiVkbFbinCUC4ar8+AqT4220bllV0Nyn5lRQxYaZNFmpRmbiBzKSVMMnymYK7nOv3B/FQcNHfyW8ANHFHehVeYldCVRc8ELswYpI6ywj3KB/SePGJH79o/MtA3V/80W3ow06nho+150Qo8CFmcXz7CIAjUyGILyZs8+U59a3CHtYtV1gyDlRzq175N9G9OKYZjsu4J7Ix9NbLGulyIQFHUOyr3VY=
@@ -15,6 +16,8 @@ before_install:
   collate utf8mb4_unicode_ci;'
 - npm install sequelize-cli -g
 before_script:
+- sleep 15
+- mongo mydb_test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
 - sequelize db:migrate --env test
 script:
 - npm test
