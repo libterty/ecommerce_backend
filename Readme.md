@@ -10,7 +10,7 @@ E-commerce Website Back-end Server 使用 Express.js + MySQL + Redis + pm2 建�
 ## Features - 專案功能
 
 - 消費者 CRUD - 使用者資訊瀏覽、使用者資訊修改、使用者登出/登入、商品瀏覽、加入購物車、創建訂單、修改訂單、刪除訂單、結帳付款、訂單瀏覽
-- 管理員 CRUD - 商品管理、庫存管理、訂單管理、優惠券管理、銷售管理、呆帳管理、系統提醒功能
+- 管理員 CRUD - 商品管理、庫存管理、訂單管理、優惠券管理、銷售管理、呆帳管理、系統提醒功能、系統日誌
 - 使用 mocha / chai / sinon / supertest 完成單元測試
 - 使用 nyc / coveralls 檢視測試結果覆蓋率，測試覆蓋率維持 90% 以上
 - 使用 TravisCI 實踐自動化測試和自動化部署流程
@@ -48,6 +48,7 @@ E-commerce Website Back-end Server 使用 Express.js + MySQL + Redis + pm2 建�
 
 - [Node.js](https://nodejs.org/en/)
 - [MySQL](https://www.mysql.com/)
+- [MongoDB](https://www.mongodb.com)
 - [Redis](https://redis.io)
 - [Docker](https://www.docker.com)
 - [pm2](https://pm2.io)
@@ -96,6 +97,13 @@ create DATABASE ec_web_test;
 ```bash
 npx sequelize db:migrate
 npx sequelize db:migrate --env test
+```
+
+MongoDB
+
+```bash
+mongo
+mongod
 ```
 
 Redis
