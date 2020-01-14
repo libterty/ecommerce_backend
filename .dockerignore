@@ -23,3 +23,16 @@ super_secret.txt
 
 # Ignore Redis File
 dump.rdb
+
+# ignore assests
+assests/
+
+# ignore codecov
+codecov.yml
+
+# ignore ngrok
+ngrok
+*.exe
+
+# ignore Jenkins local debug
+jenkins.sh
