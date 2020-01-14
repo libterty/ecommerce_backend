@@ -27,3 +27,16 @@ datadir/
 # ignore Redis file
 dump.rdb
 
+# ignore assests
+assests/
+
+# ignore codecov
+codecov.yml
+
+# ignore ngrok
+ngrok
+*.exe
+
+# ignore Jenkins local debug
+jenkins.sh
+
