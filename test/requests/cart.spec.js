@@ -224,6 +224,7 @@ describe('# Cart request', () => {
       });
     });
   });
+
   context('# Manipulate cart item', () => {
     describe('Add up cart item', () => {
       before(async function() {
@@ -235,6 +236,11 @@ describe('# Cart request', () => {
           CartId: 1,
           price: 9999,
           ProductId: 2,
+          ColorId: 1
+        });
+        await db.Inventory.create({
+          quantity: 2,
+          ProductId: 1,
           ColorId: 1
         });
       });
@@ -277,6 +283,27 @@ describe('# Cart request', () => {
           });
       });
 
+      it('should not add up and return error status when inventory is not enough', done => {
+        let agent = request.agent(app);
+        agent
+          .post('/api/cart')
+          .send({ productId: 1, colorId: 1, quantity: 1, price: 9999 })
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            agent
+              .post('/api/cart/2/add')
+              .send()
+              .expect(400)
+              .end((err, res) => {
+                if (err) return done(err);
+                expect(res.body.status).to.be.equal('error');
+                expect(res.body.message).to.be.equal('Inventory is not enough');
+                done();
+              });
+          });
+      });
+
       it('should not add up when cartItem not exists and return error status', done => {
         let agent = request.agent(app);
         agent
@@ -303,6 +330,7 @@ describe('# Cart request', () => {
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
 

@@ -197,7 +197,9 @@ const userController = {
       `getUserInfo${req.connection.remoteAddress}:${req.params.id}`
     );
     if (result !== null) {
-      return User.findByPk(req.params.id).then(async user => {
+      return User.findByPk(req.params.id, {
+        attributes: { exclude: ['password'] }
+      }).then(async user => {
         if (user) {
           await cache.set(
             `getUserInfo${req.connection.remoteAddress}:${req.params.id}`,
@@ -213,7 +215,9 @@ const userController = {
           .json({ status: 'error', message: 'Can not find any user data' });
       });
     } else {
-      return User.findByPk(req.params.id).then(async user => {
+      return User.findByPk(req.params.id, {
+        attributes: { exclude: ['password'] }
+      }).then(async user => {
         if (user) {
           await cache.set(
             `getUserInfo${req.connection.remoteAddress}:${req.params.id}`,
