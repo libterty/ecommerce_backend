@@ -5,6 +5,7 @@ const CartItem = db.CartItem;
 const Product = db.Product;
 const Image = db.Image;
 const Color = db.Color;
+const Inventory = db.Inventory;
 
 const cartController = {
   /**
@@ -203,16 +204,23 @@ const cartController = {
         });
       }
 
-      const cartItem = await CartItem.findByPk(req.params.id);
-      cartItem.update({
-        quantity: cartItem.quantity + 1,
-        price: cartItem.price
-      });
-      // await cartItem.increment('quantity');
+      await CartItem.findByPk(req.params.id).then(async item => {
+        const inventory = await Inventory.findOne({
+          where: { ProductId: item.ProductId, ColorId: item.ColorId }
+        });
+        if (inventory.quantity > item.quantity) {
+          await item.increment('quantity');
 
-      return res.status(200).json({
-        status: 'success',
-        message: 'Update cart successfully'
+          return res.status(200).json({
+            status: 'success',
+            message: 'Update cart successfully'
+          });
+        } else {
+          return res.status(400).json({
+            status: 'error',
+            message: 'Inventory is not enough'
+          });
+        }
       });
     } catch (error) {
       return res

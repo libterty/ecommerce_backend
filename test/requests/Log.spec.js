@@ -23,7 +23,7 @@ describe('# When Request coming', () => {
   context('# When Request hit api-gateway', () => {
     describe('# When logs is being requested', () => {
       before(async () => {
-        await Logs.findOneAndDelete({ user_agent: 'test1' });
+        await Logs.deleteMany();
         this.getUser = sinon
           .stub(helpers, 'getUser')
           .returns({ id: 1, name: 'test1' });
@@ -74,7 +74,7 @@ describe('# When Admin Request coming', () => {
     describe('# When logs is being requested by admin', () => {
       let token;
       before(async () => {
-        await Logs.findOneAndDelete({ user_agent: 'test1' });
+        await Logs.deleteMany();
         this.getUser = sinon
           .stub(helpers, 'getUser')
           .returns({ id: 1, name: 'test1', admin: true });
