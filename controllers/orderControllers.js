@@ -108,7 +108,7 @@ const orderController = {
               ColorId: tempCartItems[i].ColorId
             }
           }).then(async inventory => {
-            if (inventory.quantity > tempCartItems[i].quantity) {
+            if (inventory.quantity >= tempCartItems[i].quantity) {
               await OrderItem.create({
                 price: tempCartItems[i].price,
                 quantity: tempCartItems[i].quantity,
