@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/libterty/ecommerce_backend.svg?branch=dev)](https://travis-ci.org/libterty/ecommerce_backend)
 [![Coverage Status](https://coveralls.io/repos/github/libterty/ecommerce_backend/badge.svg?branch=master)](https://coveralls.io/github/libterty/ecommerce_backend?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/libterty/ecommerce_backend/blob/master/LICENCE)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/libterty8186/server_web)
+![Docker Pulls](https://img.shields.io/docker/pulls/libterty8186/server_web)
 
 E-commerce Website Back-end Server 使用 Express.js + MySQL + MongoDB + Redis + pm2 + Docker-Swarm 建立的高擴展性後端API SERVER，搭配 [E-commerce Website Front-end](https://github.com/libterty/ecommerce_frontend) 後端專案，打造一個全方位的電商網站。
 開發階段後端API Server部署在[Heroku](https://secret-brushlands-82653.herokuapp.com/api)，量產階段部署在[aws](http://3.133.137.175/api)上。專案以TDD方式開發API確保每一個Feature的功能性都是正常，Integration會等後續要盡量產前大致Function確認後才會執行。
@@ -143,7 +145,7 @@ npm test
 npm start
 ```
 
-9. 在瀏覽器開啟 http://localhost:3000/api
+9. 在瀏覽器開啟 http://localhost/api
 
 ## Installing - 使用Docker專案安裝流程
 覺得上述流程很麻煩的話，可以使用我們的 Docker image
@@ -163,7 +165,7 @@ docker build -t libterty8186/server_web:latest --env <- adding env ->
 docker run libterty8186/server_web:latest
 ```
 
-3. 在瀏覽器開啟 http://localhost:3000/api
+3. 在瀏覽器開啟 http://localhost/api
 
 ## Performance Testing/Load Testing
 
