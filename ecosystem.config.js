@@ -3,11 +3,11 @@ module.exports = {
     {
       name: 'API',
       script: 'index.js',
-      instances: 'max',
+      instances: 2,
       autorestart: true,
       watch: true,
-      max_memory_restart: '1G',
-      node_args: ['--optimize_for_size', '--max_old_space_size=128'],
+      max_memory_restart: '500M',
+      node_args: ['--optimize_for_size', '--max_old_space_size=128', '--gc_interval=100'],
       env: {
         NODE_ENV: 'development'
       },

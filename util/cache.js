@@ -1,7 +1,8 @@
+/* eslint-disable */
 const redis = require('redis');
 const REDIS_CACHE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'redis://h:p66a0fd9f2276df8f3a52b7f269a60e34ac42a3508ab3742d544ddbca1ec86311@ec2-54-152-118-90.compute-1.amazonaws.com:8919'
+    ? process.env.REDIS_CACHE_URL
     : 'redis://127.0.0.1:6379';
 let client = redis.createClient(REDIS_CACHE_URL);
 

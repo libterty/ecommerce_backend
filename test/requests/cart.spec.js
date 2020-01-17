@@ -41,6 +41,7 @@ describe('# Cart request', () => {
           url: 'https://i.imgur.com/becWGwT.jpg'
         });
       });
+
       it('should GET cart data and return success json message and total price', done => {
         let agent = request.agent(app);
         agent
@@ -62,18 +63,20 @@ describe('# Cart request', () => {
               });
           });
       });
+
       it('should not get cart data without session.cartId and return error message', done => {
         let agent = request.agent(app);
         agent
           .get('/api/cart')
           .set('Accept', 'application/json')
-          .expect(200)
+          .expect(400)
           .end(function(err, res) {
             if (err) return done(err);
             expect(res.body.status).to.be.equal('error');
             done();
           });
       });
+
       it('should get product of images which are in the cart', done => {
         let agent = request.agent(app);
         agent
@@ -95,6 +98,7 @@ describe('# Cart request', () => {
               });
           });
       });
+
       it('should get product of colors which are in the cart', done => {
         let agent = request.agent(app);
         agent
@@ -141,84 +145,74 @@ describe('# Cart request', () => {
           price: 5999
         });
       });
+
       it('should not get cart data without req.body.price and return error message', done => {
-        let agent = request.agent(app);
-        agent
+        request(app)
           .post('/api/cart')
           .send({ productId: 1, colorId: 1, quantity: 1 })
           .set('Accept', 'application/json')
-          .expect(200)
+          .expect(400)
           .end(function(err, res) {
-            if (err) return done(err);
-            agent
-              .get('/api/cart')
-              .set('Accept', 'application/json')
-              .expect(200)
-              .end(function(err, res) {
-                if (err) done(err);
-                expect(res.body.status).to.be.equal('error');
-                done();
-              });
+            if (err) done(err);
+            expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.equal('price is missing');
+            done();
           });
       });
+
       it('should not get cart data without req.body.quantity and return error message', done => {
-        let agent = request.agent(app);
-        agent
+        request(app)
           .post('/api/cart')
           .send({ productId: 1, colorId: 1, cost: 11, price: 500 })
           .set('Accept', 'application/json')
-          .expect(200)
+          .expect(400)
           .end(function(err, res) {
-            if (err) return done(err);
-            agent
-              .get('/api/cart')
-              .set('Accept', 'application/json')
-              .expect(200)
-              .end(function(err, res) {
-                if (err) done(err);
-                expect(res.body.status).to.be.equal('error');
-                done();
-              });
+            if (err) done(err);
+            expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.equal('quantity is missing');
+            done();
           });
       });
+
       it('should not get cart data without req.body.colorId and return error message', done => {
-        let agent = request.agent(app);
-        agent
+        request(app)
           .post('/api/cart')
           .send({ productId: 1, quantity: 1, cost: 11, price: 500 })
           .set('Accept', 'application/json')
-          .expect(200)
+          .expect(400)
           .end(function(err, res) {
-            if (err) return done(err);
-            agent
-              .get('/api/cart')
-              .set('Accept', 'application/json')
-              .expect(200)
-              .end(function(err, res) {
-                if (err) done(err);
-                expect(res.body.status).to.be.equal('error');
-                done();
-              });
+            if (err) done(err);
+            expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.equal('Fail to find products');
+            done();
           });
       });
+
       it('should not get cart data without req.body.productId and return error message', done => {
-        let agent = request.agent(app);
-        agent
+        request(app)
           .post('/api/cart')
           .send({ colorId: 1, quantity: 1, cost: 11, price: 500 })
           .set('Accept', 'application/json')
+          .expect(400)
+          .end(function(err, res) {
+            if (err) done(err);
+            expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.equal('Fail to find products');
+            done();
+          });
+      });
+
+      it('should return 200 and receive Add to cart', done => {
+        request(app)
+          .post('/api/cart')
+          .send({ productId: 1, colorId: 1, quantity: 1, cost: 11, price: 500 })
+          .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
-            if (err) return done(err);
-            agent
-              .get('/api/cart')
-              .set('Accept', 'application/json')
-              .expect(200)
-              .end(function(err, res) {
-                if (err) done(err);
-                expect(res.body.status).to.be.equal('error');
-                done();
-              });
+            if (err) done(err);
+            expect(res.body.status).to.be.equal('success');
+            expect(res.body.message).to.equal('Added to cart');
+            done();
           });
       });
 
@@ -230,6 +224,7 @@ describe('# Cart request', () => {
       });
     });
   });
+
   context('# Manipulate cart item', () => {
     describe('Add up cart item', () => {
       before(async function() {
@@ -243,19 +238,28 @@ describe('# Cart request', () => {
           ProductId: 2,
           ColorId: 1
         });
+        await db.Inventory.create({
+          quantity: 2,
+          ProductId: 1,
+          ColorId: 1
+        });
       });
+
       it('should not add up when cartItem not in the cart and return error status', done => {
-        let agent = request.agent(app);
-        agent
+        request(app)
           .post('/api/cart/1/add')
           .send()
-          .expect(200)
+          .expect(400)
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.be.equal(
+              'Cannot update item not in the cart'
+            );
             done();
           });
       });
+
       it('should add up and return success status', done => {
         let agent = request.agent(app);
         agent
@@ -271,10 +275,35 @@ describe('# Cart request', () => {
               .end((err, res) => {
                 if (err) return done(err);
                 expect(res.body.status).to.be.equal('success');
+                expect(res.body.message).to.be.equal(
+                  'Update cart successfully'
+                );
                 done();
               });
           });
       });
+
+      it('should not add up and return error status when inventory is not enough', done => {
+        let agent = request.agent(app);
+        agent
+          .post('/api/cart')
+          .send({ productId: 1, colorId: 1, quantity: 1, price: 9999 })
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            agent
+              .post('/api/cart/2/add')
+              .send()
+              .expect(400)
+              .end((err, res) => {
+                if (err) return done(err);
+                expect(res.body.status).to.be.equal('error');
+                expect(res.body.message).to.be.equal('Inventory is not enough');
+                done();
+              });
+          });
+      });
+
       it('should not add up when cartItem not exists and return error status', done => {
         let agent = request.agent(app);
         agent
@@ -286,17 +315,22 @@ describe('# Cart request', () => {
             agent
               .post('/api/cart/0/add')
               .send()
-              .expect(400)
+              .expect(500)
               .end((err, res) => {
                 if (err) return done(err);
                 expect(res.body.status).to.be.equal('error');
+                expect(res.body.message).to.be.equal(
+                  'Fail to add up cart item'
+                );
                 done();
               });
           });
       });
+
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
 
@@ -313,18 +347,22 @@ describe('# Cart request', () => {
           ColorId: 1
         });
       });
+
       it('should not subtract item quantity when cartItem not in the cart and return error status', done => {
-        let agent = request.agent(app);
-        agent
+        request(app)
           .post('/api/cart/1/sub')
           .send()
-          .expect(200)
+          .expect(400)
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.be.equal(
+              'Cannot update item not in the cart'
+            );
             done();
           });
       });
+
       it('should subtract item quantity and return success status', done => {
         let agent = request.agent(app);
         agent
@@ -344,6 +382,7 @@ describe('# Cart request', () => {
               });
           });
       });
+
       it('should not subtract item quantity when not exists and return error status', done => {
         let agent = request.agent(app);
         agent
@@ -355,14 +394,18 @@ describe('# Cart request', () => {
             agent
               .post('/api/cart/0/sub')
               .send()
-              .expect(400)
+              .expect(500)
               .end((err, res) => {
                 if (err) return done(err);
                 expect(res.body.status).to.be.equal('error');
+                expect(res.body.message).to.be.equal(
+                  'Fail to subtract cart item'
+                );
                 done();
               });
           });
       });
+
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
@@ -382,18 +425,22 @@ describe('# Cart request', () => {
           ColorId: 1
         });
       });
+
       it('should not delete cart item when cartItem not in the cart and return error status', done => {
-        let agent = request.agent(app);
-        agent
+        request(app)
           .delete('/api/cart/1/')
           .send()
-          .expect(200)
+          .expect(400)
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.be.equal('error');
+            expect(res.body.message).to.be.equal(
+              'Cannot update item not in the cart'
+            );
             done();
           });
       });
+
       it('should delete cart item quantity and return success status', done => {
         let agent = request.agent(app);
         agent
@@ -413,6 +460,7 @@ describe('# Cart request', () => {
               });
           });
       });
+
       it('should not delete cart item quantity when not exists and return error status', done => {
         let agent = request.agent(app);
         agent
@@ -424,14 +472,18 @@ describe('# Cart request', () => {
             agent
               .delete('/api/cart/0/')
               .send()
-              .expect(400)
+              .expect(500)
               .end((err, res) => {
                 if (err) return done(err);
                 expect(res.body.status).to.be.equal('error');
+                expect(res.body.message).to.be.equal(
+                  'Fail to remove the item from cart'
+                );
                 done();
               });
           });
       });
+
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });

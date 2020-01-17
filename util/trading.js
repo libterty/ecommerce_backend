@@ -1,3 +1,4 @@
+/* eslint-disable */
 const crypto = require('crypto');
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -20,7 +21,6 @@ class Trade {
     for (const kv of Object.entries(TradeInfo)) {
       results.push(`${kv[0]}=${kv[1]}`);
     }
-    // console.log('result log', results.join('&'));
     return results.join('&');
   }
 
@@ -54,10 +54,6 @@ class Trade {
   }
 
   getTradeInfo(Amt, Desc, email) {
-    // console.log('===== getTradeInfo =====');
-    // console.log(Amt, Desc, email);
-    // console.log('==========');
-
     const data = {
       MerchantID: this.MerchantID, // 商店代號
       RespondType: 'JSON', // 回傳格式
@@ -73,17 +69,8 @@ class Trade {
       NotifyURL: this.NotifyURL, // 支付通知網址/每期授權結果通知
       ClientBackURL: this.ClientBackURL // 支付取消返回商店網址
     };
-
-    // console.log('===== getTradeInfo: data =====')
-    // console.log(data)
-
     const mpgAesEncrypt = this.createMpgAesEncrypt(data);
     const mpgShaEncrypt = this.createMpgShaEncrypt(mpgAesEncrypt);
-
-    // console.log('===== getTradeInfo: mpgAesEncrypt, mpgShaEncrypt =====')
-    // console.log(mpgAesEncrypt)
-    // console.log(mpgShaEncrypt)
-
     const tradeInfo = {
       MerchantID: this.MerchantID, // 商店代號
       TradeInfo: mpgAesEncrypt, // 加密後參數
@@ -92,10 +79,6 @@ class Trade {
       PayGateWay: this.PayGateWay,
       MerchantOrderNo: data.MerchantOrderNo
     };
-
-    // console.log('===== getTradeInfo: tradeInfo =====')
-    // console.log(tradeInfo)
-
     return tradeInfo;
   }
 }

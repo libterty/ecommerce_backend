@@ -168,12 +168,16 @@ const paymentController = {
           payment_status: '已付款',
           updatedAt: new Date()
         });
-        return res.redirect(`http://localhost:8080/orders/success`);
+        return res.redirect(
+          `https://blooming-bastion-52657.herokuapp.com/orders/success`
+        );
       } else if (data.Status === 'MPG03009') {
         await payment.update({
           payment_status: '付款失敗'
         });
-        return res.redirect(`http://localhost:8080/orders/fails`);
+        return res.redirect(
+          `https://blooming-bastion-52657.herokuapp.com/orders/fails`
+        );
       }
     } catch (error) {
       return res

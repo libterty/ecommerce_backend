@@ -5,7 +5,9 @@ const imgur = require('imgur-node-api');
 const db = require('../models');
 const User = db.User;
 const helpers = require('../_helpers');
+const Cache = require('../util/cache');
 const IMGUR_CLIENT_ID = process.env.imgur_id;
+const cache = new Cache();
 
 const userController = {
   /**
@@ -185,20 +187,49 @@ const userController = {
    *         401:
    *           description: Unauthorized
    */
-  getUserInfo: (req, res) => {
+  getUserInfo: async (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.id)) {
       return res
         .status(401)
         .json({ status: 'error', message: 'Can not find any user data' });
     }
-    return User.findByPk(req.params.id).then(user => {
-      if (user) {
-        return res.status(200).json({ status: 'success', user });
-      }
-      return res
-        .status(400)
-        .json({ status: 'error', message: 'Can not find any user data' });
-    });
+    const result = await cache.get(
+      `getUserInfo${req.connection.remoteAddress}:${req.params.id}`
+    );
+    if (result !== null) {
+      return User.findByPk(req.params.id, {
+        attributes: { exclude: ['password'] }
+      }).then(async user => {
+        if (user) {
+          await cache.set(
+            `getUserInfo${req.connection.remoteAddress}:${req.params.id}`,
+            { status: 'success', user }
+          );
+          const newResult = await cache.get(
+            `getUserInfo${req.connection.remoteAddress}:${req.params.id}`
+          );
+          return res.status(200).json(JSON.parse(newResult));
+        }
+        return res
+          .status(400)
+          .json({ status: 'error', message: 'Can not find any user data' });
+      });
+    } else {
+      return User.findByPk(req.params.id, {
+        attributes: { exclude: ['password'] }
+      }).then(async user => {
+        if (user) {
+          await cache.set(
+            `getUserInfo${req.connection.remoteAddress}:${req.params.id}`,
+            { status: 'success', user }
+          );
+          return res.status(200).json({ status: 'success', user });
+        }
+        return res
+          .status(400)
+          .json({ status: 'error', message: 'Can not find any user data' });
+      });
+    }
   },
 
   /**
@@ -364,16 +395,56 @@ const userController = {
    *         401:
    *           description: Unauthorized
    */
-  getCurrentUser: (req, res) => {
-    return res.status(200).json({
-      status: 'success',
-      id: helpers.getUser(req).id,
-      name: helpers.getUser(req).name,
-      email: helpers.getUser(req).email,
-      address: helpers.getUser(req).address ? helpers.getUser(req).address : '',
-      tel: helpers.getUser(req).tel ? helpers.getUser(req).tel : '',
-      isAdmin: helpers.getUser(req).admin
-    });
+  getCurrentUser: async (req, res) => {
+    const result = await cache.get(
+      `getCurrentUser${req.connection.remoteAddress}:${
+        helpers.getUser(req).name
+      }`
+    );
+    if (result !== null) {
+      const data = {
+        status: 'success',
+        id: helpers.getUser(req).id,
+        name: helpers.getUser(req).name,
+        email: helpers.getUser(req).email,
+        address: helpers.getUser(req).address
+          ? helpers.getUser(req).address
+          : '',
+        tel: helpers.getUser(req).tel ? helpers.getUser(req).tel : '',
+        isAdmin: helpers.getUser(req).admin
+      };
+      await cache.set(
+        `getCurrentUser${req.connection.remoteAddress}:${
+          helpers.getUser(req).name
+        }`,
+        data
+      );
+      const newResult = await cache.get(
+        `getCurrentUser${req.connection.remoteAddress}:${
+          helpers.getUser(req).name
+        }`
+      );
+      return res.status(200).json(JSON.parse(newResult));
+    } else {
+      const data = {
+        status: 'success',
+        id: helpers.getUser(req).id,
+        name: helpers.getUser(req).name,
+        email: helpers.getUser(req).email,
+        address: helpers.getUser(req).address
+          ? helpers.getUser(req).address
+          : '',
+        tel: helpers.getUser(req).tel ? helpers.getUser(req).tel : '',
+        isAdmin: helpers.getUser(req).admin
+      };
+      await cache.set(
+        `getCurrentUser${req.connection.remoteAddress}:${
+          helpers.getUser(req).name
+        }`,
+        data
+      );
+      return res.status(200).json(data);
+    }
   }
 };
 

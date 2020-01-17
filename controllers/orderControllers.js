@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../models');
 const helpers = require('../_helpers');
+const Cache = require('../util/cache');
 const Cart = db.Cart;
 const Product = db.Product;
 const CartItem = db.CartItem;
@@ -11,7 +12,9 @@ const OrderItem = db.OrderItem;
 const Shipping = db.Shipping;
 const Image = db.Image;
 const Color = db.Color;
+const Coupon = db.Coupon;
 const Op = Sequelize.Op;
+const cache = new Cache();
 
 const orderController = {
   /**
@@ -105,7 +108,7 @@ const orderController = {
               ColorId: tempCartItems[i].ColorId
             }
           }).then(async inventory => {
-            if (inventory.quantity > tempCartItems[i].quantity) {
+            if (inventory.quantity >= tempCartItems[i].quantity) {
               await OrderItem.create({
                 price: tempCartItems[i].price,
                 quantity: tempCartItems[i].quantity,
@@ -179,55 +182,151 @@ const orderController = {
    *         401:
    *           description: Unauthorized
    */
-  getOrder: (req, res) => {
+  getOrder: async (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
         .status(401)
         .json({ status: 'error', message: 'Can not find any user data' });
     }
 
-    return Order.findOne({
-      include: [{ model: Product, include: [{ model: Image }], as: 'items' }],
-      where: {
-        UserId: req.params.UserId,
-        payment_status: '未付款'
-      }
-    }).then(async order => {
-      if (order) {
-        const result = order.items.map(async item => ({
-          ...item.dataValues,
-          color: await Color.findByPk(item.dataValues.OrderItem.ColorId, {})
-        }));
+    const result = await cache.get(
+      `getOrder${req.connection.remoteAddress}:${req.params.UserId}`
+    );
 
-        const items = await Promise.all(result).then(complete => {
-          return complete;
-        });
+    if (result !== null) {
+      return Order.findOne({
+        include: [{ model: Product, include: [{ model: Image }], as: 'items' }],
+        where: {
+          UserId: req.params.UserId,
+          payment_status: '未付款'
+        }
+      }).then(async order => {
+        if (order) {
+          const result = order.items.map(async item => ({
+            ...item.dataValues,
+            color: await Color.findByPk(item.dataValues.OrderItem.ColorId, {})
+          }));
 
-        return res.status(200).json({
-          status: 'success',
-          order: {
-            id: order.id,
-            sn: order.sn,
-            order_status: order.order_status,
-            shipping_status: order.shipping_status,
-            payment_status: order.payment_status,
-            total_amount: order.total_amount,
-            name: order.name,
-            address: order.address,
-            email: order.email,
-            phone: order.phone,
-            invoice: order.invoice,
-            UserId: order.UserId,
-            createdAt: order.createdAt,
-            updatedAt: order.updatedAt,
-            items
-          }
+          const items = await Promise.all(result).then(complete => {
+            return complete;
+          });
+
+          const data = {
+            status: 'success',
+            order: {
+              id: order.id,
+              sn: order.sn,
+              order_status: order.order_status,
+              shipping_status: order.shipping_status,
+              payment_status: order.payment_status,
+              total_amount: order.total_amount,
+              name: order.name,
+              address: order.address,
+              email: order.email,
+              phone: order.phone,
+              invoice: order.invoice,
+              UserId: order.UserId,
+              createdAt: order.createdAt,
+              updatedAt: order.updatedAt,
+              items
+            }
+          };
+
+          await cache.set(
+            `getOrder${req.connection.remoteAddress}:${req.params.UserId}`,
+            data
+          );
+          const newResult = await cache.get(
+            `getOrder${req.connection.remoteAddress}:${req.params.UserId}`
+          );
+          return res.status(200).json(JSON.parse(newResult));
+        }
+        await cache.set(
+          `getOrder${req.connection.remoteAddress}:${req.params.UserId}`,
+          { status: 'error', message: 'Nothing in your order list' }
+        );
+        const newResult = await cache.get(
+          `getOrder${req.connection.remoteAddress}:${req.params.UserId}`
+        );
+        return res.status(400).json(JSON.parse(newResult));
+      });
+    } else {
+      return Order.findOne({
+        include: [{ model: Product, include: [{ model: Image }], as: 'items' }],
+        where: {
+          UserId: req.params.UserId,
+          payment_status: '未付款'
+        }
+      }).then(async order => {
+        if (order) {
+          const result = order.items.map(async item => ({
+            ...item.dataValues,
+            color: await Color.findByPk(item.dataValues.OrderItem.ColorId, {})
+          }));
+
+          const items = await Promise.all(result).then(complete => {
+            return complete;
+          });
+
+          const data = {
+            status: 'success',
+            order: {
+              id: order.id,
+              sn: order.sn,
+              order_status: order.order_status,
+              shipping_status: order.shipping_status,
+              payment_status: order.payment_status,
+              total_amount: order.total_amount,
+              name: order.name,
+              address: order.address,
+              email: order.email,
+              phone: order.phone,
+              invoice: order.invoice,
+              UserId: order.UserId,
+              createdAt: order.createdAt,
+              updatedAt: order.updatedAt,
+              items
+            }
+          };
+
+          await cache.set(
+            `getOrder${req.connection.remoteAddress}:${req.params.UserId}`,
+            data
+          );
+
+          return res.status(200).json({
+            status: 'success',
+            queue: 'First Request',
+            order: {
+              id: order.id,
+              sn: order.sn,
+              order_status: order.order_status,
+              shipping_status: order.shipping_status,
+              payment_status: order.payment_status,
+              total_amount: order.total_amount,
+              name: order.name,
+              address: order.address,
+              email: order.email,
+              phone: order.phone,
+              invoice: order.invoice,
+              UserId: order.UserId,
+              createdAt: order.createdAt,
+              updatedAt: order.updatedAt,
+              items
+            }
+          });
+        }
+        await cache.set(
+          `getOrder${req.connection.remoteAddress}:${req.params.UserId}`,
+          { status: 'error', message: 'Nothing in your order list' }
+        );
+        return res.status(400).json({
+          status: 'error',
+          queue: 'First Request',
+          message: 'Nothing in your order list'
         });
-      }
-      return res
-        .status(400)
-        .json({ status: 'error', message: 'Nothing in your order list' });
-    });
+      });
+    }
   },
   /**
    * @swagger
@@ -300,7 +399,7 @@ const orderController = {
    *         401:
    *           description: Unauthorized
    */
-  putOrder: (req, res) => {
+  putOrder: async (req, res) => {
     const {
       name,
       address,
@@ -308,8 +407,10 @@ const orderController = {
       phone,
       shippingMethod,
       shippingStatus,
-      shippingFee
+      shippingFee,
+      couponId
     } = req.body;
+    let coupon;
 
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
@@ -353,12 +454,18 @@ const orderController = {
         .json({ status: 'error', message: "Contact phone didn't exist" });
     }
 
+    if (couponId) {
+      coupon = await Coupon.findByPk(couponId, {});
+    }
+
     return Order.findByPk(req.params.OrderId).then(async order => {
       if (order) {
         try {
           if (order.total_amount > 3000) {
             await order.update({
-              total_amount: order.total_amount,
+              total_amount: couponId
+                ? Math.floor((order.total_amount * coupon.percent) / 100)
+                : order.total_amount,
               name: name ? name : order.name,
               address: address ? address : order.address,
               email: email ? email : order.email,
@@ -367,7 +474,11 @@ const orderController = {
             });
           } else {
             await order.update({
-              total_amount: order.total_amount + shippingFee,
+              total_amount: couponId
+                ? Math.floor(
+                    ((order.total_amount + shippingFee) * coupon.percent) / 100
+                  )
+                : order.total_amount + shippingFee,
               name: name ? name : order.name,
               address: address ? address : order.address,
               email: email ? email : order.email,
@@ -507,25 +618,68 @@ const orderController = {
    *         401:
    *           description: Unauthorized
    */
-  getOrders: (req, res) => {
+  getOrders: async (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.UserId)) {
       return res
         .status(401)
         .json({ status: 'error', message: 'Can not find any user data' });
     }
 
-    return Order.findAll({
-      where: {
-        UserId: req.params.UserId
-      }
-    }).then(orders => {
-      if (orders.length > 0) {
-        return res.status(200).json({ status: 'success', orders });
-      }
-      return res
-        .status(400)
-        .json({ status: 'error', message: "You don't have any orders record" });
-    });
+    const result = await cache.get(
+      `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`
+    );
+
+    if (result !== null) {
+      return Order.findAll({
+        where: {
+          UserId: req.params.UserId
+        }
+      }).then(async orders => {
+        if (orders.length > 0) {
+          await cache.set(
+            `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`,
+            { status: 'success', orders }
+          );
+          const newResult = await cache.get(
+            `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`
+          );
+          return res.status(200).json(JSON.parse(newResult));
+        }
+        await cache.set(
+          `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`,
+          { status: 'error', message: "You don't have any orders record" }
+        );
+        const newResult = await cache.get(
+          `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`
+        );
+        return res.status(400).json(JSON.parse(newResult));
+      });
+    } else {
+      return Order.findAll({
+        where: {
+          UserId: req.params.UserId
+        }
+      }).then(async orders => {
+        if (orders.length > 0) {
+          await cache.set(
+            `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`,
+            { status: 'success', orders }
+          );
+          return res
+            .status(200)
+            .json({ status: 'success', queue: 'First Request', orders });
+        }
+        await cache.set(
+          `getOrders${req.connection.remoteAddress}:User:${req.params.UserId}`,
+          { status: 'error', message: "You don't have any orders record" }
+        );
+        return res.status(400).json({
+          status: 'error',
+          queue: 'First Request',
+          message: "You don't have any orders record"
+        });
+      });
+    }
   }
 };
 
