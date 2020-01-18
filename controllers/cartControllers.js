@@ -42,6 +42,9 @@ const cartController = {
       }).then(c => c);
       const Colors = await Color.findAll().then(colors => colors);
       const Images = await Image.findAll().then(images => images);
+      const Inventories = await Inventory.findAll().then(
+        inventories => inventories
+      );
 
       cartItems = cartItems.map(cart => ({
         ...cart.dataValues,
@@ -53,13 +56,18 @@ const cartController = {
         ),
         Image: Images.filter(i => i.dataValues).find(
           image => image.ProductId == cart.dataValues.ProductId
+        ),
+        Inventories: Inventories.filter(i => i.dataValues).find(
+          inventory =>
+          inventory.ProductId == cart.dataValues.ProductId &&
+          inventory.ColorId == cart.dataValues.ColorId
         )
       }));
 
       let totalPrice =
-        cartItems.length > 0
-          ? cartItems.map(d => d.price * d.quantity).reduce((a, b) => a + b)
-          : 0;
+        cartItems.length > 0 ?
+        cartItems.map(d => d.price * d.quantity).reduce((a, b) => a + b) :
+        0;
 
       return res.status(200).json({
         status: 'success',
