@@ -16,6 +16,8 @@ describe('# Cart request', () => {
         await db.Image.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
+
         await db.Product.create({
           id: 1,
           name: 'Sofa',
@@ -30,6 +32,7 @@ describe('# Cart request', () => {
         });
         await db.Color.create({ id: 1, name: 'white', ProductId: 1 });
         await db.Color.create({ id: 2, name: 'black', ProductId: 1 });
+        await db.Color.create({ id: 3, name: 'black', ProductId: 2 });
         await db.Image.create({
           id: 1,
           ProductId: 1,
@@ -40,6 +43,9 @@ describe('# Cart request', () => {
           ProductId: 2,
           url: 'https://i.imgur.com/becWGwT.jpg'
         });
+        await db.Inventory.create({ quantity: 10, ProductId: 1, ColorId: 1 });
+        await db.Inventory.create({ quantity: 6, ProductId: 1, ColorId: 2 });
+        await db.Inventory.create({ quantity: 5, ProductId: 2, ColorId: 3 });
       });
 
       it('should GET cart data and return success json message and total price', done => {
@@ -58,6 +64,7 @@ describe('# Cart request', () => {
                 if (err) done(err);
                 expect(res.body.cart[0].id).to.be.equal(1);
                 expect(res.body.totalPrice).to.be.equal(9999);
+                expect(res.body.cart[0].Inventories.quantity).to.be.equal(10);
                 expect(res.body.status).to.be.equal('success');
                 done();
               });
@@ -119,10 +126,32 @@ describe('# Cart request', () => {
           });
       });
 
+      it('should get product of inventories which are in the cart', done => {
+        let agent = request.agent(app);
+        agent
+          .post('/api/cart')
+          .send({ productId: 1, colorId: 1, quantity: 1, price: 9999 })
+          .expect(200)
+          .end(function(err, res) {
+            if (err) return done(err);
+            agent
+              .get('/api/cart')
+              .set('Accept', 'application/json')
+              .expect(200)
+              .end(function(err, res) {
+                if (err) return done(err);
+                expect(res.body.cart[0].Inventories.quantity).to.be.equal(10);
+                done();
+              });
+          });
+      });
+
+
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
 
