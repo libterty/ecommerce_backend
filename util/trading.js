@@ -13,7 +13,7 @@ class Trade {
     this.PayGateWay = 'https://ccore.spgateway.com/MPG/mpg_gateway';
     this.ReturnURL = this.URL + '/spgateway/callback?from=ReturnURL';
     this.NotifyURL = this.URL + '/spgateway/callback?from=NotifyURL';
-    this.ClientBackURL = 'http://localhost:8080/order';
+    this.ClientBackURL = `${this.URL}/orders` || 'http://localhost:8080/orders';
   }
 
   genDataChain(TradeInfo) {
