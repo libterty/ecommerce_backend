@@ -146,7 +146,6 @@ describe('# Cart request', () => {
           });
       });
 
-
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.Product.destroy({ where: {}, truncate: true });

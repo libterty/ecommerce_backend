@@ -59,15 +59,15 @@ const cartController = {
         ),
         Inventories: Inventories.filter(i => i.dataValues).find(
           inventory =>
-          inventory.ProductId == cart.dataValues.ProductId &&
-          inventory.ColorId == cart.dataValues.ColorId
+            inventory.ProductId == cart.dataValues.ProductId &&
+            inventory.ColorId == cart.dataValues.ColorId
         )
       }));
 
       let totalPrice =
-        cartItems.length > 0 ?
-        cartItems.map(d => d.price * d.quantity).reduce((a, b) => a + b) :
-        0;
+        cartItems.length > 0
+          ? cartItems.map(d => d.price * d.quantity).reduce((a, b) => a + b)
+          : 0;
 
       return res.status(200).json({
         status: 'success',

@@ -10,6 +10,7 @@ const adminCouponController = require('../controllers/adminCouponController');
 const userCouponController = require('../controllers/userCouponController');
 const orderController = require('../controllers/orderControllers');
 const paymentController = require('../controllers/paymentControllers');
+const chatbotController = require('../controllers/chatbotController');
 const passport = require('../config/passport');
 const helpers = require('../_helpers');
 const authenticated = passport.authenticate('jwt', { session: false });
@@ -228,7 +229,7 @@ router.get(
   authenticatedAdmin,
   adminCouponController.getCoupons
 );
-
+router.get('/chatbot', chatbotController.getChatBot);
 // TODO: send user coupon
 
 module.exports = router;
