@@ -34,9 +34,6 @@ describe('# Chat Request', () => {
             expect(res.body.status).to.equal('success');
             expect(res.body.message).to.equal('success1');
             expect(res.body.chats[0].name).to.equal('test category');
-            expect(res.body.chats[0].ChatItems[0].question).to.equal(
-              'test question'
-            );
             done();
           });
       });
@@ -50,9 +47,6 @@ describe('# Chat Request', () => {
             expect(res.body.status).to.equal('success');
             expect(res.body.message).to.equal(undefined);
             expect(res.body.chats[0].name).to.equal('test category');
-            expect(res.body.chats[0].ChatItems[0].question).to.equal(
-              'test question'
-            );
             done();
           });
       });
