@@ -269,15 +269,16 @@ const cartController = {
         });
       }
       const cartItem = await CartItem.findByPk(req.params.id);
-      cartItem.update({
-        quantity: cartItem.quantity - 1 >= 1 ? cartItem.quantity - 1 : 1,
-        price: cartItem.price
-      });
-      // await cartItem.decrement('quantity');
-
-      return res.json({
-        status: 'success',
-        message: 'Update cart successfully'
+      if (cartItem.quantity > 1) {
+        await cartItem.decrement('quantity');
+        return res.status(200).json({
+          status: 'success',
+          message: 'Update cart successfully'
+        });
+      }
+      return res.status(400).json({
+        status: 'error',
+        message: 'CartItem quantity must more then zero'
       });
     } catch (error) {
       return res
@@ -316,7 +317,7 @@ const cartController = {
         });
       }
       const cartItem = await CartItem.findByPk(req.params.id);
-      cartItem.destroy();
+      await cartItem.destroy();
       return res.json({ status: 'success', message: 'Removed item from cart' });
     } catch (error) {
       return res.status(500).json({

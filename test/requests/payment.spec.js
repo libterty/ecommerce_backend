@@ -140,6 +140,41 @@ describe('# Payment Request', () => {
           phone: '02-8888-8888',
           OrderId: 1
         });
+        await db.Order.create({
+          sn: '1579595181835',
+          order_status: '訂單處理中',
+          shipping_status: '未出貨',
+          payment_status: '未付款',
+          total_amount: '3000',
+          name: 'test1',
+          address: '測試路',
+          email: process.env.testEmail,
+          phone: '02-8888-8888',
+          invoice: '',
+          UserId: 1
+        });
+        await db.Shipping.create({
+          sn: '1579595181835',
+          shipping_method: '黑貓宅急便',
+          shipping_status: '未出貨',
+          shipping_fee: 350,
+          name: 'test1',
+          address: '測試路',
+          email: process.env.testEmail,
+          phone: '02-8888-8888',
+          OrderId: 1
+        });
+        await db.Payment.create({
+          sn: '1579595181835',
+          shipping_method: '黑貓宅急便',
+          shipping_status: '未出貨',
+          shipping_fee: 350,
+          name: 'test1',
+          address: '測試路',
+          email: process.env.testEmail,
+          phone: '02-8888-8888',
+          OrderId: 1
+        });
       });
 
       it('Should return 401 when passing malware request', done => {
@@ -170,6 +205,23 @@ describe('# Payment Request', () => {
           .end((err, res) => {
             db.Payment.findByPk(1).then(payment => {
               expect(payment.dataValues.payment_status).to.equal('已付款');
+              return done();
+            });
+          });
+      });
+
+      it('Should return 302 when receiving data', done => {
+        request(app)
+          .post('/api/spgateway/callback')
+          .send({
+            TradeInfo:
+              'cf5e436fff3e719591a4f90b96dc8e4d60efe56826d57794bbda90df02298b0f86cb6a19c3a1c7f4087bc6eedaa86844d1322bc35391090a90d70b959f81f524a17edd513f8136171846f369c247eaef32bc34eb55cccadcc5067b686b11096ec16808f14052993e2153443cbe1c273940e222ebfeec14368f3aecf4e2b846f0ab54826b1b493aa3c725d05f7f5d9f08d8c4235428cdbd03458238c005e2cfbc91302d95e7c99289afa4dc94203a29ee866d270c8c7466c7d5489294c7001c91af27de9633ab4606bbe527efcdef9625fc105a23bb79b736fefe727182673a5210497c3e570232769de98ab46ad7ed0a365187d7175dba0c5c8b76cdcc661860b7e457c6116a6034cbe31233d4eb52c1d4169f708c4966e6482a3067f4c98455a907d6091281119f52c16b35ac994ff87127103b3e403a4fcbb77b0c61b42ceab3528efb67f0aa183c45230bf5c544d79f2a401d3e61824156f95edb8168fc7f5e18e544a1aa7ef7e13ea4df05b0bbccc1e9b7291c5adf39dbc426af580b45aa063ff5f9574014b6f041b27d2c7bd6ed5383e91f6ba6236ac2d3ad41af7db5693158f63468aaa5ac8fa2c099a8bdfec55c7a98b40613e6588ab28878cfdf788979505054f4854a65c8ce85cef3923a8121cdc8adfeccc919fd66757a20544ee1bc466cc364bf3ee2f95acde678234522885666f47f6e036fd2874e02cb626b23'
+          })
+          .set('Accept', 'application/json')
+          .expect(302)
+          .end((err, res) => {
+            db.Payment.findByPk(2).then(payment => {
+              expect(payment.dataValues.payment_status).to.equal('付款失敗');
               return done();
             });
           });
