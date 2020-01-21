@@ -374,6 +374,11 @@ describe('# Cart request', () => {
           ProductId: 2,
           ColorId: 1
         });
+        await db.Inventory.create({
+          quantity: 4,
+          ProductId: 1,
+          ColorId: 1
+        });
       });
 
       it('should not subtract item quantity when cartItem not in the cart and return error status', done => {
@@ -400,12 +405,45 @@ describe('# Cart request', () => {
           .end((err, res) => {
             if (err) return done(err);
             agent
-              .post('/api/cart/2/sub')
+              .post('/api/cart/2/add')
               .send()
               .expect(200)
               .end((err, res) => {
                 if (err) return done(err);
-                expect(res.body.status).to.be.equal('success');
+                agent
+                  .post('/api/cart/2/sub')
+                  .send()
+                  .expect(200)
+                  .end((err, res) => {
+                    if (err) return done(err);
+                    expect(res.body.status).to.be.equal('success');
+                    expect(res.body.message).to.be.equal(
+                      'Update cart successfully'
+                    );
+                    done();
+                  });
+              });
+          });
+      });
+
+      it('should subtract item quantity and return error status', done => {
+        let agent = request.agent(app);
+        agent
+          .post('/api/cart')
+          .send({ productId: 1, colorId: 1, quantity: 1, price: 9999 })
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            agent
+              .post('/api/cart/2/sub')
+              .send()
+              .expect(400)
+              .end((err, res) => {
+                if (err) return done(err);
+                expect(res.body.status).to.be.equal('error');
+                expect(res.body.message).to.be.equal(
+                  'CartItem quantity must more then zero'
+                );
                 done();
               });
           });
@@ -437,6 +475,7 @@ describe('# Cart request', () => {
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
 
