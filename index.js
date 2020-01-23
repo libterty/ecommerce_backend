@@ -45,11 +45,7 @@ let redisClient = redis.createClient(REDIS_URL);
 app.use(
   cors({ 
     credentials: true, 
-    origin: [
-      'http://localhost:8080',
-      'http://localhost:5000',
-      'https://blooming-bastion-52657.herokuapp.com'
-    ],
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
   })
 );
