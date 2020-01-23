@@ -48,7 +48,7 @@ app.use(
     origin: [
       'http://localhost:8080',
       'http://localhost:5000',
-      'https://blooming-bastion-52657.herokuapp.com '
+      'https://blooming-bastion-52657.herokuapp.com'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE']
   })
