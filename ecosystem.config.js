@@ -6,6 +6,7 @@ module.exports = {
       instances: 2,
       autorestart: true,
       watch: true,
+      ignore_watch: ["logs"],
       max_memory_restart: '500M',
       node_args: [
         '--optimize_for_size',
