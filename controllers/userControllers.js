@@ -327,6 +327,7 @@ const userController = {
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID);
         imgur.upload(file.path, (err, img) => {
+          if (err) throw new Error(err);
           if (!img.data)
             return res
               .status(400)
