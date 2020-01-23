@@ -5,8 +5,7 @@ module.exports = {
       script: 'index.js',
       instances: 2,
       autorestart: true,
-      watch: true,
-      ignore_watch: ["logs"],
+      watch: false,
       max_memory_restart: '500M',
       node_args: [
         '--optimize_for_size',
