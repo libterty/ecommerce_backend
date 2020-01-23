@@ -42,7 +42,17 @@ const REDIS_URL =
 let RedisStore = require('connect-redis')(session);
 let redisClient = redis.createClient(REDIS_URL);
 
-app.use(cors({ credentials: true, origin: true }));
+app.use(
+  cors({ 
+    credentials: true, 
+    origin: [
+      'http://localhost:8080',
+      'http://localhost:5000',
+      'https://blooming-bastion-52657.herokuapp.com'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+  })
+);
 app.use('/upload', express.static(__dirname + '/upload'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
