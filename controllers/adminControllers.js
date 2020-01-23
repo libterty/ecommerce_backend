@@ -311,6 +311,7 @@ const adminController = {
         if (file) {
           imgur.setClientID(IMGUR_CLIENT_ID);
           imgur.upload(file.path, (err, img) => {
+            if (err) throw new Error(err);
             return Image.create({
               url: file ? img.data.link : null,
               ProductId: dbProduct.dataValues.id
@@ -709,6 +710,7 @@ const adminController = {
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID);
       imgur.upload(file.path, (err, img) => {
+        if (err) throw new Error(err);
         return Image.create({
           url: file ? img.data.link : null,
           ProductId: req.params.id

@@ -26,9 +26,10 @@ describe('# Product request', () => {
         });
         await db.Image.create({ url: 'test1.jpg', ProductId: 1 });
         await db.Image.create({ url: 'test2.jpg', ProductId: 2 });
+        await cache.del('getHomePageProducts');
       });
 
-      it('should return 200 and get json data', done => {
+      it('should return 200 and get json data from RDBMS', done => {
         request(app)
           .get('/api/furnitures')
           .set('Accept', 'application/json')
@@ -36,7 +37,22 @@ describe('# Product request', () => {
           .end((err, res) => {
             if (err) return done(err);
             expect(res.body.status).to.equal('success');
-            expect(res.body.products[0].name).to.equal('Product1 Test');
+            expect(res.body.message).to.equal('success1');
+            expect(res.body.products[0].name).to.equal('Product2 Test');
+            done();
+          });
+      });
+
+      it('should return 200 and get json data from cache', done => {
+        request(app)
+          .get('/api/furnitures')
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.body.status).to.equal('success');
+            expect(res.body.message).to.equal(undefined);
+            expect(res.body.products[0].name).to.equal('Product2 Test');
             done();
           });
       });
@@ -44,6 +60,7 @@ describe('# Product request', () => {
       after(async () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Image.destroy({ where: {}, truncate: true });
+        await cache.del('getHomePageProducts');
       });
     });
 

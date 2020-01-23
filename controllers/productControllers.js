@@ -19,21 +19,35 @@ const productController = {
    *         200:
    *           description: success
    */
-  getHomePageProducts: (req, res) => {
-    return Product.findAll().then(async products => {
-      const Images = await Image.findAll().then(images => images);
-      products = products.map(p => ({
-        ...p.dataValues,
-        Image: Images.filter(i => i.dataValues).find(
-          item => item.ProductId == p.dataValues.id
-        )
-          ? Images.filter(i => i.dataValues).find(
+  getHomePageProducts: async (req, res) => {
+    const result = await cache.get('getHomePageProducts');
+
+    if (result) {
+      return res.status(200).json(JSON.parse(result));
+    } else {
+      return Product.findAll({ limit: 6, order: [['id', 'DESC']] }).then(
+        async products => {
+          const Images = await Image.findAll().then(images => images);
+          products = products.map(p => ({
+            ...p.dataValues,
+            Image: Images.filter(i => i.dataValues).find(
               item => item.ProductId == p.dataValues.id
-            ).url
-          : null
-      }));
-      return res.status(200).json({ status: 'success', products });
-    });
+            )
+              ? Images.filter(i => i.dataValues).find(
+                  item => item.ProductId == p.dataValues.id
+                ).url
+              : null
+          }));
+          await cache.set('getHomePageProducts', {
+            status: 'success',
+            products
+          });
+          return res
+            .status(200)
+            .json({ status: 'success', message: 'success1', products });
+        }
+      );
+    }
   },
 
   /**
