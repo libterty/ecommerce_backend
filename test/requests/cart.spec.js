@@ -186,6 +186,11 @@ describe('# Cart request', () => {
           cost: 1111,
           price: 5999
         });
+        await db.Inventory.create({
+          quantity: 10,
+          ProductId: 1,
+          ColorId: 1
+        });
       });
 
       it('should not get cart data without req.body.price and return error message', done => {
@@ -263,6 +268,7 @@ describe('# Cart request', () => {
         await db.Product.destroy({ where: {}, truncate: true });
         await db.Color.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
   });
@@ -505,6 +511,11 @@ describe('# Cart request', () => {
           ProductId: 2,
           ColorId: 1
         });
+        await db.Inventory.create({
+          quantity: 4,
+          ProductId: 1,
+          ColorId: 1
+        });
       });
 
       it('should not delete cart item when cartItem not in the cart and return error status', done => {
@@ -568,6 +579,7 @@ describe('# Cart request', () => {
       after(async function() {
         await db.Cart.destroy({ where: {}, truncate: true });
         await db.CartItem.destroy({ where: {}, truncate: true });
+        await db.Inventory.destroy({ where: {}, truncate: true });
       });
     });
   });
