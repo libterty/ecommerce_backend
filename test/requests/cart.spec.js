@@ -48,6 +48,20 @@ describe('# Cart request', () => {
         await db.Inventory.create({ quantity: 5, ProductId: 2, ColorId: 3 });
       });
 
+      it('should return error when Inventory is not enough for quantity', done => {
+        request(app)
+          .post('/api/cart')
+          .send({ productId: 1, colorId: 1, quantity: 100, price: 9999 })
+          .expect(400)
+          .end(function(err, res) {
+            expect(res.body.status).to.equal('error');
+            expect(res.body.message).to.equal(
+              'Quantity cannot more then inventory'
+            );
+            done();
+          });
+      });
+
       it('should GET cart data and return success json message and total price', done => {
         let agent = request.agent(app);
         agent

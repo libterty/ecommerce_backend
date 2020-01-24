@@ -135,6 +135,17 @@ const cartController = {
       });
     }
     try {
+      const inventory = await Inventory.findOne({
+        where: { ProductId: productId, ColorId: colorId }
+      });
+
+      if (quantity > inventory.quantity) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Quantity cannot more then inventory'
+        });
+      }
+
       return Cart.findOrCreate({
         where: {
           id: req.session.cartId || 0
@@ -156,7 +167,7 @@ const cartController = {
         }).spread(function(cartItem, created) {
           return cartItem
             .update({
-              quantity: (parseInt(cartItem.quantity) || 0) + 1,
+              quantity: cartItem.quantity + quantity,
               price
             })
             .then(cartItem => {
