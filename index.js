@@ -43,8 +43,8 @@ let RedisStore = require('connect-redis')(session);
 let redisClient = redis.createClient(REDIS_URL);
 
 app.use(
-  cors({ 
-    credentials: true, 
+  cors({
+    credentials: true,
     origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
   })
