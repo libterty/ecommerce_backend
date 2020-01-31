@@ -1,5 +1,9 @@
 # E-commerce Website Back-end Server
 
+<p align="center">
+  <img src="https://i.imgur.com/QnAQhiR.png" alt="maynooth">
+</p>
+
 [![Build Status](https://travis-ci.org/libterty/ecommerce_backend.svg?branch=dev)](https://travis-ci.org/libterty/ecommerce_backend)
 [![Coverage Status](https://coveralls.io/repos/github/libterty/ecommerce_backend/badge.svg?branch=master)](https://coveralls.io/github/libterty/ecommerce_backend?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/libterty/ecommerce_backend/blob/master/LICENCE)
