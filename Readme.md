@@ -4,14 +4,14 @@
   <img src="https://i.imgur.com/QnAQhiR.png" alt="maynooth">
 </p>
 
-[![Build Status](https://travis-ci.org/libterty/ecommerce_backend.svg?branch=dev)](https://travis-ci.org/libterty/ecommerce_backend)
+[![Build Status](https://travis-ci.org/libterty/ecommerce_backend.svg?branch=master)](https://travis-ci.org/libterty/ecommerce_backend)
 [![Coverage Status](https://coveralls.io/repos/github/libterty/ecommerce_backend/badge.svg?branch=master)](https://coveralls.io/github/libterty/ecommerce_backend?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/libterty/ecommerce_backend/blob/master/LICENCE)
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/libterty8186/server_web)
 ![Docker Pulls](https://img.shields.io/docker/pulls/libterty8186/server_web)
 
 E-commerce Website Back-end Server 使用 Express.js + MySQL + MongoDB + Redis + pm2 + Docker-Swarm 建立的高擴展性後端API SERVER，搭配 [E-commerce Website Front-end](https://github.com/libterty/ecommerce_frontend) 後端專案，打造一個全方位的電商網站。
-開發階段後端API Server部署在[Heroku](https://secret-brushlands-82653.herokuapp.com/api)，量產階段部署在[aws](http://3.133.137.175/api)上 (AWS暫時關閉中已超出本月免費流量）。專案以TDD方式開發API確保每一個Feature的功能性都是正常。
+開發階段後端API Server部署在[Heroku](https://secret-brushlands-82653.herokuapp.com/api)，量產階段部署在[aws](http://3.134.252.225/api)上。專案以TDD方式開發API確保每一個Feature的功能性都是正常。
 
 ## Features - 專案功能
 
@@ -119,13 +119,13 @@ mongod
 
 Redis
 
+> :pushpin: 確認有連線到local server
 ```bash
-// 確認有連線到local server
 redis-server
 ```
 
+> :pushpin: 操作redis資料庫cli指令
 ```bash
-// 操作redis資料庫cli指令
 redis-cli
 ```
 
@@ -137,7 +137,7 @@ npx sequelize db:seed:all
 
 5. 測試
 
-本專案使用 Mocha 做單元測試，Istanbul/nyc 計算程式覆蓋率。
+> :notebook: 本專案使用 Mocha 做單元測試，Istanbul/nyc 計算程式覆蓋率。
 
 ```bash
 npm test
@@ -187,6 +187,9 @@ pm2 start -i 4 index.js --watch
 ```bash
 loadtest -n 1000 -c 10 -H "authorization: bear <- token ->" http://localhost/api/<-endpoint->
 ```
+
+> :warning: **Max Connection for Development SQL Server in use is 10**
+> :warning: **Max Connection for Development Heroku Server Connection in user is 20**
 
 # Contribution
 - [11](https://github.com/libterty)
