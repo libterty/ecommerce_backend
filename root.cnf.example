@@ -1,0 +1,19 @@
+# OpenSSL configuration for Root CA
+
+[ req ]
+
+prompt             = no
+string_mask        = default
+
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+x509_extensions    = x509_ext
+
+countryName = your countryName
+organizationName = your organizationName
+commonName = your commonName
+
+[ x509_ext ]
+
+basicConstraints=critical,CA:true,pathlen:0
+keyUsage=critical,keyCertSign,cRLSign

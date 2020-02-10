@@ -40,3 +40,7 @@ ngrok
 # ignore Jenkins local debug
 jenkins.sh
 
+# root.cnf and server.cnf
+*.cnf
+
+
