@@ -11,7 +11,12 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/libterty8186/server_web)
 
 E-commerce Website Back-end Server 使用 Express.js + MySQL + MongoDB + Redis + pm2 + Docker-Swarm 建立的高擴展性後端API SERVER，搭配 [E-commerce Website Front-end](https://github.com/libterty/ecommerce_frontend) 後端專案，打造一個全方位的電商網站。
-開發階段後端API Server部署在[Heroku](https://secret-brushlands-82653.herokuapp.com/api)，量產階段部署在[aws](http://3.134.252.225/api)上。專案以TDD方式開發API確保每一個Feature的功能性都是正常。
+開發階段後端API Server部署在[Heroku](https://secret-brushlands-82653.herokuapp.com/api)，量產階段部署在[aws](http://3.134.252.225/api)上 **(由於AWS免費額度流量不足仍繼續不開放此API Server)**。專案以TDD方式開發API確保每一個Feature的功能性都是正常。
+
+
+> :warning: **Max Connection for Development SQL Server in use is 10**
+
+> :warning: **Max Connection for Development Heroku Server Connection in user is 20**
 
 ## Features - 專案功能
 
@@ -187,9 +192,6 @@ pm2 start -i 4 index.js --watch
 ```bash
 loadtest -n 1000 -c 10 -H "authorization: bear <- token ->" http://localhost/api/<-endpoint->
 ```
-
-> :warning: **Max Connection for Development SQL Server in use is 10**
-> :warning: **Max Connection for Development Heroku Server Connection in user is 20**
 
 # Contribution
 - [11](https://github.com/libterty)
