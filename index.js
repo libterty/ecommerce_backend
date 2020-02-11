@@ -44,7 +44,7 @@ let redisClient = redis.createClient(REDIS_URL);
 
 app.use(
   cors({
-    credentials: true,
+    credentials: 'include',
     origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
   })
