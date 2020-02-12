@@ -735,6 +735,13 @@ describe('# User Coupon Request', () => {
           expire_date: '2019/02/20',
           percent: 20
         });
+        await db.Coupon.create({
+          id: 3,
+          coupon_code: 'SHIPPINGFREE',
+          limited_usage: 1,
+          expire_date: '2050/05/03',
+          percent: 20
+        });
       });
 
       it('should return 200 and test1 token', done => {
@@ -761,6 +768,23 @@ describe('# User Coupon Request', () => {
             expect(res.body.status).to.equal('success');
             expect(res.body.message).to.equal('Use coupon success');
             done();
+          });
+      });
+
+      it('should return 200 and use valid coupons without decrement', done => {
+        request(app)
+          .get('/api/orders/coupons/1')
+          .set('Authorization', 'bearer ' + token)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end((err, res) => {
+            db.Coupon.findByPk(3).then(async coupon => {
+              expect(coupon.dataValues.limited_usage).to.equal(1);
+              expect(res.body.status).to.equal('success');
+              expect(res.body.message).to.equal('Use coupon success');
+              await coupon.destroy();
+              return done();
+            });
           });
       });
 

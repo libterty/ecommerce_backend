@@ -5,7 +5,7 @@ module.exports = {
     return queryInterface.bulkInsert('Coupons', [
       {
         coupon_code: 'SHIPPINGFREE',
-        limited_usage: null,
+        limited_usage: 100000001,
         expire_date: new Date('2050/07/12'),
         percent: null,
         createdAt: new Date(),

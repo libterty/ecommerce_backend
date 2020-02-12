@@ -135,11 +135,18 @@ const userCouponController = {
    */
   useValidCoupon: (req, res) => {
     return Coupon.findByPk(req.params.id).then(coupon => {
-      coupon.decrement('limited_usage').then(() => {
+      const vCoupon = coupon.dataValues.coupon_code || '';
+      if (vCoupon === 'SHIPPINGFREE') {
         return res
           .status(200)
           .json({ status: 'success', message: 'Use coupon success' });
-      });
+      } else {
+        coupon.decrement('limited_usage').then(() => {
+          return res
+            .status(200)
+            .json({ status: 'success', message: 'Use coupon success' });
+        });
+      }
     });
   }
 };
