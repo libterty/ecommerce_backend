@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('./config/passport');
 const cors = require('cors');
@@ -41,6 +41,22 @@ const REDIS_URL =
     : 'redis://127.0.0.1:6379';
 let RedisStore = require('connect-redis')(session);
 let redisClient = redis.createClient(REDIS_URL);
+let sessionOption = {
+  store: new RedisStore({ client: redisClient }),
+  secret: 'trueAndFalse',
+  name: 'trueAndFalse',
+  cookie: {
+    secure: false
+  },
+  resave: false,
+  saveUninitialized: true,
+  sameSite: 'none'
+};
+
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+  sessionOption.cookie.secure = true;
+}
 
 app.use(
   cors({
@@ -53,19 +69,8 @@ app.use('/upload', express.static(__dirname + '/upload'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(
-  session({
-    store: new RedisStore({ client: redisClient }),
-    secret: 'trueAndFalse',
-    name: 'trueAndFalse',
-    cookie: {
-      secure: false
-    },
-    resave: false,
-    saveUninitialized: false
-  })
-);
+// app.use(cookieParser());
+app.use(session(sessionOption));
 app.use(function(req, res, next) {
   if (!req.session) return next(new Error('lost Connections'));
   next();
