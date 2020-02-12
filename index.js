@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('./config/passport');
 const cors = require('cors');
@@ -69,7 +69,7 @@ app.use('/upload', express.static(__dirname + '/upload'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(session(sessionOption));
 app.use(function(req, res, next) {
   if (!req.session) return next(new Error('lost Connections'));
