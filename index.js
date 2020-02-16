@@ -46,7 +46,7 @@ let sessionOption = {
   secret: 'trueAndFalse',
   name: 'trueAndFalse',
   cookie: {
-    secure: true
+    secure: false
   },
   resave: false,
   saveUninitialized: false
