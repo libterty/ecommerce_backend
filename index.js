@@ -46,13 +46,11 @@ let sessionOption = {
   secret: 'trueAndFalse',
   name: 'trueAndFalse',
   cookie: {
-    secure: false
+    secure: true
   },
   resave: false,
-  saveUninitialized: true,
-  sameSite: 'none'
+  saveUninitialized: false
 };
-
 if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
   sessionOption.cookie.secure = true;

@@ -78,6 +78,7 @@ describe('# Trading', () => {
       const mpgAesEncrypt = trade.createMpgAesEncrypt(data);
 
       it('Should return Decrypt Data hex when we call the function', () => {
+        console.log('mpgAesEncrypt', mpgAesEncrypt);
         const data = trade.createMpgAesDecrypt(mpgAesEncrypt);
         expect(data.includes('test1test1')).to.equal(true);
         expect(data.includes('test1@example.com')).to.equal(true);
